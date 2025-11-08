@@ -13,7 +13,7 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://example.me',
+    site: 'https://eeshans.com',
     integrations: [expressiveCode(expressiveCodeOptions), tailwind({
         applyBaseStyles: false
 		}), sitemap(), mdx(), icon(), react()],
