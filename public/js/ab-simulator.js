@@ -39,22 +39,45 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLeaderboard();
   };
   
-  // Wait for PostHog to be fully ready with feature flags
-  function waitForPostHog(attempt = 0) {
-    if (attempt > 50) {
-      // Waited 5 seconds, give up and init anyway
+  // PostHog's stub is created immediately, feature flags might be in-flight
+  // Give PostHog up to 5 seconds to resolve feature flags
+  let attempts = 0;
+  const maxAttempts = 50;
+  
+  function checkPostHog() {
+    if (attempts++ > maxAttempts) {
+      // Timeout after 5 seconds
       doInit();
       return;
     }
     
-    if (typeof window !== 'undefined' && window.posthog && window.posthog.onFeatureFlags) {
-      window.posthog.onFeatureFlags(doInit);
+    // PostHog stub exists immediately, but feature flags load asynchronously
+    if (typeof window !== 'undefined' && window.posthog) {
+      // Just call getFeatureFlag directly - the stub queues the call
+      // This works because PostHog queues calls until the real lib loads
+      const flag = window.posthog.getFeatureFlag(FEATURE_FLAG_KEY);
+      
+      // If we got a defined value (not null/undefined), feature flags are loaded
+      if (flag !== null && flag !== undefined) {
+        doInit();
+      } else if (attempts < 10) {
+        // Keep trying for first 1 second
+        setTimeout(checkPostHog, 100);
+      } else {
+        // After 1 second, just initialize - flag will be null but that's OK
+        doInit();
+      }
     } else {
-      setTimeout(() => waitForPostHog(attempt + 1), 100);
+      // PostHog not available at all, try again
+      if (attempts < 10) {
+        setTimeout(checkPostHog, 100);
+      } else {
+        doInit();
+      }
     }
   }
   
-  waitForPostHog();
+  checkPostHog();
 });
 
 const initializeVariant = () => {
