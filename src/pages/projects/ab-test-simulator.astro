@@ -154,81 +154,362 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 
 		<!-- Dashboard -->
 		<div id="dashboard-section" class="space-y-6 rounded-lg border bg-card p-4">
-			<h3 class="font-semibold">📊 Analytics Dashboard</h3>
-			<p class="text-xs text-muted-foreground">Real-time A/B test results (updates every 10 seconds)</p>
-
-			<!-- Comparison Card -->
-			<div id="comparison-card" class="rounded-lg border bg-muted p-4">
-				<div class="text-sm">Loading comparison...</div>
+			<div class="flex items-center justify-between">
+				<div>
+					<h3 class="font-semibold">📊 Analytics Dashboard</h3>
+					<p class="text-xs text-muted-foreground">Real-time A/B test results</p>
+				</div>
+				<div id="update-indicator" class="text-xs text-muted-foreground">
+					<span id="last-updated">Loading...</span>
+				</div>
 			</div>
 
-			<!-- Charts -->
-			<div id="avg-time-chart"></div>
-			<div id="completion-chart"></div>
+			<!-- Comparison Card (High Priority) -->
+			<div id="comparison-card" class="rounded-lg border bg-gradient-to-br from-card to-muted p-6">
+				<div class="flex items-center justify-center h-24">
+					<div class="text-center">
+						<div class="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+						<div class="text-sm text-muted-foreground">Loading comparison...</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Funnel Chart (Moved up) -->
+			<div class="rounded-lg border bg-card p-4">
+				<div id="funnel-chart"></div>
+			</div>
+
+			<!-- Charts Grid: Avg Time + Distribution -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+				<!-- Avg Time Chart -->
+				<div class="rounded-lg border bg-card p-4">
+					<div id="avg-time-chart"></div>
+				</div>
+
+				<!-- Distribution Chart (Histogram) -->
+				<div class="rounded-lg border bg-card p-4">
+					<div id="distribution-chart"></div>
+				</div>
+			</div>
+
+			<!-- Recent Completions Table -->
+			<div class="rounded-lg border bg-card p-4">
+				<h4 class="text-sm font-semibold mb-4">Recent Completions</h4>
+				<div id="completions-table" class="overflow-x-auto">
+					<div class="text-sm text-muted-foreground text-center py-8">Loading...</div>
+				</div>
+			</div>
 		</div>
 
 		<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 		<script is:inline>
-		// Auto-detect local vs production
+		// Auto-detect API URL
 		const API_URL = window.location.hostname === 'localhost'
 			? 'http://localhost:8000'
 			: 'https://soma-analytics.fly.dev';
 
+		// Color scheme matching your design
+		const colors = {
+			variantA: '#6366f1',    // indigo
+			variantB: '#ef4444',    // red
+			median: '#10b981',      // green
+			p25: '#f59e0b',         // amber
+			grid: '#e5e7eb',
+			gridDark: '#374151'
+		};
+
+		// Get Plotly theme config
+		function getPlotlyTheme() {
+			const isDark = document.documentElement.classList.contains('dark');
+			const textColor = isDark ? '#e5e7eb' : '#374151';
+			const gridColor = isDark ? '#1f2937' : '#f3f4f6';
+			const lineColor = isDark ? '#374151' : '#e5e7eb';
+
+			return {
+				font: { family: 'Satoshi, sans-serif', size: 12, color: textColor },
+				paper_bgcolor: 'rgba(0,0,0,0)',
+				plot_bgcolor: 'rgba(0,0,0,0)',
+				xaxis: { gridcolor: gridColor, linecolor: lineColor, zerolinecolor: lineColor },
+				yaxis: { gridcolor: gridColor, linecolor: lineColor, zerolinecolor: lineColor }
+			};
+		}
+
+		// Format time helper
+		function getLastUpdateTime() {
+			const now = new Date();
+			return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+		}
+
+		// Render comparison card
+		function renderComparison(comparison) {
+			const diff = comparison.percentage_difference;
+			const isSignificant = Math.abs(diff) > 10;
+			const isWinnerB = diff < 0;
+			
+			const bgClass = isSignificant 
+				? (isWinnerB ? 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-900' : 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-900')
+				: 'bg-muted';
+			
+			const card = document.getElementById('comparison-card');
+			card.innerHTML = `
+				<div class="rounded-lg p-4 ${bgClass}">
+					<div class="grid grid-cols-3 gap-6 items-stretch">
+						<!-- 2/3 width: Variants A & B -->
+						<div class="col-span-2">
+							<div class="grid grid-cols-2 gap-4">
+								<div>
+									<div class="text-xs text-muted-foreground">Variant A<br><span class="text-xs">(3 words)</span></div>
+									<div class="font-mono text-3xl font-bold">${comparison.variant_a_avg}s</div>
+									<div class="text-xs text-muted-foreground mt-1">${comparison.variant_a_completions} completions</div>
+								</div>
+								<div>
+									<div class="text-xs text-muted-foreground">Variant B<br><span class="text-xs">(4 words)</span></div>
+									<div class="font-mono text-3xl font-bold">${comparison.variant_b_avg}s</div>
+									<div class="text-xs text-muted-foreground mt-1">${comparison.variant_b_completions} completions</div>
+								</div>
+							</div>
+						</div>
+						<!-- 1/3 width: Comparison result -->
+						<div class="flex flex-col justify-center items-center text-center border-l dark:border-current border-current pl-4">
+							<div class="text-sm font-semibold mb-2">${comparison.interpretation}</div>
+							<div class="text-xs text-muted-foreground">
+								<span class="font-mono font-bold block">${diff > 0 ? '+' : ''}${diff}%</span>
+								<span>${isSignificant ? 'significant' : 'not significant'}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			`;
+		}
+
+		// Render average time chart
+		function renderAvgTimeChart(stats, theme) {
+			if (!stats || stats.length < 2) return;
+
+			const trace = {
+				x: ['Variant A', 'Variant B'],
+				y: [stats[0].avg_completion_time, stats[1].avg_completion_time],
+				type: 'bar',
+				marker: { color: [colors.variantA, colors.variantB] },
+				text: [stats[0].avg_completion_time.toFixed(2) + 's', stats[1].avg_completion_time.toFixed(2) + 's'],
+				//textposition: 'outside'
+			};
+
+			const layout = {
+				title: { text: 'Average Completion Time', font: { size: 14 } },
+				font: theme.font,
+				paper_bgcolor: theme.paper_bgcolor,
+				plot_bgcolor: theme.plot_bgcolor,
+				xaxis: { title: '', gridcolor: theme.xaxis.gridcolor, linecolor: theme.xaxis.linecolor },
+				yaxis: { title: 'Seconds', gridcolor: theme.yaxis.gridcolor, linecolor: theme.yaxis.linecolor },
+				height: 320,
+				margin: { l: 50, r: 50, t: 50, b: 40 },
+				automargin: true,
+				showlegend: false
+			};
+
+			Plotly.newPlot('avg-time-chart', [trace], layout, { responsive: true, displayModeBar: false });
+		}
+
+		// Compute simple Gaussian KDE
+		function computeKDE(data) {
+			if (!data || data.length === 0) return { x: [], y: [] };
+			
+			const mean = data.reduce((a, b) => a + b) / data.length;
+			const variance = data.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / data.length;
+			const std = Math.sqrt(variance);
+			const bandwidth = std * Math.pow(data.length, -0.2);
+
+			const min = Math.min(...data);
+			const max = Math.max(...data);
+			const xPoints = [];
+			const yPoints = [];
+			
+			for (let i = 0; i <= 150; i++) {
+				const x = min + (max - min) * i / 150;
+				xPoints.push(x);
+				
+				let density = 0;
+				for (let j = 0; j < data.length; j++) {
+					density += Math.exp(-Math.pow((x - data[j]) / bandwidth, 2) / 2);
+				}
+				yPoints.push(density / (data.length * bandwidth * Math.sqrt(2 * Math.PI)));
+			}
+			
+			return { x: xPoints, y: yPoints };
+		}
+
+		// Render KDE distribution
+		function renderDistributionChart(distributionData, theme) {
+			if (!distributionData.variant_a_times || !distributionData.variant_b_times) return;
+
+			const kdeA = computeKDE(distributionData.variant_a_times);
+			const kdeB = computeKDE(distributionData.variant_b_times);
+
+			const traces = [
+				{
+					x: kdeA.x,
+					y: kdeA.y,
+					type: 'scatter',
+					mode: 'lines',
+					name: 'Variant A',
+					line: { color: colors.variantA, width: 2 },
+					fill: 'tozeroy',
+					fillcolor: 'rgba(99, 102, 241, 0.2)'
+				},
+				{
+					x: kdeB.x,
+					y: kdeB.y,
+					type: 'scatter',
+					mode: 'lines',
+					name: 'Variant B',
+					line: { color: colors.variantB, width: 2 },
+					fill: 'tozeroy',
+					fillcolor: 'rgba(239, 68, 68, 0.2)'
+				}
+			];
+
+			const layout = {
+				title: { text: 'Completion Time Distribution (KDE)', font: { size: 14 } },
+				font: theme.font,
+				paper_bgcolor: theme.paper_bgcolor,
+				plot_bgcolor: theme.plot_bgcolor,
+				xaxis: { title: 'Completion Time (seconds)', gridcolor: theme.xaxis.gridcolor, linecolor: theme.xaxis.linecolor },
+				yaxis: { title: 'Density', gridcolor: theme.yaxis.gridcolor, linecolor: theme.yaxis.linecolor },
+				height: 320,
+				margin: { l: 50, r: 30, t: 50, b: 40 },
+				showlegend: true
+			};
+
+			Plotly.newPlot('distribution-chart', traces, layout, { responsive: true, displayModeBar: false });
+		}
+
+		// Render funnel chart using Plotly's funnel type
+		function renderFunnelChart(funnel, theme) {
+			const variantA = funnel.filter(f => f.variant === 'A').sort((a, b) => a.stage_order - b.stage_order);
+			const variantB = funnel.filter(f => f.variant === 'B').sort((a, b) => a.stage_order - b.stage_order);
+
+			const traces = [
+				{
+					type: 'funnel',
+					y: variantA.map(f => f.stage),
+					x: variantA.map(f => f.event_count),
+					name: 'Variant A',
+					marker: { color: colors.variantA },
+					textposition: 'inside',
+					textinfo: 'value+percent initial'
+				},
+				{
+					type: 'funnel',
+					y: variantB.map(f => f.stage),
+					x: variantB.map(f => f.event_count),
+					name: 'Variant B',
+					marker: { color: colors.variantB },
+					textposition: 'inside',
+					textinfo: 'value+percent initial'
+				}
+			];
+
+			const layout = {
+				title: { text: 'Conversion Funnel', font: { size: 14 } },
+				font: theme.font,
+				paper_bgcolor: theme.paper_bgcolor,
+				plot_bgcolor: theme.plot_bgcolor,
+				xaxis: { gridcolor: theme.xaxis.gridcolor, linecolor: theme.xaxis.linecolor },
+				yaxis: { gridcolor: theme.yaxis.gridcolor, linecolor: theme.yaxis.linecolor },
+				height: 320,
+				margin: { l: 100, r: 30, t: 50, b: 40 },
+				showlegend: true
+			};
+
+			Plotly.newPlot('funnel-chart', traces, layout, { responsive: true, displayModeBar: false });
+		}
+
+		// Render recent completions table
+		function renderCompletionsTable(completions) {
+			if (!completions || completions.length === 0) {
+				document.getElementById('completions-table').innerHTML = '<div class="text-sm text-muted-foreground text-center py-4">No completions yet</div>';
+				return;
+			}
+
+			const rows = completions.slice(0, 10).map(c => `
+				<tr class="border-b hover:bg-muted/50">
+					<td class="py-2 px-3 text-sm font-mono">${c.variant}</td>
+					<td class="py-2 px-3 text-sm font-mono">${c.completion_time_seconds.toFixed(1)}s</td>
+					<td class="py-2 px-3 text-sm">${c.correct_words_count} words</td>
+					<td class="py-2 px-3 text-sm">${c.total_guesses_count} guesses</td>
+					<td class="py-2 px-3 text-xs text-muted-foreground">${new Date(c.timestamp).toLocaleTimeString()}</td>
+				</tr>
+			`).join('');
+
+			document.getElementById('completions-table').innerHTML = `
+				<table class="w-full text-sm">
+					<thead class="border-b font-semibold">
+						<tr>
+							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Variant</th>
+							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Time</th>
+							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Words</th>
+							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Guesses</th>
+							<th class="text-left py-2 px-3 text-xs text-muted-foreground">When</th>
+						</tr>
+					</thead>
+					<tbody>${rows}</tbody>
+				</table>
+			`;
+		}
+
+		// Main update function
 		async function updateDashboard() {
 			try {
-				const [stats, comparison] = await Promise.all([
+				const [stats, comparison, funnel, completions, distribution] = await Promise.all([
 					fetch(`${API_URL}/api/variant-stats`).then(r => r.json()),
-					fetch(`${API_URL}/api/comparison`).then(r => r.json())
+					fetch(`${API_URL}/api/comparison`).then(r => r.json()),
+					fetch(`${API_URL}/api/conversion-funnel`).then(r => r.json()),
+					fetch(`${API_URL}/api/recent-completions?limit=10`).then(r => r.json()),
+					fetch(`${API_URL}/api/time-distribution`).then(r => r.json())
 				]);
 
-				document.getElementById('comparison-card').innerHTML = `
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<div class="text-xs text-muted-foreground">Variant A (3 words)</div>
-							<div class="font-mono text-2xl font-bold">${comparison.variant_a_avg}s</div>
-							<div class="text-xs">${comparison.variant_a_completions} completions</div>
-						</div>
-						<div>
-							<div class="text-xs text-muted-foreground">Variant B (4 words)</div>
-							<div class="font-mono text-2xl font-bold">${comparison.variant_b_avg}s</div>
-							<div class="text-xs">${comparison.variant_b_completions} completions</div>
-						</div>
-					</div>
-					<div class="mt-3 text-sm ${comparison.percentage_difference > 0 ? 'text-red-600' : 'text-green-600'}">
-						${comparison.interpretation}
-					</div>
-				`;
+				const theme = getPlotlyTheme();
 
-				Plotly.newPlot('avg-time-chart', [{
-					x: stats.map(d => `Variant ${d.variant}`),
-					y: stats.map(d => d.avg_completion_time),
-					type: 'bar',
-					marker: { color: ['#636EFA', '#EF553B'] }
-				}], {
-					title: 'Average Completion Time',
-					yaxis: { title: 'Seconds' },
-					height: 300
-				});
+				// Render all components
+				renderComparison(comparison);
+				renderFunnelChart(funnel, theme);
+				renderAvgTimeChart(stats, theme);
+				renderDistributionChart(distribution, theme);
+				renderCompletionsTable(completions);
 
-				Plotly.newPlot('completion-chart', stats.map(d => ({
-					y: [d.min_completion_time, d.p25_completion_time, d.median_completion_time, d.p75_completion_time, d.max_completion_time],
-					type: 'box',
-					name: `Variant ${d.variant}`,
-					boxmean: true
-				})), {
-					title: 'Completion Time Distribution',
-					yaxis: { title: 'Seconds' },
-					height: 300
-				});
+				// Update timestamp
+				document.getElementById('last-updated').innerHTML = `Last updated: ${getLastUpdateTime()}`;
+				document.getElementById('update-indicator').classList.remove('opacity-50');
 
 			} catch (err) {
 				console.error('Dashboard error:', err);
-				document.getElementById('comparison-card').innerHTML = `<div class="text-red-600 text-sm">Error loading data. Is the API running?</div>`;
+				document.getElementById('comparison-card').innerHTML = `
+					<div class="rounded-lg p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900">
+						<div class="text-sm font-semibold text-red-900 dark:text-red-100 mb-1">❌ Error Loading Dashboard</div>
+						<div class="text-xs text-red-800 dark:text-red-200">${err.message}</div>
+						<div class="text-xs text-red-700 dark:text-red-300 mt-2">Check if soma-analytics API is running at ${API_URL}</div>
+					</div>
+				`;
 			}
 		}
 
+		// Initial load
 		updateDashboard();
-		setInterval(updateDashboard, 10000);
+
+		// Auto-refresh every 10 seconds
+		setInterval(() => {
+			document.getElementById('update-indicator').classList.add('opacity-50');
+			updateDashboard();
+		}, 10000);
+
+		// Re-render when theme changes (dark mode toggle)
+		const observer = new MutationObserver(() => {
+			if (document.getElementById('avg-time-chart').hasChildNodes()) {
+				updateDashboard();
+			}
+		});
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 		</script>
 	</div>
 </PageLayout>

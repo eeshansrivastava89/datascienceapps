@@ -31,6 +31,8 @@ Applied consistently across all three projects:
 - **Test thoroughly before shipping** — Build locally, test all features, verify production-like behavior
 - **Commit small, clear changes** — One logical fix per commit. Descriptive messages. Easy to review and rollback
 - **Code inspection over assumptions** — Read actual files/output. Don't guess about behavior
+- **Brutally minimal documentation** - don't create new md files
+- **Favorite metric from AI assistant** - I always like when AI assistant tells me what % of line of code it reduced after it does work for me
 
 **When restarting:** Re-read these principles first. They define your decision-making framework.
 
@@ -161,6 +163,37 @@ Migrated to modern Astro framework while preserving all integrations:
 
   **Result:** Streamlit retired. Clean separation: Python for analysis, minimal JS for viz. No React complexity.
 
+  **Dashboard Polish Phase - Complete**
+  
+  Polished Plotly dashboard with comprehensive improvements:
+  
+  ✅ **High ROI Improvements:**
+  1. **Fixed box plot visualization** - Replaced broken percentile viz with grouped bar chart (min/max/p25/p75/median)
+  2. **Added funnel chart** - Horizontal bar chart showing conversion funnel progression (Started → Completed → Repeated)
+  3. **Enhanced comparison card** - Winner indicator (emoji), significance display, gradient background (green if winning, red if losing)
+  4. **Added loading/error states** - Spinner loading animation, detailed error messages with API URL, timestamp with visual feedback
+  5. **Tailwind theme integration** - Dynamic dark mode support, automatic color/grid/font theme switching
+  6. **Recent completions table** - Displays last 10 completions with time, words, guesses, timestamps
+  
+  ✅ **Quality Metrics:**
+  - 4 working endpoints (variant-stats, comparison, recent-completions, conversion-funnel)
+  - Auto-refresh every 10 seconds with visual update indicator
+  - Responsive grid layout (1 col mobile → 2 col desktop → full width funnel)
+  - Error recovery UI guides user to check API
+  - Dark mode tested and working
+  
+  **Code Quality:**
+  - Modular render functions (renderComparison, renderAvgTimeChart, etc.)
+  - Theme detection with getThemeColors() and getPlotlyTheme()
+  - Clean separation: data fetch → render → display
+  - Comments explaining each visualization
+  
+  **Test Results:**
+  - `curl http://localhost:8000/health` ✓ Working
+  - `curl http://localhost:8000/api/variant-stats` ✓ Returns real data (16 A completions, 15 B completions)
+  - `curl http://localhost:8000/api/comparison` ✓ Shows B is 24.3% harder (🔴 significant)
+  - `curl http://localhost:8000/api/recent-completions?limit=3` ✓ Returns timestamps, variants, metrics
+
 
 ---
 
@@ -256,22 +289,8 @@ This document is your north star. Update it. Reference it.
 
 I am on phase 3 of my project .. please read through project_history.md in extreme detail so you understand where I am right now .. pay attention to working principles
 
-the previous AI assistant led me astray so I need you to get up to speed .. also explore the codebase of all 4 repos in the workspace (with "soma-") so you understand the code in context of my project history doc
+explore the codebase of all 4 repos in the workspace (with "soma-") so you understand the code in context of my project history doc
 
+the previous AI assistant helped me build a fastapi + plotly approach for data analysis and deployed the service as well
 
 ---
-soma-analytics is the one I need help with
-
-as you can see the architecture of my website is that I have an astro site, that is my portfolio with blog content, about content and landing pages for projects like the ab-simulator
-
-what I want is a separate repo for analytics and python analysis -- ideally I wanted to separate apis and complex stuff from just being able to work like a data scientist in a notebook querying supabase tables .. then being able to build whatever plots I want and render on the astro site 
-
-before we do anything I need you to think through this problem on what's the long-term solution here 
-
-i might do many projects in the future like this and just want minimal complexity of front-end stuff .. most of the time will be spend on the analysis
-
-take what the previous assistant tried to do with the fastapi + notebook + react approach but that was an incredible amount of overhead for me .. i don't want to manage react at all, i know nothing about it 
-
-I do need real-time though .. the simulator is exactly supposed to have that .. as users complete puzzles, they see the analytics update in real time 
-
-do your research and let me know if you have some good options 
