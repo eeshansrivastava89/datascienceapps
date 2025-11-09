@@ -199,8 +199,15 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 			</div>
 		</div>
 
-		<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+		<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
 		<script is:inline>
+		// Wait for both Plotly and PostHog to load
+		function initDashboard() {
+			if (typeof Plotly === 'undefined') {
+				setTimeout(initDashboard, 100);
+				return;
+			}
+
 		// Auto-detect API URL
 		const API_URL = window.location.hostname === 'localhost'
 			? 'http://localhost:8000'
@@ -541,6 +548,14 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 			}
 		});
 		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+		}
+		
+		// Start dashboard when ready
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initDashboard);
+		} else {
+			initDashboard();
+		}
 		</script>
 	</div>
 </PageLayout>
