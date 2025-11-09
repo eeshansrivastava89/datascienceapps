@@ -46,15 +46,34 @@ const initializeVariant = () => {
   let variant = 'A';
   let flagResponse = null;
   
-  if (typeof posthog !== 'undefined' && posthog?.getFeatureFlag) {
-    flagResponse = posthog.getFeatureFlag(FEATURE_FLAG_KEY);
-    if (flagResponse === '4-words') variant = 'B';
-    else if (flagResponse === 'control') variant = 'A';
-    else {
+  // Try to get feature flag from PostHog
+  if (typeof posthog !== 'undefined') {
+    let flag = null;
+    
+    // Method 1: getFeatureFlag (newer versions)
+    if (typeof posthog.getFeatureFlag === 'function') {
+      flag = posthog.getFeatureFlag(FEATURE_FLAG_KEY);
+    }
+    // Method 2: featureFlags object (some versions)
+    else if (posthog.featureFlags && posthog.featureFlags[FEATURE_FLAG_KEY] !== undefined) {
+      flag = posthog.featureFlags[FEATURE_FLAG_KEY];
+    }
+    
+    console.log(`PostHog flag "${FEATURE_FLAG_KEY}":`, flag); // Debug log
+    
+    if (flag === '4-words') {
+      variant = 'B';
+      flagResponse = '4-words';
+    } else if (flag === 'control') {
+      variant = 'A';
+      flagResponse = 'control';
+    } else {
+      // No feature flag from PostHog, randomize
       variant = Math.random() < 0.5 ? 'A' : 'B';
-      flagResponse = null; // No flag returned, just random
+      flagResponse = null; // No flag response since not from PostHog
     }
   } else {
+    // PostHog not loaded, random variant
     variant = Math.random() < 0.5 ? 'A' : 'B';
     flagResponse = null;
   }
@@ -205,13 +224,19 @@ const resetPuzzle = (isRepeat = false) => {
 };
 
 const trackEvent = (eventName, props = {}) => {
+  const flagResponse = localStorage.getItem('simulator_flag_response');
+  
+  // Only track if we have a valid feature flag response
+  if (!flagResponse) {
+    console.warn(`Skipping event "${eventName}" - no feature flag response loaded. Feature flag not properly initialized in PostHog.`);
+    return;
+  }
+  
   if (typeof posthog === 'undefined' || !posthog?.capture) return;
   try {
-    const storedFlag = localStorage.getItem('simulator_flag_response');
-    
     posthog.capture(eventName, {
       variant: puzzleState.variant,
-      $feature_flag_response: storedFlag || null,
+      $feature_flag_response: flagResponse,
       user_id: localStorage.getItem('simulator_user_id'),
       ...props
     });
