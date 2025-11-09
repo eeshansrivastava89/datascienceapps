@@ -43,10 +43,22 @@
 		
 		if (sig) {
 			statusBox.classList.remove('hidden');
-			statusBox.className = diff < 0 ? 'rounded-lg p-3 bg-red-50 dark:bg-red-950/20' : 'rounded-lg p-3 bg-green-50 dark:bg-green-950/20';
-			statusText.textContent = `🔴 ${diff < 0 ? '4-words variant is significantly harder' : '3-words variant is significantly harder'}`;
-			statusText.className = diff < 0 ? 'text-sm font-medium text-red-600 dark:text-red-400' : 'text-sm font-medium text-green-600 dark:text-green-400';
-			document.getElementById('comparison-diff').className = diff < 0 ? 'font-mono text-2xl font-bold text-red-600 dark:text-red-400' : 'font-mono text-2xl font-bold text-green-600 dark:text-green-400';
+			const isHarder = diff > 0;
+			
+			// Remove old color classes
+			statusBox.classList.remove('bg-red-50', 'dark:bg-red-950/20', 'bg-green-50', 'dark:bg-green-950/20');
+			statusText.classList.remove('text-red-600', 'dark:text-red-400', 'text-green-600', 'dark:text-green-400');
+			
+			// Add new color classes based on comparison
+			if (isHarder) {
+				statusText.textContent = '🔴 4-words variant is significantly harder';
+				statusText.className = 'text-sm font-medium text-red-600';
+				document.getElementById('comparison-diff').className = 'font-mono text-2xl font-bold text-red-600';
+			} else {
+				statusText.textContent = '🟢 3-words variant is significantly harder';
+				statusText.className = 'text-sm font-medium text-green-600';
+				document.getElementById('comparison-diff').className = 'font-mono text-2xl font-bold text-green-600';
+			}
 		} else {
 			statusBox.classList.add('hidden');
 			document.getElementById('comparison-diff').className = 'font-mono text-2xl font-bold text-muted-foreground';
