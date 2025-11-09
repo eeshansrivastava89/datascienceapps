@@ -29,75 +29,64 @@ let puzzleState = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  let hasInitialized = false;
-  const doInit = () => {
-    if (hasInitialized) return;
-    hasInitialized = true;
-    initializeVariant();
-    displayVariant();
-    setupPuzzle();
-    updateLeaderboard();
-  };
-  
-  // Wait for window.posthog to exist (the stub loads first, real lib loads async)
-  let attempts = 0;
-  const waitForPostHog = () => {
-    if (window.posthog) {
-      // PostHog object exists, safe to use
-      doInit();
-    } else if (attempts++ < 30) {
-      // Try for up to 3 seconds (30 * 100ms)
-      setTimeout(waitForPostHog, 100);
-    } else {
-      // Timeout, proceed anyway
-      doInit();
-    }
-  };
-  
-  waitForPostHog();
+  // Wait for PostHog to be ready, then initialize with feature flags
+  if (window.posthog && posthog.onFeatureFlags) {
+    // PostHog is available, wait for feature flags
+    posthog.onFeatureFlags(() => {
+      initializeVariant();
+      displayVariant();
+      setupPuzzle();
+      updateLeaderboard();
+    });
+  } else {
+    // Wait for PostHog to load
+    let attempts = 0;
+    const waitForPostHog = () => {
+      if (window.posthog && posthog.onFeatureFlags) {
+        posthog.onFeatureFlags(() => {
+          initializeVariant();
+          displayVariant();
+          setupPuzzle();
+          updateLeaderboard();
+        });
+      } else if (attempts++ < 30) {
+        setTimeout(waitForPostHog, 100);
+      } else {
+        // PostHog didn't load, show error
+        showFeatureFlagError();
+      }
+    };
+    waitForPostHog();
+  }
 });
 
 const initializeVariant = () => {
-  let variant = null;
-  let flagFailed = false;
+  // This function is called only AFTER onFeatureFlags callback fires
+  // So we can safely get the feature flag without race conditions
+  const flag = posthog.getFeatureFlag(FEATURE_FLAG_KEY);
   
-  // Try to get feature flag from PostHog
-  try {
-    if (posthog?.getFeatureFlag) {
-      const flag = posthog.getFeatureFlag(FEATURE_FLAG_KEY);
-      if (flag === '4-words') {
-        variant = 'B';
-      } else if (flag === 'control') {
-        variant = 'A';
-      } else {
-        // Feature flag exists but value is invalid
-        flagFailed = true;
-      }
-    } else {
-      // PostHog not available
-      flagFailed = true;
-    }
-  } catch (e) {
-    console.error('Error getting feature flag:', e);
-    flagFailed = true;
-  }
-  
-  // Show error message but don't break the page
-  if (flagFailed) {
+  if (!flag) {
+    // Feature flag didn't return a value, show error
     showFeatureFlagError();
-    variant = null;
+    return;
   }
   
-  // Store variant if we got one
-  if (variant !== null) {
-    localStorage.setItem('simulator_variant', variant);
-    localStorage.setItem('simulator_user_id', 'user_' + Math.random().toString(36).substr(2, 9));
-    if (!localStorage.getItem('simulator_username')) {
-      localStorage.setItem('simulator_username', generateUsername());
-    }
+  let variant;
+  if (flag === '4-words') {
+    variant = 'B';  // 4 words = Variant B
+  } else if (flag === 'control') {
+    variant = 'A';  // control = Variant A (3 words)
   } else {
-    // Show error but don't store anything
+    // Unexpected feature flag value
+    console.warn('Unexpected feature flag value:', flag);
     showFeatureFlagError();
+    return;
+  }
+  
+  localStorage.setItem('simulator_variant', variant);
+  localStorage.setItem('simulator_user_id', 'user_' + Math.random().toString(36).substr(2, 9));
+  if (!localStorage.getItem('simulator_username')) {
+    localStorage.setItem('simulator_username', generateUsername());
   }
 };
 
