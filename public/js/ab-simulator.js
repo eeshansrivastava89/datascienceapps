@@ -47,42 +47,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const initializeVariant = () => {
   let variant = 'A';
-  let flagResponse = null;
   
-  // Try to get feature flag from PostHog - check window object first
-  if (typeof window !== 'undefined' && window.posthog) {
-    let flag = null;
-    
-    // Method 1: getFeatureFlag (newer versions)
-    if (typeof window.posthog.getFeatureFlag === 'function') {
-      flag = window.posthog.getFeatureFlag(FEATURE_FLAG_KEY);
-    }
-    // Method 2: featureFlags object (some versions)
-    else if (window.posthog.featureFlags && window.posthog.featureFlags[FEATURE_FLAG_KEY] !== undefined) {
-      flag = window.posthog.featureFlags[FEATURE_FLAG_KEY];
-    }
-    
-    console.log(`PostHog flag "${FEATURE_FLAG_KEY}":`, flag); // Debug log
-    
-    if (flag === '4-words') {
-      variant = 'B';
-      flagResponse = '4-words';
-    } else if (flag === 'control') {
-      variant = 'A';
-      flagResponse = 'control';
+  // Try to get feature flag from PostHog
+  try {
+    if (posthog?.getFeatureFlag) {
+      const flag = posthog.getFeatureFlag(FEATURE_FLAG_KEY);
+      if (flag === '4-words') {
+        variant = 'B';
+      } else if (flag === 'control') {
+        variant = 'A';
+      } else {
+        variant = Math.random() < 0.5 ? 'A' : 'B';
+      }
     } else {
-      // No feature flag from PostHog, randomize
       variant = Math.random() < 0.5 ? 'A' : 'B';
-      flagResponse = null; // No flag response since not from PostHog
     }
-  } else {
-    // PostHog not loaded, random variant
+  } catch (e) {
+    console.error('Error getting feature flag:', e);
     variant = Math.random() < 0.5 ? 'A' : 'B';
-    flagResponse = null;
   }
   
   localStorage.setItem('simulator_variant', variant);
-  localStorage.setItem('simulator_flag_response', flagResponse || '');
   localStorage.setItem('simulator_user_id', 'user_' + Math.random().toString(36).substr(2, 9));
   if (!localStorage.getItem('simulator_username')) {
     localStorage.setItem('simulator_username', generateUsername());
@@ -227,19 +212,14 @@ const resetPuzzle = (isRepeat = false) => {
 };
 
 const trackEvent = (eventName, props = {}) => {
-  const flagResponse = localStorage.getItem('simulator_flag_response');
-  
-  // Only track if we have a valid feature flag response
-  if (!flagResponse) {
-    console.warn(`Skipping event "${eventName}" - no feature flag response loaded. Feature flag not properly initialized in PostHog.`);
-    return;
-  }
-  
-  if (typeof window === 'undefined' || !window.posthog?.capture) return;
   try {
-    window.posthog.capture(eventName, {
+    // PostHog will be available globally if script loaded
+    if (!posthog?.capture) return;
+    
+    posthog.capture(eventName, {
       variant: puzzleState.variant,
-      $feature_flag_response: flagResponse,
+      $feature_flag: FEATURE_FLAG_KEY,
+      $feature_flag_response: posthog.getFeatureFlag(FEATURE_FLAG_KEY),
       user_id: localStorage.getItem('simulator_user_id'),
       ...props
     });
