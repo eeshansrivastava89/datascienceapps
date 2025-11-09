@@ -195,9 +195,7 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 			<!-- Recent Completions Table -->
 			<div class="rounded-lg border bg-card p-4">
 				<h4 class="text-sm font-semibold mb-4">Recent Completions</h4>
-				<div id="completions-table" class="overflow-x-auto">
-					<div class="text-sm text-muted-foreground text-center py-8">Loading...</div>
-				</div>
+				<div id="completions-table"></div>
 			</div>
 		</div>
 
@@ -419,37 +417,76 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 			Plotly.newPlot('funnel-chart', traces, layout, { responsive: true, displayModeBar: false });
 		}
 
-		// Render recent completions table
-		function renderCompletionsTable(completions) {
+		// Render recent completions table using Plotly
+		function renderCompletionsTable(completions, theme) {
+			const isDark = document.documentElement.classList.contains('dark');
+			
 			if (!completions || completions.length === 0) {
-				document.getElementById('completions-table').innerHTML = '<div class="text-sm text-muted-foreground text-center py-4">No completions yet</div>';
+				const headerBg = isDark ? '#1f2937' : '#f3f4f6';
+				const emptyTrace = {
+					type: 'table',
+					header: {
+						values: ['<b>Variant</b>', '<b>Time</b>', '<b>Words</b>', '<b>Guesses</b>', '<b>When</b>'],
+						align: 'center',
+						fill: { color: headerBg },
+						font: { color: theme.font.color, size: 12, family: 'Satoshi, monospace' },
+						height: 28
+					},
+					cells: {
+						values: [['No data'], [''], [''], [''], ['']],
+						align: 'center',
+						fill: { color: 'rgba(0,0,0,0)' },
+						font: { color: '#9ca3af', size: 11 },
+						height: 24
+					}
+				};
+
+				Plotly.newPlot('completions-table', [emptyTrace], {
+					margin: { l: 0, r: 0, t: 0, b: 0 },
+					paper_bgcolor: 'transparent',
+					plot_bgcolor: 'transparent',
+					height: 80
+				}, { responsive: true, displayModeBar: false });
 				return;
 			}
 
-			const rows = completions.slice(0, 10).map(c => `
-				<tr class="border-b hover:bg-muted/50">
-					<td class="py-2 px-3 text-sm font-mono">${c.variant}</td>
-					<td class="py-2 px-3 text-sm font-mono">${c.completion_time_seconds.toFixed(1)}s</td>
-					<td class="py-2 px-3 text-sm">${c.correct_words_count} words</td>
-					<td class="py-2 px-3 text-sm">${c.total_guesses_count} guesses</td>
-					<td class="py-2 px-3 text-xs text-muted-foreground">${new Date(c.timestamp).toLocaleTimeString()}</td>
-				</tr>
-			`).join('');
+			const headerBg = isDark ? '#1f2937' : '#f3f4f6';
+			const variants = completions.map(c => c.variant);
+			const times = completions.map(c => c.completion_time_seconds.toFixed(1) + 's');
+			const words = completions.map(c => c.correct_words_count);
+			const guesses = completions.map(c => c.total_guesses_count);
+			const timestamps = completions.map(c => new Date(c.timestamp).toLocaleTimeString());
 
-			document.getElementById('completions-table').innerHTML = `
-				<table class="w-full text-sm">
-					<thead class="border-b font-semibold">
-						<tr>
-							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Variant</th>
-							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Time</th>
-							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Words</th>
-							<th class="text-left py-2 px-3 text-xs text-muted-foreground">Guesses</th>
-							<th class="text-left py-2 px-3 text-xs text-muted-foreground">When</th>
-						</tr>
-					</thead>
-					<tbody>${rows}</tbody>
-				</table>
-			`;
+			const trace = {
+				type: 'table',
+				header: {
+					values: ['<b>Variant</b>', '<b>Time</b>', '<b>Words</b>', '<b>Guesses</b>', '<b>When</b>'],
+					align: 'center',
+					fill: { color: headerBg },
+					font: { color: theme.font.color, size: 12, family: 'Satoshi, monospace' },
+					height: 28,
+					line: { color: isDark ? '#374151' : '#e5e7eb', width: 1 }
+				},
+				cells: {
+					values: [variants, times, words, guesses, timestamps],
+					align: 'center',
+					fill: { 
+						color: [
+							completions.map((c, i) => i % 2 === 0 ? 'rgba(0,0,0,0.02)' : 'rgba(0,0,0,0)')
+						]
+					},
+					font: { color: theme.font.color, size: 11, family: 'Satoshi, monospace' },
+					height: 24,
+					line: { color: isDark ? '#374151' : '#e5e7eb', width: 1 }
+				}
+			};
+
+			Plotly.newPlot('completions-table', [trace], {
+				margin: { l: 0, r: 0, t: 0, b: 0 },
+				paper_bgcolor: 'transparent',
+				plot_bgcolor: 'transparent',
+				height: completions.length * 24 + 40
+			}, { responsive: true, displayModeBar: false });
 		}
 
 		// Main update function
@@ -470,7 +507,7 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 				renderFunnelChart(funnel, theme);
 				renderAvgTimeChart(stats, theme);
 				renderDistributionChart(distribution, theme);
-				renderCompletionsTable(completions);
+				renderCompletionsTable(completions, theme);
 
 				// Update timestamp
 				document.getElementById('last-updated').innerHTML = `Last updated: ${getLastUpdateTime()}`;
