@@ -3,6 +3,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Accept build arguments for PostHog config
+ARG PUBLIC_POSTHOG_KEY
+ARG PUBLIC_POSTHOG_HOST
+
+# Make them available as env vars during build
+ENV PUBLIC_POSTHOG_KEY=$PUBLIC_POSTHOG_KEY
+ENV PUBLIC_POSTHOG_HOST=$PUBLIC_POSTHOG_HOST
+
 # Copy package files
 COPY package.json package-lock.json* pnpm-lock.yaml* ./
 
@@ -12,7 +20,7 @@ RUN npm install
 # Copy source
 COPY . .
 
-# Build
+# Build (Astro will bake in PUBLIC_* env vars)
 RUN npm run build
 
 # Runtime stage - serve static files with Nginx

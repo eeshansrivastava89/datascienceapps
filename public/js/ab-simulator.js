@@ -30,31 +30,18 @@ let puzzleState = {
 
 document.addEventListener('DOMContentLoaded', () => {
   // Wait for PostHog feature flags to load before initializing
-  let hasInitialized = false;
-  let timeoutId = null;
-  
-  function doInit() {
-    if (hasInitialized) return;
-    hasInitialized = true;
-    if (timeoutId) clearTimeout(timeoutId);
-    initializeVariant();
-    displayVariant();
-    setupPuzzle();
-    updateLeaderboard();
+  if (typeof posthog !== 'undefined' && posthog.onFeatureFlags) {
+    posthog.onFeatureFlags(() => {
+      initializeVariant();
+      displayVariant();
+      setupPuzzle();
+      updateLeaderboard();
+    });
+  } else {
+    // PostHog not loaded - show error
+    console.error('PostHog not initialized. Check environment variables.');
+    showFeatureFlagError();
   }
-  
-  // Try PostHog callback first
-  if (posthog && posthog.onFeatureFlags) {
-    posthog.onFeatureFlags(doInit);
-  }
-  
-  // Timeout fallback - if PostHog doesn't fire callback in 3 seconds, show error
-  timeoutId = setTimeout(() => {
-    if (!hasInitialized) {
-      console.error('PostHog feature flags failed to load within 3 seconds');
-      showFeatureFlagError();
-    }
-  }, 3000);
 });
 
 const initializeVariant = () => {
@@ -67,10 +54,10 @@ const initializeVariant = () => {
   } else if (posthogVariant === 'control') {
     variant = 'A';  // control = Variant A (3 words)
   } else {
-    // Feature flag not loaded yet - this should not happen if PostHog is working
-    console.error('PostHog feature flag not loaded properly. Variant:', posthogVariant, 'Feature flag key:', FEATURE_FLAG_KEY);
+    // Feature flag not loaded - show error and stop
+    console.error('PostHog feature flag not resolved. Received:', posthogVariant);
     showFeatureFlagError();
-    return; // Don't initialize if feature flag failed
+    return;
   }
 
   localStorage.setItem('simulator_variant', variant);
@@ -90,8 +77,8 @@ const showFeatureFlagError = () => {
       <div class="flex items-start gap-2">
         <div class="text-lg">⚠️</div>
         <div class="flex-1">
-          <h3 class="font-semibold text-red-900 dark:text-red-100 text-sm">Feature Flag Not Loaded</h3>
-          <p class="text-xs text-red-800 dark:text-red-200 mt-1">PostHog feature flags failed to load. Please refresh the page or check your PostHog configuration.</p>
+          <h3 class="font-semibold text-red-900 dark:text-red-100 text-sm">PostHog Feature Flag Error</h3>
+          <p class="text-xs text-red-800 dark:text-red-200 mt-1">Feature flag "${FEATURE_FLAG_KEY}" failed to load. Check PostHog configuration.</p>
         </div>
       </div>
     </div>
@@ -137,7 +124,7 @@ const displayVariant = () => {
 const setupPuzzle = () => {
   const variant = localStorage.getItem('simulator_variant');
   if (!variant) {
-    // Disable start button if feature flag failed
+    // Feature flag failed - disable start button
     const startButton = $('start-button');
     if (startButton) {
       startButton.disabled = true;
