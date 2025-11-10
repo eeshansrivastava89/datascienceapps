@@ -4,14 +4,29 @@
 
 ---
 
+## Instructions for AI Assistant
+
+Please read through project_history.md in extreme detail so you understand where I am right now .. pay attention to working principles. Explore the codebase of soma-portfolio and soma-analytics repos so you understand the code in context of my project history doc. Let me know once you have perfect understand of my code and work. 
+
+1. Read the "Working Principles" section above (defines how you think)
+2. Check the "Tech Stack & Architecture" section (current state)
+3. Understand the three repos: Hugo (archived), Streamlit (still running), Astro (current)
+4. If something breaks, look at "Critical Fixes" first (you've seen these problems before)
+5. Keep this file updated with each major change
+
+This document is your north star. Update it. Reference it.
+
 ## Memory Refresh for AI Assistant (Read This First)
 
 **What is SOMA?** A demonstration portfolio site showcasing enterprise-grade analytics, experimentation, and data science workflows through an interactive A/B test simulator.
 
-**Three Repos:**
+**Four Repos:**
 1. `soma-blog-hugo` - Original Hugo blog (ARCHIVED - local only, Fly deployment removed, DNS removed)
-2. `soma-streamlit-dashboard` - Analytics dashboard (Deployed on Fly.io, local only)
+2. `soma-streamlit-dashboard` - Analytics dashboard (ARCHIVED - local only)
 3. `soma-portfolio` - Astro portfolio (PRODUCTION - live at https://eeshans.com)
+4. `soma-analytics` - FastAPI backend (PRODUCTION - live at https://soma-analytics.fly.dev/)
+
+-- using Cloudflare reverse proxy to get around ad blockers - https://api-v2.eeshans.com
 
 **Key Insight:** Each phase solved a different problem. Hugo + PostHog + Supabase + Streamlit proved the concept. Astro migration consolidated everything into one clean, modern stack.
 
@@ -136,6 +151,7 @@ Migrated to modern Astro framework while preserving all integrations:
 - Increased profile image size from h-28 to 200px
 - Scaled Hugo site to zero machines (preserved, not deleted)
 - Disabled GitHub Actions on Hugo (preserved workflow code)
+  
 - **Homepage Redesign:** Replaced static CTA with data-driven utility section
   - Two-column grid: Newsletter (left, icon + label + description) + Utilities (right: A/B Simulator, Browse Projects)
   - Created `src/data/social-links.yaml` for configurable social links (no hardcoding)
@@ -161,42 +177,117 @@ Migrated to modern Astro framework while preserving all integrations:
   Plotly.js renders charts (no React, no frameworks)
   ```
 
-  **Result:** Streamlit retired. Clean separation: Python for analysis, minimal JS for viz. No React complexity.
+## Phase 4: Real-Time Dashboard Optimization (Nov 9, 2025)
 
-  **Dashboard Polish Phase - Complete**
-  
-  Polished Plotly dashboard with comprehensive improvements:
-  
-  ✅ **High ROI Improvements:**
-  1. **Fixed box plot visualization** - Replaced broken percentile viz with grouped bar chart (min/max/p25/p75/median)
-  2. **Added funnel chart** - Horizontal bar chart showing conversion funnel progression (Started → Completed → Repeated)
-  3. **Enhanced comparison card** - Winner indicator (emoji), significance display, gradient background (green if winning, red if losing)
-  4. **Added loading/error states** - Spinner loading animation, detailed error messages with API URL, timestamp with visual feedback
-  5. **Tailwind theme integration** - Dynamic dark mode support, automatic color/grid/font theme switching
-  6. **Recent completions table** - Displays last 10 completions with time, words, guesses, timestamps
-  
-  ✅ **Quality Metrics:**
-  - 4 working endpoints (variant-stats, comparison, recent-completions, conversion-funnel)
-  - Auto-refresh every 10 seconds with visual update indicator
-  - Responsive grid layout (1 col mobile → 2 col desktop → full width funnel)
-  - Error recovery UI guides user to check API
-  - Dark mode tested and working
-  
-  **Code Quality:**
-  - Modular render functions (renderComparison, renderAvgTimeChart, etc.)
-  - Theme detection with getThemeColors() and getPlotlyTheme()
-  - Clean separation: data fetch → render → display
-  - Comments explaining each visualization
-  
-  **Test Results:**
-  - `curl http://localhost:8000/health` ✓ Working
-  - `curl http://localhost:8000/api/variant-stats` ✓ Returns real data (16 A completions, 15 B completions)
-  - `curl http://localhost:8000/api/comparison` ✓ Shows B is 24.3% harder (🔴 significant)
-  - `curl http://localhost:8000/api/recent-completions?limit=3` ✓ Returns timestamps, variants, metrics
+**Problem:** Dashboard updates were slow (15-20 seconds) even with 5-second polling. Elements updated partially, causing poor UX.
+
+**Optimizations implemented:**
+
+1. **Removed API caching** (`soma-analytics/api.py`)
+   - Deleted `_cache` dict and `get_cached()` function
+   - All endpoints now return fresh data on every request
+   - **Code reduction:** ~15 lines removed
+
+2. **Simplified conversion funnel query**
+   - Replaced expensive self-JOIN with direct `WHERE event = 'puzzle_repeated'` query
+   - Changed from: `INNER JOIN posthog_events ON timestamp > c.timestamp` (O(n²) complexity)
+   - Changed to: Simple COUNT on `puzzle_repeated` events (O(n) complexity)
+   - **Query optimization:** ~10x faster execution
 
 
 ---
 
+## Phase 5: Global Leaderboard Implementation (Nov 9, 2025)
+
+**Problem:** Leaderboard was localStorage-only (single user), used tiny username dictionary (10 adjectives × 10 animals = 100 combinations, high collision risk).
+
+**Solution:** Implemented global leaderboard with unique-names-generator library (1400+ adjectives × 350+ animals) backed by API queries to PostHog data in Supabase.
+
+**Changes made:**
+
+1. **Username Generation Upgrade**
+   - Installed `unique-names-generator` v4.7.1 npm package
+   - Integrated via inline Astro script (module import) in `ab-test-simulator.astro`
+   - Username format: "Speedy Tiger" style (capital case, space separator)
+   - Removed old 2-line custom dictionary (ADJECTIVES, ANIMALS arrays)
+
+2. **PostHog Identity Tracking**
+   - Added `posthog.identify(username)` when username first generated
+   - Added `username` property to all event tracking calls
+   - Username stored in `properties` JSONB column in Supabase `posthog_events` table
+
+3. **Backend Leaderboard Query** (`soma-analytics/analysis/ab_test.py`)
+   - Created `get_leaderboard(variant='A', limit=10)` function
+   - SQL: `SELECT properties->>'username', MIN(completion_time_seconds), COUNT(*) FROM posthog_events WHERE event='puzzle_completed' GROUP BY username ORDER BY best_time`
+   - Returns list of dicts: `{username, best_time, total_completions}`
+
+4. **API Endpoint** (`soma-analytics/api.py`)
+   - Added `/api/leaderboard?variant=A&limit=10` endpoint
+   - Query params validated (variant must be A/B, limit max 50)
+   - Returns JSON array sorted by best_time ascending
+
+5. **Frontend Display** (`public/js/ab-simulator.js`)
+   - Replaced localStorage logic with API fetch
+   - Shows top 5 with medals (🥇🥈🥉🏅)
+   - If user ranked 6+, shows their rank below top 5 with separator
+   - Highlights current user with blue background + 🌟 star
+   - Auto-refreshes every 5 seconds (synced with dashboard polling)
+   - Fetches immediately after puzzle completion
+
+6. **UI Polish**
+   - Top 5 always shown with rank indicators
+   - User's personal best appears below if ranked 6th or lower
+   - Empty state: "Complete to rank"
+   - Error state: "Loading..." with console error logging
+
+**Architecture:**
+```
+User completes puzzle
+  ↓
+PostHog captures event with username property
+  ↓
+Supabase webhook stores in posthog_events.properties->>'username'
+  ↓
+FastAPI queries MIN(completion_time) grouped by username
+  ↓
+Frontend fetches /api/leaderboard and renders with medals
+```
+
+---
+
+## Phase 6: Memory Game Transformation (Nov 9, 2025)
+
+**Problem:** Word search puzzle was text-heavy, lacked visual engagement, and didn't demonstrate modern UI patterns.
+
+**Solution:** Transformed into pineapple hunting memory game with visual feedback, countdown timer, and improved UX.
+
+**Key Changes:**
+
+1. **Game Mechanics Overhaul**
+   - Replaced word search with 5x5 fruit grid memory game
+   - Variant A: 3 pineapples (easier), Variant B: 4 pineapples (harder)
+   - 2-second memorization phase → 5-second visual countdown (5,4,3,2,1,HIDE) → 60-second game phase
+   - Always-visible gray boxes with hidden fruits, click to reveal
+
+2. **Visual Design System**
+   - Gray boxes always visible (border-2 border-gray-500) → Green (memorize/correct) → Red flash (incorrect)
+   - 5-second countdown timer with large red numbers and "Get Ready!" message
+   - Simple wrong feedback: red flash + fruit for 1 second, then fade back to gray
+   - Pure Tailwind utilities, no custom CSS
+
+3. **Code Architecture Updates**
+   - `puzzle-config.js`: 5x5 fruit grids with random pineapple placement
+   - `ab-simulator.js`: Complete rewrite for memory game logic with proper timer sequencing
+   - `ab-test-simulator.astro`: Added countdown timer HTML, memorize message, removed word input
+   - Maintained PostHog events: puzzle_started, puzzle_completed, puzzle_failed
+
+4. **Analytics Integration**
+   - Tracks pineapples found vs total clicks
+   - Completion time in milliseconds
+   - Real-time A/B test comparison preserved
+   - Leaderboard system unchanged (still works)
+
+**Result:** Engaging memory game with modern UI, proper countdown sequence, and enterprise-grade analytics tracking.
 
 
 ## How to Maintain This
@@ -269,164 +360,5 @@ npm run build && npm run preview
 # Reset PostHog variant (in browser console)
 localStorage.clear(); posthog.reset(); location.reload();
 ```
-
----
-
-## For Future Sessions
-
-1. Read the "Working Principles" section above (defines how you think)
-2. Check the "Tech Stack & Architecture" section (current state)
-3. Understand the three repos: Hugo (archived), Streamlit (still running), Astro (current)
-4. If something breaks, look at "Critical Fixes" first (you've seen these problems before)
-5. Keep this file updated with each major change
-
-This document is your north star. Update it. Reference it.
-
-
-
----
-## Rationale for the Python backend + front-end in Astro
-
-I am on phase 3 of my project .. please read through project_history.md in extreme detail so you understand where I am right now .. pay attention to working principles
-
-explore the codebase of all 4 repos in the workspace (with "soma-") so you understand the code in context of my project history doc
-
-the previous AI assistant helped me build a fastapi + plotly approach for data analysis and deployed the service as well
-
-now I am stuck with posthog feature flag working fine in local but not in production need your help solving. the previous assistant has added a ton of bloat and logic -- but please remember I WANT to use the feature flag for randomization and not a math.random fallback
-
----
-
-## Phase 4: Real-Time Dashboard Optimization (Nov 9, 2025)
-
-**Problem:** Dashboard updates were slow (15-20 seconds) even with 5-second polling. Elements updated partially, causing poor UX.
-
-**Investigation revealed multiple performance bottlenecks:**
-1. **API caching** - 5-20 second TTL caused stale data between polls
-2. **Regular PostgreSQL views** - Re-computed percentiles and aggregations on every query (expensive)
-3. **Expensive self-JOIN** - Conversion funnel used complex JOIN to find "repeated" users instead of direct `puzzle_repeated` event
-4. **Aggressive polling** - 5-second interval was unnecessary and resource-intensive
-
-**Optimizations implemented:**
-
-1. **Removed API caching** (`soma-analytics/api.py`)
-   - Deleted `_cache` dict and `get_cached()` function
-   - All endpoints now return fresh data on every request
-   - **Code reduction:** ~15 lines removed
-
-2. **Converted to materialized views** (Supabase SQL)
-   - Changed `CREATE VIEW` → `CREATE MATERIALIZED VIEW` for `v_variant_stats` and `v_conversion_funnel`
-   - Added automatic refresh trigger on `INSERT` events (`puzzle_completed`, `puzzle_started`, `puzzle_repeated`, `puzzle_failed`)
-   - Created `CONCURRENTLY` refresh function to avoid blocking reads during updates
-   - Added indexes: `idx_variant_stats_variant` (unique), `idx_conversion_funnel_variant`
-
-3. **Simplified conversion funnel query**
-   - Replaced expensive self-JOIN with direct `WHERE event = 'puzzle_repeated'` query
-   - Changed from: `INNER JOIN posthog_events ON timestamp > c.timestamp` (O(n²) complexity)
-   - Changed to: Simple COUNT on `puzzle_repeated` events (O(n) complexity)
-   - **Query optimization:** ~10x faster execution
-
-4. **Increased polling interval**
-   - Changed from 5 seconds → 10 seconds
-   - Reduced server load by 50% while maintaining real-time feel
-
-**Materialized Views Explained:**
-
-*Regular views* are virtual tables - they re-execute the underlying query every time you SELECT from them. For complex aggregations (percentiles, GROUP BY, JOINs), this is slow.
-
-*Materialized views* are physical tables - they store the query result as actual data on disk. SELECT queries are instant (just read pre-computed data). The trade-off: you must manually REFRESH when source data changes.
-
-**Our implementation:**
-```sql
-CREATE MATERIALIZED VIEW v_variant_stats AS [expensive query with percentiles];
-CREATE TRIGGER refresh_analytics_on_insert ... PERFORM refresh_analytics_views();
-```
-
-This gives us **both** speed AND freshness - views refresh automatically when new events arrive, queries are instant because data is pre-computed.
-
-**Result:**
-- Dashboard updates now appear within 1-2 seconds of events firing
-- Query execution time: ~500ms → ~10ms (50x faster)
-- Real-time objective achieved without sacrificing database performance
-- Cleaner architecture: No caching layer, simpler SQL queries
-
-**Technical debt resolved:**
-- Removed stale cache layer that was hiding database performance issues
-- Fixed expensive self-JOIN that was never needed (we track `puzzle_repeated` directly)
-- Proper use of database features (materialized views) instead of application-layer caching
-
----
-
-## Phase 5: Global Leaderboard Implementation (Nov 9, 2025)
-
-**Problem:** Leaderboard was localStorage-only (single user), used tiny username dictionary (10 adjectives × 10 animals = 100 combinations, high collision risk).
-
-**Solution:** Implemented global leaderboard with unique-names-generator library (1400+ adjectives × 350+ animals) backed by API queries to PostHog data in Supabase.
-
-**Changes made:**
-
-1. **Username Generation Upgrade**
-   - Installed `unique-names-generator` v4.7.1 npm package
-   - Integrated via inline Astro script (module import) in `ab-test-simulator.astro`
-   - Username format: "Speedy Tiger" style (capital case, space separator)
-   - Removed old 2-line custom dictionary (ADJECTIVES, ANIMALS arrays)
-
-2. **PostHog Identity Tracking**
-   - Added `posthog.identify(username)` when username first generated
-   - Added `username` property to all event tracking calls
-   - Username stored in `properties` JSONB column in Supabase `posthog_events` table
-
-3. **Backend Leaderboard Query** (`soma-analytics/analysis/ab_test.py`)
-   - Created `get_leaderboard(variant='A', limit=10)` function
-   - SQL: `SELECT properties->>'username', MIN(completion_time_seconds), COUNT(*) FROM posthog_events WHERE event='puzzle_completed' GROUP BY username ORDER BY best_time`
-   - Returns list of dicts: `{username, best_time, total_completions}`
-
-4. **API Endpoint** (`soma-analytics/api.py`)
-   - Added `/api/leaderboard?variant=A&limit=10` endpoint
-   - Query params validated (variant must be A/B, limit max 50)
-   - Returns JSON array sorted by best_time ascending
-
-5. **Frontend Display** (`public/js/ab-simulator.js`)
-   - Replaced localStorage logic with API fetch
-   - Shows top 5 with medals (🥇🥈🥉🏅)
-   - If user ranked 6+, shows their rank below top 5 with separator
-   - Highlights current user with blue background + 🌟 star
-   - Auto-refreshes every 5 seconds (synced with dashboard polling)
-   - Fetches immediately after puzzle completion
-
-6. **UI Polish**
-   - Top 5 always shown with rank indicators
-   - User's personal best appears below if ranked 6th or lower
-   - Empty state: "Complete to rank"
-   - Error state: "Loading..." with console error logging
-
-**Architecture:**
-```
-User completes puzzle
-  ↓
-PostHog captures event with username property
-  ↓
-Supabase webhook stores in posthog_events.properties->>'username'
-  ↓
-FastAPI queries MIN(completion_time) grouped by username
-  ↓
-Frontend fetches /api/leaderboard and renders with medals
-```
-
-**Result:**
-- Global leaderboard visible to all users
-- Much larger username variety (490,000+ unique combinations)
-- Real-time updates every 5 seconds
-- Clean separation: PostHog for identity, Supabase for storage, API for queries
-- Zero new database tables (reuses existing `posthog_events` table)
-
-**Code metrics:**
-- Lines changed: ~80 (frontend) + ~50 (backend)
-- Dependencies added: 1 (unique-names-generator)
-- New endpoints: 1 (/api/leaderboard)
-- Deployment time: ~2 minutes (both repos via GitHub Actions)
-
----
-````
 
 ---

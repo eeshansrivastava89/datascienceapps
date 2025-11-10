@@ -28,7 +28,13 @@ let puzzleState = {
   guessedWords: [], 
   foundWords: [], 
   timerInterval: null, 
-  completionTime: null
+  completionTime: null,
+  // Memory game specific state
+  memorizeTime: 5000, // 5 seconds to memorize
+  isMemorizing: false,
+  foundPineapples: [],
+  totalClicks: 0,
+  gridState: [] // Track revealed tiles
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -129,7 +135,15 @@ const displayVariant = () => {
   puzzleSection.classList.toggle('variant-a-theme', variant === 'A');
   puzzleSection.classList.toggle('variant-b-theme', variant === 'B');
   
-  $('letter-grid').innerHTML = config.letters.map(letter => `<div class="letter">${letter}</div>`).join('');
+  // Create 5x5 grid for memory game with always visible grey boxes
+  const gridHTML = config.grid.map((row, rowIndex) => 
+    row.map((fruit, colIndex) => 
+      `<div class="aspect-square rounded-lg bg-gray-600 flex items-center justify-center cursor-pointer transition-all duration-300 relative overflow-hidden memory-tile border-2 border-gray-500" data-row="${rowIndex}" data-col="${colIndex}" data-fruit="${fruit}">
+        <span class="text-2xl transition-all duration-300 fruit-emoji opacity-0 scale-80">${fruit}</span>
+      </div>`
+    ).join('')
+  ).join('');
+  $('letter-grid').innerHTML = gridHTML;
 };
 
 const setupPuzzle = () => {
@@ -148,27 +162,86 @@ const setupPuzzle = () => {
   $('start-button').addEventListener('click', startChallenge);
   $('reset-button').addEventListener('click', resetPuzzle);
   $('try-again-inline-button').addEventListener('click', resetPuzzle);
-  $('word-input').addEventListener('keypress', handleWordInput);
+  
+  // Add click handlers for memory tiles
+  document.querySelectorAll('.memory-tile').forEach(tile => {
+    tile.addEventListener('click', handleTileClick);
+  });
 };
 
 const startChallenge = () => {
-  puzzleState.startTime = Date.now();
   puzzleState.isRunning = true;
+  puzzleState.isMemorizing = true;
   puzzleState.guessedWords = [];
   puzzleState.foundWords = [];
+  puzzleState.foundPineapples = [];
+  puzzleState.totalClicks = 0;
+  puzzleState.gridState = Array(5).fill(null).map(() => Array(5).fill(false));
   
-  // Show: timer is always visible, show input section and reset button
-  $('input-section').classList.remove('hidden');
-  $('reset-button').classList.remove('hidden');
+  // Show all fruits for memorization
+  document.querySelectorAll('.memory-tile').forEach(tile => {
+    tile.classList.remove('bg-gray-800', 'bg-green-600', 'bg-red-600');
+    tile.classList.add('bg-green-600', 'scale-105');
+    tile.querySelector('.fruit-emoji').classList.remove('opacity-0', 'scale-80');
+    tile.querySelector('.fruit-emoji').classList.add('opacity-100', 'scale-100');
+  });
+  
+  // Show memorize message
   $('start-button').classList.add('hidden');
+  $('memorize-message').classList.remove('hidden');
   
-  $('word-input').focus();
+  // Start countdown timer after 2 seconds
+  setTimeout(() => {
+    $('memorize-message').classList.add('hidden');
+    startCountdownTimer();
+  }, 2000);
   
-  puzzleState.timerInterval = setInterval(updateTimer, 100);
   trackEvent('puzzle_started', { 
     difficulty: puzzleState.puzzleConfig.difficulty,
     puzzle_id: puzzleState.puzzleConfig.id
   });
+};
+
+const startCountdownTimer = () => {
+  let countdown = 5;
+  $('countdown-timer').classList.remove('hidden');
+  $('countdown-number').textContent = countdown;
+  
+  const countdownInterval = setInterval(() => {
+    countdown--;
+    if (countdown > 0) {
+      $('countdown-number').textContent = countdown;
+    } else {
+      clearInterval(countdownInterval);
+      $('countdown-number').textContent = 'HIDE';
+      
+      setTimeout(() => {
+        $('countdown-timer').classList.add('hidden');
+        puzzleState.isMemorizing = false;
+        startGamePhase();
+      }, 1000);
+    }
+  }, 1000);
+};
+
+const startGamePhase = () => {
+  // Start the 60-second timer now
+  puzzleState.startTime = Date.now();
+  
+  // Hide all fruits
+  document.querySelectorAll('.memory-tile').forEach(tile => {
+    tile.classList.remove('bg-green-600', 'scale-105');
+    tile.classList.add('bg-gray-800');
+    tile.querySelector('.fruit-emoji').classList.remove('opacity-100', 'scale-100');
+    tile.querySelector('.fruit-emoji').classList.add('opacity-0', 'scale-80');
+  });
+  
+  // Hide memorize message, show game elements
+  $('memorize-message').classList.add('hidden');
+  $('reset-button').classList.remove('hidden');
+  
+  // Start game timer
+  puzzleState.timerInterval = setInterval(updateTimer, 100);
 };
 
 const updateTimer = () => {
@@ -180,23 +253,50 @@ const updateTimer = () => {
   $('timer').textContent = formatTime(60000 - elapsed);
 };
 
-const handleWordInput = event => {
-  if (event.key !== 'Enter') return;
+const handleTileClick = (event) => {
+  if (!puzzleState.isRunning || puzzleState.isMemorizing) return;
   
-  const word = event.target.value.toUpperCase().trim();
-  event.target.value = '';
-  if (!word) return;
+  const tile = event.currentTarget;
+  const row = parseInt(tile.dataset.row);
+  const col = parseInt(tile.dataset.col);
+  const fruit = tile.dataset.fruit;
   
-  const config = puzzleState.puzzleConfig;
-  puzzleState.guessedWords.push(word);
+  // Don't allow clicking already revealed tiles
+  if (puzzleState.gridState[row][col]) return;
   
-  if (config.targetWords.includes(word) && !puzzleState.foundWords.includes(word)) {
-    puzzleState.foundWords.push(word);
-    $('found-words-list').textContent = puzzleState.foundWords.join(', ');
-    if (puzzleState.foundWords.length === config.targetCount) endChallenge(true);
+  puzzleState.totalClicks++;
+  puzzleState.gridState[row][col] = true;
+  
+  if (fruit === '🍍') {
+    // Correct pineapple found
+    puzzleState.foundPineapples.push([row, col]);
+    tile.classList.remove('bg-gray-800');
+    tile.classList.add('bg-green-600', 'scale-105');
+    tile.querySelector('.fruit-emoji').classList.remove('opacity-0', 'scale-80');
+    tile.querySelector('.fruit-emoji').classList.add('opacity-100', 'scale-100');
+    
+    // Update found count display
+    $('found-words-list').textContent = `${puzzleState.foundPineapples.length}/${puzzleState.puzzleConfig.targetCount}`;
+    
+    // Check if all pineapples found
+    if (puzzleState.foundPineapples.length === puzzleState.puzzleConfig.targetCount) {
+      endChallenge(true);
+    }
   } else {
-    event.target.classList.add('shake-animate');
-    setTimeout(() => event.target.classList.remove('shake-animate'), 500);
+    // Incorrect guess
+    tile.classList.remove('bg-gray-800');
+    tile.classList.add('bg-red-600', 'animate-pulse');
+    tile.querySelector('.fruit-emoji').classList.remove('opacity-0', 'scale-80');
+    tile.querySelector('.fruit-emoji').classList.add('opacity-100', 'scale-100');
+    
+    // Show incorrect briefly, then hide again
+    setTimeout(() => {
+      tile.classList.remove('bg-red-600', 'animate-pulse');
+      tile.classList.add('bg-gray-800');
+      tile.querySelector('.fruit-emoji').classList.remove('opacity-100', 'scale-100');
+      tile.querySelector('.fruit-emoji').classList.add('opacity-0', 'scale-80');
+      puzzleState.gridState[row][col] = false; // Allow clicking again
+    }, 1000);
   }
 };
 
@@ -223,7 +323,7 @@ const endChallenge = async (success) => {
   if (success) {
     const isPersonalBest = updateLeaderboard(puzzleState.completionTime, puzzleState.variant);
     $('result-time').textContent = formatTime(puzzleState.completionTime);
-    $('result-guesses').textContent = puzzleState.guessedWords.length;
+    $('result-guesses').textContent = puzzleState.totalClicks;
     $('result-message').innerHTML = isPersonalBest ? '🏆 Personal Best!' : '✓ Complete!';
     
     // Green success styling
@@ -235,7 +335,7 @@ const endChallenge = async (success) => {
     statusTitle.textContent = 'Challenge Complete';
   } else {
     $('result-time').textContent = '00:60:00';
-    $('result-guesses').textContent = puzzleState.foundWords.length + '/' + puzzleState.puzzleConfig.targetCount;
+    $('result-guesses').textContent = `${puzzleState.foundPineapples.length}/${puzzleState.puzzleConfig.targetCount}`;
     $('result-message').innerHTML = '⏰ Time\'s up!';
     
     // Red failure styling
@@ -249,8 +349,8 @@ const endChallenge = async (success) => {
   
   trackEvent(success ? 'puzzle_completed' : 'puzzle_failed', { 
     completion_time_seconds: success ? (puzzleState.completionTime / 1000).toFixed(3) : undefined,
-    correct_words_count: puzzleState.foundWords.length,
-    total_guesses_count: puzzleState.guessedWords.length
+    correct_words_count: puzzleState.foundPineapples.length, // Track pineapples found
+    total_guesses_count: puzzleState.totalClicks // Track total clicks
   });
 };
 
@@ -260,16 +360,27 @@ const resetPuzzle = (isRepeat = false) => {
   puzzleState.startTime = null;
   puzzleState.guessedWords = [];
   puzzleState.foundWords = [];
+  puzzleState.foundPineapples = [];
+  puzzleState.totalClicks = 0;
+  puzzleState.gridState = [];
   puzzleState.completionTime = null;
   
   $('timer').textContent = '00:60:00';
-  $('word-input').value = '';
   $('found-words-list').textContent = '(none yet)';
+  
+  // Reset grid tiles
+  document.querySelectorAll('.memory-tile').forEach(tile => {
+    tile.classList.remove('bg-green-600', 'bg-red-600', 'bg-gray-800', 'scale-105', 'animate-pulse');
+    tile.classList.add('bg-gray-700');
+    tile.querySelector('.fruit-emoji').classList.remove('opacity-100', 'scale-100');
+    tile.querySelector('.fruit-emoji').classList.add('opacity-0', 'scale-80');
+  });
   
   // Reset to initial state: show start button, hide everything else
   $('start-button').classList.remove('hidden');
   $('reset-button').classList.add('hidden');
-  $('input-section').classList.add('hidden');
+  $('memorize-message').classList.add('hidden');
+  $('countdown-timer').classList.add('hidden');
   $('try-again-inline-button').classList.add('hidden');
   $('result-card').classList.add('hidden');
   

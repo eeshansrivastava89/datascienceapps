@@ -1,86 +1,88 @@
 /**
- * Puzzle Configuration for A/B Test Simulator
+ * Puzzle Configuration for A/B Test Simulator - Memory Game Edition
  * 
  * Each variant has multiple puzzle options to increase variety.
- * Puzzles are designed to have EXACTLY the target number of words (no more, no less).
+ * Puzzles are memory games where users memorize fruit positions and find pineapples.
+ * Variant A: Find 4 pineapples in 60 seconds
+ * Variant B: Find 5 pineapples in 60 seconds
  */
 
 const PUZZLE_VARIANTS = {
-  // Variant A: Difficulty 3/10 - Find exactly 3 words
+  // Variant A: Difficulty 3/10 - Find exactly 4 pineapples
   A: [
     {
       id: 'A1',
-      letters: ['C', 'O', 'D', 'E', 'R', 'U', 'N', 'S', 'T', 'A', 'R', 'T'],
-      targetWords: ['CODE', 'RUNS', 'STAR'],
+      pineapplePositions: [[0,1], [2,3], [4,0], [1,4]], // 4 pineapple positions [row, col]
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'], // Fruits to fill remaining spots
       difficulty: 3,
-      targetCount: 3
+      targetCount: 4
     },
     {
       id: 'A2',
-      letters: ['T', 'E', 'S', 'T', 'D', 'A', 'T', 'A', 'B', 'U', 'G', 'S'],
-      targetWords: ['TEST', 'DATA', 'BUGS'],
+      pineapplePositions: [[1,1], [3,2], [0,4], [4,3]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 3,
-      targetCount: 3
+      targetCount: 4
     },
     {
       id: 'A3',
-      letters: ['L', 'O', 'O', 'P', 'F', 'I', 'L', 'E', 'S', 'A', 'V', 'E'],
-      targetWords: ['LOOP', 'FILE', 'SAVE'],
+      pineapplePositions: [[2,2], [0,0], [4,4], [1,3]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 3,
-      targetCount: 3
+      targetCount: 4
     },
     {
       id: 'A4',
-      letters: ['B', 'A', 'S', 'E', 'T', 'Y', 'P', 'E', 'C', 'A', 'L', 'L'],
-      targetWords: ['BASE', 'TYPE', 'CALL'],
+      pineapplePositions: [[3,1], [1,0], [2,4], [0,2]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 3,
-      targetCount: 3
+      targetCount: 4
     },
     {
       id: 'A5',
-      letters: ['L', 'I', 'N', 'K', 'P', 'A', 'T', 'H', 'M', 'O', 'D', 'E'],
-      targetWords: ['LINK', 'PATH', 'MODE'],
+      pineapplePositions: [[4,1], [2,0], [0,3], [3,4]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 3,
-      targetCount: 3
+      targetCount: 4
     }
   ],
 
-  // Variant B: Difficulty 5/10 - Find exactly 4 words
+  // Variant B: Difficulty 5/10 - Find exactly 5 pineapples
   B: [
     {
       id: 'B1',
-      letters: ['C', 'O', 'M', 'P', 'U', 'T', 'E', 'R', 'S', 'C', 'I', 'E', 'N', 'C', 'E', 'D', 'A', 'T', 'A'],
-      targetWords: ['COMP', 'PURE', 'ENCE', 'DATA'],
+      pineapplePositions: [[0,1], [2,3], [4,0], [1,4], [3,2]], // 5 pineapple positions
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 5,
-      targetCount: 4
+      targetCount: 5
     },
     {
       id: 'B2',
-      letters: ['B', 'U', 'I', 'L', 'D', 'T', 'O', 'O', 'L', 'S', 'H', 'I', 'P', 'M', 'E', 'R', 'G', 'E'],
-      targetWords: ['BUILD', 'TOOLS', 'SHIP', 'MERGE'],
+      pineapplePositions: [[1,1], [3,2], [0,4], [4,3], [2,0]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 5,
-      targetCount: 4
+      targetCount: 5
     },
     {
       id: 'B3',
-      letters: ['D', 'E', 'B', 'U', 'G', 'T', 'R', 'A', 'C', 'E', 'L', 'O', 'G', 'S', 'F', 'I', 'X', 'E'],
-      targetWords: ['DEBUG', 'TRACE', 'LOGS', 'FIXE'],
+      pineapplePositions: [[2,2], [0,0], [4,4], [1,3], [3,1]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 5,
-      targetCount: 4
+      targetCount: 5
     },
     {
       id: 'B4',
-      letters: ['P', 'A', 'R', 'S', 'E', 'Q', 'U', 'E', 'R', 'Y', 'J', 'O', 'I', 'N', 'K', 'E', 'Y', 'S'],
-      targetWords: ['PARSE', 'QUERY', 'JOIN', 'KEYS'],
+      pineapplePositions: [[3,1], [1,0], [2,4], [0,2], [4,2]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 5,
-      targetCount: 4
+      targetCount: 5
     },
     {
       id: 'B5',
-      letters: ['S', 'T', 'A', 'C', 'K', 'H', 'E', 'A', 'P', 'Q', 'U', 'E', 'U', 'E', 'P', 'U', 'S', 'H'],
-      targetWords: ['STACK', 'HEAP', 'QUEUE', 'PUSH'],
+      pineapplePositions: [[4,1], [2,0], [0,3], [3,4], [1,2]],
+      otherFruits: ['🍎','🍌','🍇','🍓','🍊'],
       difficulty: 5,
-      targetCount: 4
+      targetCount: 5
     }
   ]
 };
@@ -88,7 +90,7 @@ const PUZZLE_VARIANTS = {
 /**
  * Select a random puzzle for the given variant
  * @param {string} variant - 'A' or 'B'
- * @returns {object} Puzzle configuration with letters, targetWords, etc.
+ * @returns {object} Puzzle configuration with pineapplePositions, otherFruits, etc.
  */
 function selectRandomPuzzle(variant) {
   const variants = PUZZLE_VARIANTS[variant];
@@ -101,32 +103,45 @@ function selectRandomPuzzle(variant) {
 }
 
 /**
- * Shuffle letters using Fisher-Yates algorithm
- * @param {Array} letters - Array of letter strings
- * @returns {Array} Shuffled copy of the array
+ * Generate the full 5x5 grid for the memory game
+ * @param {object} puzzle - Puzzle configuration
+ * @returns {Array} 5x5 grid with fruits
  */
-function shuffleLetters(letters) {
-  const shuffled = [...letters]; // Create a copy
+function generateGrid(puzzle) {
+  const grid = Array(5).fill(null).map(() => Array(5).fill(null));
   
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  // Place pineapples
+  puzzle.pineapplePositions.forEach(([row, col]) => {
+    grid[row][col] = '🍍';
+  });
+  
+  // Fill remaining spots with other fruits
+  const otherFruits = [...puzzle.otherFruits];
+  let fruitIndex = 0;
+  
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
+      if (grid[row][col] === null) {
+        grid[row][col] = otherFruits[fruitIndex % otherFruits.length];
+        fruitIndex++;
+      }
+    }
   }
   
-  return shuffled;
+  return grid;
 }
 
 /**
- * Get a puzzle configuration with shuffled letters
+ * Get a puzzle configuration with generated grid
  * @param {string} variant - 'A' or 'B'
- * @returns {object} Puzzle config with shuffled letters
+ * @returns {object} Puzzle config with generated grid
  */
 function getPuzzleForVariant(variant) {
   const puzzle = selectRandomPuzzle(variant);
   
   return {
     ...puzzle,
-    letters: shuffleLetters(puzzle.letters)
+    grid: generateGrid(puzzle)
   };
 }
 

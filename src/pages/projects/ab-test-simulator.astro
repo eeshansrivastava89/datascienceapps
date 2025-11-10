@@ -7,7 +7,7 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 		<!-- Header -->
 		<div class="space-y-2">
 			<h1 class="text-3xl font-bold">A/B Test Simulator</h1>
-			<p class="text-base text-muted-foreground">Interactive word search puzzle demonstrating A/B testing with PostHog experiments and real-time analytics</p>
+			<p class="text-base text-muted-foreground">Interactive memory game puzzle demonstrating A/B testing with PostHog experiments and real-time analytics</p>
 		</div>
 
 		<!-- Challenge Info -->
@@ -19,7 +19,7 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 					<div id="user-variant" class="font-mono font-bold">Loading...</div>
 				</div>
 				<div class="text-sm">
-					<div class="text-xs text-muted-foreground">Username</div>
+					<div class="text-xs text-muted-foreground">Your Random Username</div>
 					<div id="user-username" class="truncate font-mono">Loading...</div>
 				</div>
 				<div class="text-sm">
@@ -27,7 +27,7 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 					<div id="difficulty-display" class="font-mono">Loading...</div>
 				</div>
 				<div class="text-sm">
-					<div class="text-xs text-muted-foreground">Find Words</div>
+					<div class="text-xs text-muted-foreground">No. of Pineapples to Find</div>
 					<div id="target-word-count" class="font-mono font-bold">0</div>
 				</div>
 			</div>
@@ -35,13 +35,13 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 
 		<!-- Puzzle Section -->
 		<div id="puzzle-section" class="space-y-4 rounded-lg border bg-card p-4">
-			<h3 class="font-semibold">Find the Words</h3>
+			<h3 class="font-semibold">Find the PINPEAPPLES 🍍</h3>
 			
 			<!-- Three-column layout: Grid (1/3) + Controls (1/3) + Stats (1/3) -->
 			<div class="grid gap-6" style="grid-template-columns: 1fr 1fr 1fr;">
 				<!-- LEFT: Letter Grid (1/3) -->
 				<div>
-					<div id="letter-grid" class="grid gap-2" style="grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));"></div>
+					<div id="letter-grid" class="grid grid-cols-5 gap-2 max-w-[300px]"></div>
 				</div>
 
 				<!-- CENTER: Controls & Info (1/3) -->
@@ -60,7 +60,23 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 							<div class="text-xs text-muted-foreground">Time</div>
 							<div id="timer" class="font-mono text-2xl font-bold col-span-2">00:60:00</div>
 						</div>
-					</div>					<!-- Input Box (hidden until started) -->
+					</div>					<!-- Memorize Message (hidden until started) -->
+					<div id="memorize-message" class="hidden rounded-lg bg-green-50 border border-green-200 p-3">
+						<div class="text-center">
+							<div class="text-lg font-bold text-green-800">🧠 Memorize the Pineapples!</div>
+							<div class="text-sm text-green-600">Remember where the 🍍 are - they'll be hidden in 5 seconds</div>
+						</div>
+					</div>
+
+					<!-- Countdown Timer (hidden until started) -->
+					<div id="countdown-timer" class="hidden">
+						<div class="text-center">
+							<div id="countdown-number" class="text-6xl font-bold text-red-600 mb-2">5</div>
+							<div class="text-lg font-semibold text-gray-700">Get Ready!</div>
+						</div>
+					</div>
+
+					<!-- Input Box (hidden until started) -->
 					<div id="input-section" class="hidden space-y-2">
 						<label for="word-input" class="text-xs font-medium text-muted-foreground">Enter Word</label>
 						<input type="text" id="word-input" placeholder="Type a word..." autocomplete="off" class="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
@@ -68,8 +84,8 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 
 					<!-- Found Words -->
 					<div id="found-words" class="rounded-lg bg-muted p-3">
-						<div class="text-xs text-muted-foreground mb-2">Found Words</div>
-						<div id="found-words-list" class="font-mono text-sm">(none yet)</div>
+						<div class="text-xs text-muted-foreground mb-2">Pineapples Found</div>
+						<div id="found-words-list" class="font-mono text-sm">0</div>
 					</div>
 				</div>
 
@@ -207,6 +223,7 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 		<script src="/js/puzzle-config.js" is:inline></script>
 		<script src="/js/dashboard.js" is:inline></script>
 	</div>
+
 </PageLayout>
 
 <script>
