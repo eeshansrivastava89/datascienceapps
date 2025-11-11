@@ -448,7 +448,6 @@ const updateLeaderboard = (currentTime = null, currentVariant = null) => {
   // Fetch leaderboard data immediately
   const variant = currentVariant || localStorage.getItem('simulator_variant');
   if (!variant) return false; // No variant means feature flag failed
-  
   fetchAndDisplayLeaderboard(variant);
   return currentTime !== null;
 };

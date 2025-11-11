@@ -387,7 +387,6 @@ Status: In Progress (multiple items completed). This section tracks incremental 
 - DONE: Extracted DOM helpers to `public/js/utils.js`; removed inline duplicates (ab-simulator.js).
 - TODO: Error UI target alignment in `dashboard.js` (ensure correct container reference).
 - TODO: `requestAnimationFrame` for timer (potential smoother cadence, optional).
-- TODO: Personal best cache to reduce leaderboard flicker.
 
 4) Reliability and resilience
 - DONE: Feature flag retry (single 500ms delayed retry before error).
