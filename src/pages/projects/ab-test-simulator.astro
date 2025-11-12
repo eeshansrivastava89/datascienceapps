@@ -229,7 +229,9 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 			window.__SUPABASE_URL__ = SUPABASE_URL;
 			window.__SUPABASE_ANON_KEY__ = SUPABASE_ANON_KEY;
 		</script>
-		<script src="/js/dashboard.js" is:inline></script>
+		<script src="/js/ab-sim/supabase-api.js" is:inline></script>
+		<script src="/js/ab-sim/core.js" is:inline></script>
+		<script src="/js/ab-sim/dashboard.js" is:inline></script>
 	</div>
 
 </PageLayout>
@@ -248,4 +250,4 @@ import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generato
 };
 </script>
 
-<script src="/js/ab-simulator.js" is:inline></script>
+<!-- consolidated into /js/ab-sim/core.js -->

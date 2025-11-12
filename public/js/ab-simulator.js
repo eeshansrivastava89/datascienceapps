@@ -1,4 +1,6 @@
 const FEATURE_FLAG_KEY = 'word_search_difficulty_v2';
+window.FEATURE_FLAG_KEY = FEATURE_FLAG_KEY;
+const { puzzleState } = window.simState;
 
 // DOM helpers (now loaded globally from utils.js)
 // $ show hide toggle formatTime
@@ -12,81 +14,39 @@ const generateUsername = () => {
   return 'Player ' + Math.floor(Math.random() * 1000);
 };
 
-let puzzleState = {
-  variant: null,
-  puzzleConfig: null, // Store the selected puzzle configuration
-  startTime: null,
-  isRunning: false,
-  timerInterval: null,
-  completionTime: null,
-  // Memory game specific state
-  isMemorizing: false,
-  foundPineapples: [],
-  totalClicks: 0,
-  gridState: [] // Track revealed tiles
-};
+// puzzleState comes from state.js
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Wait for PostHog feature flags; add a single retry before erroring
-  if (typeof posthog !== 'undefined' && posthog.onFeatureFlags) {
-    posthog.onFeatureFlags(() => {
-      const ok = initializeVariant();
-      if (ok) {
-        displayVariant();
-        setupPuzzle();
-        updateLeaderboard();
-      } else {
-        setTimeout(() => {
-          const okRetry = initializeVariant();
-          if (okRetry) {
-            displayVariant();
-            setupPuzzle();
-            updateLeaderboard();
-          } else {
-            console.error('PostHog feature flag not resolved after retry.');
-            showFeatureFlagError();
-          }
-        }, 500);
-      }
-    });
-  } else {
-    // PostHog not loaded - show error
+  if (typeof posthog === 'undefined' || !posthog.onFeatureFlags) {
     console.error('PostHog not initialized. Check environment variables.');
     showFeatureFlagError();
+    return;
   }
+  posthog.onFeatureFlags(() => {
+    const ok = window.featureFlag.initializeVariant(FEATURE_FLAG_KEY);
+    if (!ok) {
+      return setTimeout(() => {
+        const retry = window.featureFlag.initializeVariant(FEATURE_FLAG_KEY);
+        if (!retry) {
+          console.error('PostHog feature flag not resolved after retry.');
+          showFeatureFlagError();
+          return;
+        }
+        afterVariantResolved();
+      }, 500);
+    }
+    afterVariantResolved();
+  });
 });
 
-const initializeVariant = () => {
-  // Get variant from PostHog feature flag
-  if (typeof posthog === 'undefined') return false;
-  const posthogVariant = posthog.getFeatureFlag(FEATURE_FLAG_KEY);
+function afterVariantResolved() {
+  displayVariant();
+  setupPuzzle();
+    // Leaderboard rendering now handled by analytics.renderLeaderboard
+    analytics.renderLeaderboard(variant);
+}
 
-  let variant = null;
-  if (posthogVariant === '4-words') {
-    variant = 'B';  // 4 words = Variant B
-  } else if (posthogVariant === 'control') {
-    variant = 'A';  // control = Variant A (3 words)
-  } else {
-    // Feature flag not resolved yet
-    return false;
-  }
-
-  localStorage.setItem('simulator_variant', variant);
-
-  const userId = 'user_' + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem('simulator_user_id', userId);
-
-  if (!localStorage.getItem('simulator_username')) {
-    const username = generateUsername();
-    localStorage.setItem('simulator_username', username);
-    // Identify user in PostHog with their username
-    if (typeof posthog !== 'undefined' && posthog.identify) {
-      posthog.identify(username);
-    }
-  }
-
-  return true;
-};
+// initializeVariant is now in featureFlag.js
 
 const showFeatureFlagError = () => {
   const errorHTML = `
@@ -139,14 +99,7 @@ const displayVariant = () => {
   puzzleSection.classList.toggle('variant-b-theme', variant === 'B');
   
   // Create 5x5 grid for memory game with always visible grey boxes
-  const gridHTML = config.grid.map((row, rowIndex) => 
-    row.map((fruit, colIndex) => 
-      `<div class="aspect-square rounded-lg bg-gray-600 flex items-center justify-center cursor-pointer transition-all duration-300 relative overflow-hidden memory-tile border-2 border-gray-500 hover:!bg-orange-500 hover:!border-orange-600 hover:scale-105" data-row="${rowIndex}" data-col="${colIndex}" data-fruit="${fruit}">
-        <span class="text-2xl transition-all duration-300 fruit-emoji opacity-0 scale-80">${fruit}</span>
-      </div>`
-    ).join('')
-  ).join('');
-  $('letter-grid').innerHTML = gridHTML;
+  window.puzzleUI.buildGrid(config);
 };
 
 const setupPuzzle = () => {
@@ -180,17 +133,7 @@ const startChallenge = () => {
   puzzleState.totalClicks = 0;
   puzzleState.gridState = Array(5).fill(null).map(() => Array(5).fill(false));
   
-  // Show all fruits for memorization
-  document.querySelectorAll('.memory-tile').forEach(tile => {
-    tile.classList.remove('bg-gray-800', 'bg-green-600', 'bg-red-600');
-    tile.classList.add('bg-green-600', 'scale-105');
-    tile.querySelector('.fruit-emoji').classList.remove('opacity-0', 'scale-80');
-    tile.querySelector('.fruit-emoji').classList.add('opacity-100', 'scale-100');
-  });
-  
-  // Show memorize message
-  $('start-button').classList.add('hidden');
-  $('memorize-message').classList.remove('hidden');
+  window.puzzleUI.showMemorizePhase();
   
   // Start countdown timer after 2 seconds
   setTimeout(() => {
@@ -198,7 +141,7 @@ const startChallenge = () => {
     startCountdownTimer();
   }, 2000);
   
-  trackEvent('puzzle_started', { 
+  analytics.trackEvent('puzzle_started', { 
     difficulty: puzzleState.puzzleConfig.difficulty,
     puzzle_id: puzzleState.puzzleConfig.id
   });
@@ -231,12 +174,7 @@ const startGamePhase = () => {
   puzzleState.startTime = Date.now();
   
   // Hide all fruits
-  document.querySelectorAll('.memory-tile').forEach(tile => {
-    tile.classList.remove('bg-green-600', 'scale-105');
-    tile.classList.add('bg-gray-800');
-    tile.querySelector('.fruit-emoji').classList.remove('opacity-100', 'scale-100');
-    tile.querySelector('.fruit-emoji').classList.add('opacity-0', 'scale-80');
-  });
+  window.puzzleUI.hideFruits();
   
   // Hide memorize message, show game elements
   $('memorize-message').classList.add('hidden');
@@ -252,7 +190,7 @@ const updateTimer = () => {
     endChallenge(false);
     return;
   }
-  $('timer').textContent = formatTime(60000 - elapsed);
+  window.puzzleUI.updateTimerDisplay(elapsed);
 };
 
 const handleTileClick = (event) => {
@@ -347,7 +285,7 @@ const endChallenge = async (success) => {
     statusTitle.textContent = 'Challenge Failed';
   }
   
-  trackEvent(success ? 'puzzle_completed' : 'puzzle_failed', { 
+  analytics.trackEvent(success ? 'puzzle_completed' : 'puzzle_failed', { 
       // Ensure numeric type for analytics (not string)
       completion_time_seconds: success ? Number((puzzleState.completionTime / 1000).toFixed(3)) : undefined,
     correct_words_count: puzzleState.foundPineapples.length, // Track pineapples found
@@ -356,14 +294,7 @@ const endChallenge = async (success) => {
 };
 
 const resetPuzzle = (isRepeat = false) => {
-  puzzleState.isRunning = false;
-  clearInterval(puzzleState.timerInterval);
-  puzzleState.startTime = null;
-  // Reset state collections
-  puzzleState.foundPineapples = [];
-  puzzleState.totalClicks = 0;
-  puzzleState.gridState = [];
-  puzzleState.completionTime = null;
+  window.simState.resetState();
   
   $('timer').textContent = '00:60:00';
   $('found-pineapples-list').textContent = '0';
@@ -372,8 +303,9 @@ const resetPuzzle = (isRepeat = false) => {
   document.querySelectorAll('.memory-tile').forEach(tile => {
     tile.classList.remove('bg-green-600', 'bg-red-600', 'bg-gray-800', 'scale-105', 'animate-pulse');
     tile.classList.add('bg-gray-700');
-    tile.querySelector('.fruit-emoji').classList.remove('opacity-100', 'scale-100');
-    tile.querySelector('.fruit-emoji').classList.add('opacity-0', 'scale-80');
+    const emoji = tile.querySelector('.fruit-emoji');
+    emoji.classList.remove('opacity-100', 'scale-100');
+    emoji.classList.add('opacity-0', 'scale-80');
   });
   
   // Reset to initial state: show start button, hide everything else
@@ -384,51 +316,18 @@ const resetPuzzle = (isRepeat = false) => {
   document.querySelectorAll('.try-again-button').forEach(btn => btn.classList.add('hidden'));
   $('result-card').classList.add('hidden');
   
-  if (isRepeat) trackEvent('puzzle_repeated', {});
+  if (isRepeat) analytics.trackEvent('puzzle_repeated', {});
 };
 
-const trackEvent = (eventName, props = {}) => {
-  try {
-    // PostHog will be available globally if script loaded
-    if (!posthog?.capture) return;
-    
-    posthog.capture(eventName, {
-      variant: puzzleState.variant,
-      username: localStorage.getItem('simulator_username'),
-      $feature_flag: FEATURE_FLAG_KEY,
-      $feature_flag_response: posthog.getFeatureFlag(FEATURE_FLAG_KEY),
-      user_id: localStorage.getItem('simulator_user_id'),
-      ...props
-    });
-  } catch (e) {
-    console.error('PostHog error:', e);
-  }
-};
 
 
 const fetchAndDisplayLeaderboard = async (variant) => {
   const leaderboardList = $('leaderboard-list');
   const username = localStorage.getItem('simulator_username');
-  const SUPABASE_URL = window.__SUPABASE_URL__;
-  const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY__;
-
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    leaderboardList.innerHTML = '<p class="text-center text-[0.70rem] italic text-gray-400">Supabase env missing</p>';
-    return;
-  }
 
   try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/leaderboard`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ variant, limit_count: 10 })
-    });
-    if (!response.ok) throw new Error('Failed to fetch leaderboard');
-    const data = await response.json();
+    if (!window.supabaseApi) throw new Error('Supabase API not initialized');
+    const data = await window.supabaseApi.leaderboard(variant, 10);
 
     if (!data || data.length === 0) {
       leaderboardList.innerHTML = '<p style="text-align: center; color: #9ca3af; font-style: italic; font-size: 0.75rem; margin: 0; padding: 1rem 0;">Complete to rank</p>';
@@ -460,6 +359,7 @@ const updateLeaderboard = (currentTime = null, currentVariant = null) => {
   // Fetch leaderboard data immediately
   const variant = currentVariant || localStorage.getItem('simulator_variant');
   if (!variant) return false; // No variant means feature flag failed
-  fetchAndDisplayLeaderboard(variant);
+  // Removed inline leaderboard rendering logic
+  // fetchAndDisplayLeaderboard(variant);
   return currentTime !== null;
 };

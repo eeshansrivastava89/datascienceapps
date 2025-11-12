@@ -30,7 +30,7 @@ This doc is intentionally brief: a pre/post visual and a chunked todo list you c
 [ab-test-simulator.astro]
    |-- utils.js
    |-- puzzle-config.js
-   |-- lib/supabase-api.js    (central PostgREST calls -> window.supabaseApi)
+  |-- public/js/supabase-api.js    (central PostgREST calls -> window.supabaseApi)
    |-- featureFlag.js         (resolveVariant, initUserIdentity)
    |-- state.js               (puzzleState + reset helpers)
    |-- puzzle-ui.js           (grid rendering, tile clicks, timers, endChallenge)
@@ -49,12 +49,12 @@ Minimal, incremental steps. You can land each item independently.
 
 ### Phase 1 — Organization (no behavior change)
 
-- [ ] Create `public/js/supabase-api.js` (window.supabaseApi)
+- [x] Create `public/js/supabase-api.js` (window.supabaseApi)
   - Methods: `variantOverview()`, `funnel()`, `recent(n)`, `distribution()`, `leaderboard(variant, limit)`
   - Handles headers + JSON shape normalization (RETURNS TABLE arrays → object)
-- [ ] Refactor `dashboard.js` to use `supabaseApi.*` (remove inline fetches)
-- [ ] Refactor leaderboard fetch in `ab-simulator.js` to `supabaseApi.leaderboard`
-- [ ] Extract analytics helpers into `public/js/analytics.js`
+- [x] Refactor `dashboard.js` to use `supabaseApi.*` (remove inline fetches)
+- [x] Refactor leaderboard fetch in `ab-simulator.js` to `supabaseApi.leaderboard`
+- [x] Extract analytics helpers into `public/js/analytics.js`
   - `baseEventProps(extra)`, `trackEvent(name, extra)`
   - Replace inline `posthog.capture` calls to go through analytics helper
 - [ ] Optional split for clarity (keep small files):
@@ -82,13 +82,6 @@ Acceptance for Phase 2:
 - Fewer redundant requests on transient errors; manual refresh works.
 - Simpler tile-update logic; consistent event properties across events.
 
----
-
-## Optional (Phase 3, later)
-
-- [ ] Replace Plotly table with semantic HTML table + CSS (lighter weight)
-- [ ] Replace Plotly funnel with simple stacked bars (HTML/CSS)
-- [ ] Consider ES modules (import/export) once files are stable; optional build if needed
 
 ---
 

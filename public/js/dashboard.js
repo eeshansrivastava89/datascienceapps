@@ -2,8 +2,6 @@
 (function initDashboard() {
 	if (typeof Plotly === 'undefined') return setTimeout(initDashboard, 100);
 
-	const SUPABASE_URL = window?.__SUPABASE_URL__;
-	const SUPABASE_ANON_KEY = window?.__SUPABASE_ANON_KEY__;
 	const colors = { variantA: '#e5e3e0ff', variantB: '#f5a656ff' };
 	const chartConfig = { responsive: true, displayModeBar: false };
 
@@ -144,45 +142,14 @@
 
 	async function updateDashboard() {
 		try {
-			if (!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error('Supabase env not configured');
+			if (!window.supabaseApi) throw new Error('Supabase API not initialized');
 
-			const overviewPromise = fetch(`${SUPABASE_URL}/rest/v1/rpc/variant_overview`, {
-				method: 'POST',
-				headers: {
-					'apikey': SUPABASE_ANON_KEY,
-					'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(null)
-			}).then(async r => {
-				if (!r.ok) {
-					const text = await r.text();
-					throw new Error(`variant_overview RPC failed (${r.status}): ${text}`);
-				}
-				return r.json();
-			});
-
-			const [overviewRaw, funnel, completions, distributionRaw] = await Promise.all([
-				overviewPromise,
-				fetch(`${SUPABASE_URL}/rest/v1/v_conversion_funnel?select=*`, {
-					headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
-				}).then(r => r.json()),
-				fetch(`${SUPABASE_URL}/rest/v1/rpc/recent_completions`, {
-					method: 'POST',
-					headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
-					body: JSON.stringify({ limit_count: 50 })
-				}).then(r => r.json()),
-				fetch(`${SUPABASE_URL}/rest/v1/rpc/completion_time_distribution`, {
-					method: 'POST',
-					headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
-					body: JSON.stringify({})
-				}).then(r => r.json())
+			const [overview, funnel, completions, distribution] = await Promise.all([
+				window.supabaseApi.variantOverview(),
+				window.supabaseApi.funnel(),
+				window.supabaseApi.recent(50),
+				window.supabaseApi.distribution()
 			]);
-
-			// Normalize RPC return shapes (PostgREST returns an array of one row for RETURNS TABLE)
-			const overview = Array.isArray(overviewRaw) ? overviewRaw[0] : overviewRaw;
-			const distribution = Array.isArray(distributionRaw) ? distributionRaw[0] : distributionRaw;
 
 			const theme = getPlotlyTheme();
 			if (!overview || !overview.comparison || !overview.stats) {

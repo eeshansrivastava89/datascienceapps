@@ -390,46 +390,6 @@ Status: In Progress (multiple items completed). This section tracks incremental 
 
 4) Reliability and resilience
 - DONE: Feature flag retry (single 500ms delayed retry before error).
-- TODO: Explicit min bound on `/api/recent-completions?limit` (ensure floor >=1).
-
-5) Analytics depth (optional nicety)
-- TODO: Percentiles (p50/p90) endpoint or enrich variant stats for deeper performance narrative.
-
-Estimated impact summary
-- Network: -1 request / refresh cycle (stats+comparison merge) → lighter polling.
-- JS hygiene: ~40+ LOC reduction (dead code + helper extraction). Further small wins possible.
-- UX clarity: consistent variant labeling (pineapples), improved readability.
-
-If you want, I can start with the JS audit cleanups first (dead code removal, duplicate ID fix, feature flag retry). That’s the safest set with immediate LOC and clarity wins.
 
 
-## AI Resumption Prompt (for tomorrow)
-
-Copy-paste this prompt to rehydrate full context and continue seamlessly:
-
-```
-You are assisting on the SOMA Portfolio/Analytics project. Rehydrate context and regain full working memory, then wait for my instruction on which task to execute:
-
-1) Read /Users/eeshans/dev/soma-portfolio/PROJECT_HISTORY.md end-to-end.
-   - Memorize the Working Principles, Tech Stack & Architecture, and the section "Temporary Recommendations (Nov 10, 2025)".
-
-2) Confirm key files and roles without editing any code yet:
-   - soma-portfolio: astro.config.mjs, package.json, tailwind.config.js, tsconfig.json,
-     src/pages/index.astro, src/pages/projects/ab-test-simulator.astro,
-     src/components/BaseHead.astro,
-     public/js/ab-simulator.js, public/js/puzzle-config.js, public/js/dashboard.js,
-     src/data/social-links.yaml
-   - soma-analytics: api.py, analysis/ab_test.py, requirements.txt, Dockerfile, fly.toml
-
-3) Summarize (briefly) the current architecture and experiment pipeline, then restate the "Temporary Recommendations" as a prioritized checklist. Note any deltas since last run if files have changed.
-
-4) When I say "proceed", start with the JS audit items unless I specify otherwise:
-   - Fix duplicate IDs (try-again button)
-   - Remove dead/legacy code (guessedWords/foundWords/updateFoundWordsList, unused input box, unused memorizeTime constant)
-   - Add a single feature-flag retry before erroring
-   - Optional: extract small DOM utils to public/js/utils.js
-   Provide an estimated LOC reduction and how you’ll validate (build + quick manual test steps).
-
-Do not make any code changes until I confirm the first task to execute.
-```
 
