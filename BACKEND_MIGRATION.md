@@ -132,3 +132,23 @@ curl -s -X POST \
 * recent-completions - 500 ms -> 150 ms
 * time-distribution - 500 ms (occasionally 1000ms) -> 150 ms
 * leaderboard - 500 ms (occ 1000 ms) -> 150 ms
+
+---
+
+## Operations: Smoke checks and secrets cleanup
+
+### Smoke checks (added)
+
+- A scheduled workflow `.github/workflows/smoke.yml` pings:
+  - `rpc/variant_overview`, `rpc/recent_completions`, `rpc/completion_time_distribution`
+  - `v_conversion_funnel` view
+- Configure repository secrets required by the workflow:
+  - `PUBLIC_SUPABASE_URL`
+  - `PUBLIC_SUPABASE_ANON_KEY`
+- The job fails on non-200 responses to alert on outages, grants drift, or schema regressions.
+
+### Secrets cleanup
+
+- PUBLIC_* values are now supplied at build time via Docker build args (see `Dockerfile` and `fly.toml`).
+- Remove any redundant Fly runtime secrets for these values to avoid configuration drift.
+- Keep runtime secrets only if you plan to introduce server-side logic again.
