@@ -55,8 +55,8 @@ Minimal path (do in order; each removes code quickly):
 
 Performance / optional extras (only if needed after baseline):
 
-* [ ] (Optional) Add `mv_completion_distribution` + pg_cron REFRESH for heavy percentile query
-* [ ] (Optional) Add essential indexes (`events(variant, created_at)`, `completions(username)`) if not present
+* [ ] (For Later) Add `mv_completion_distribution` + pg_cron REFRESH for heavy percentile query
+* [ ] (For Later) Add essential indexes (`events(variant, created_at)`, `completions(username)`) if not present
 * [ ] (Optional) Introduce notebooks (`analytics/notebooks`) + run log table `analytics_run_log`
 * [ ] (Deferred) Decide ML inference path (Fly vs Modal) when first model needed
 
