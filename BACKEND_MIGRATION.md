@@ -55,9 +55,9 @@ Minimal path (do in order; each removes code quickly):
 
 Performance / optional extras (only if needed after baseline):
 
-* [ ] (For Later) Add `mv_completion_distribution` + pg_cron REFRESH for heavy percentile query
-* [ ] (For Later) Add essential indexes (`events(variant, created_at)`, `completions(username)`) if not present
-* [ ] (Optional) Introduce notebooks (`analytics/notebooks`) + run log table `analytics_run_log`
+* [-] (For Later) Add `mv_completion_distribution` + pg_cron REFRESH for heavy percentile query
+* [-] (For Later) Add essential indexes (`events(variant, created_at)`, `completions(username)`) if not present
+* [x] (Optional) Introduce notebooks (`analytics/notebooks`) + run log table `analytics_run_log`
 * [ ] (Deferred) Decide ML inference path (Fly vs Modal) when first model needed
 
 ### Current State Summary (Completed)
@@ -69,7 +69,7 @@ Performance / optional extras (only if needed after baseline):
 ### Suggested Next Steps
 
 1. (Optional) Add materialized view for distribution if query latency grows.
-2. (Optional) Add `analytics_run_log` + notebook pipeline if you introduce periodic batch transforms.
+2. (Done) Add `analytics_run_log` + notebook pipeline if you introduce periodic batch transforms.
 3. (Optional) Add indexes after measuring (pg_stat_statements) rather than pre-optimizing.
 4. (Hygiene) Remove archived infra files once certain no Python service returns.
 
@@ -152,3 +152,13 @@ curl -s -X POST \
 - PUBLIC_* values are now supplied at build time via Docker build args (see `Dockerfile` and `fly.toml`).
 - Remove any redundant Fly runtime secrets for these values to avoid configuration drift.
 - Keep runtime secrets only if you plan to introduce server-side logic again.
+
+---
+
+## Notebooks
+
+- Example: `analytics/notebooks/ab_dashboard_health.ipynb` reads PUBLIC_* envs (auto-loads `.env` locally), calls Supabase RPCs, and logs via `log_analytics_run` SECURITY DEFINER RPC.
+- Table: `analytics_run_log(id, job_name, status, duration_ms, message, created_at)`
+- RPC: `log_analytics_run(job_name text, status text, duration_ms int, message text)`; `GRANT EXECUTE` to `anon, authenticated`.
+- To run locally in VS Code: open the notebook, pick a Python kernel with `requests` installed, run all cells. No service key needed.
+- Optional CI: execute via `nbconvert` on a schedule, reusing the same PUBLIC_* secrets as the smoke workflow.
