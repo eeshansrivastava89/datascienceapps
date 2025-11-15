@@ -2,6 +2,10 @@
 
 This doc is intentionally brief: a pre/post visual and a chunked todo list you can chip away at. No code in here.
 
+## Prompt
+
+Please read through project_history.md -> backend_migration.md -> frontend_simplification.md in extreme detail so you understand where I am right now .. pay attention to working principles. Explore the codebase of soma-portfolio repo so you understand the code in context of my project history doc. Let me know once you have perfect understand of my code and work, and where I am currently in my workflow. 
+
 ## Before (today)
 
 - Page loads global scripts and everything is wired imperatively.
@@ -57,27 +61,30 @@ Acceptance:
 - All PostgREST traffic via `window.supabaseApi`.
 - Single place (`core.js`) for feature flag, state, events, leaderboard logic.
 
-### CRITICAL ISSUE 
-Previous AI assistant broke posthog tracking after Phase 1. Did all the checks about proxy, it's working, posthog loads in console, but events are not reaching posthog. This is very much due to the phase 1 migration and not an external issue. Previous invesgtigations reveal:
-* events are showing up in posthog's live events, but not in activity or its own events database
-* supabase webhooks are probably not an issue because the events aren't loading into posthog events table, only the live view
-* everything was working perfectly before the phase 1 migration
-* proxy is working fine too
 
-### Phase 2 — UX & resilience polish
+### Phase 2 — UX & resilience polish (complete)
 
-- [ ] Replace fixed `setInterval` with adaptive schedule in `dashboard.js`
+- [x] Replace fixed `setInterval` with adaptive schedule in `dashboard.js`
   - Success → next poll after 5s; Error → exponential backoff (10s, 20s, up to 60s)
-  - Add a small “Refresh” button near “Last updated”
-- [ ] Debounce re-render on theme change (avoid double redraw)
-- [ ] Add `showFruit(tile, state)` helper to reduce repeated class toggles
-- [ ] Optional: only update leaderboard DOM if content changed
-- [ ] Add a per-run `game_session_id` to event props for easier grouping
+  - Add a small "Refresh" button near "Last updated"
+- [x] Add a per-run `game_session_id` to event props for easier grouping
+- [ ] ~~Debounce re-render on theme change (avoid double redraw)~~ - Skipped (premature optimization)
+- [ ] ~~Add `showFruit(tile, state)` helper to reduce repeated class toggles~~ - Skipped (unnecessary abstraction)
+- [ ] ~~Optional: only update leaderboard DOM if content changed~~ - Skipped (adds complexity)
 
 Acceptance for Phase 2:
-- Fewer redundant requests on transient errors; manual refresh works.
-- Simpler tile-update logic; consistent event properties across events.
+- ✅ Fewer redundant requests on transient errors; manual refresh works.
+- ✅ Every game run has unique session ID for funnel analysis in PostHog.
+- ✅ Adaptive polling backs off gracefully on errors (5s → 10s → 20s → 40s → 60s max)
+- ✅ Manual refresh button gives users control over dashboard updates.
 
+### Phase 2.5 - Minor Improvements
+
+okay now some minor improvements 
+
+-- i noticed that render leaderboard uses inline css and not tailiwind .. can you fix that?
+-- can you go through all the js files and see if we can replace any inline css with tailwind
+-- i need a nicer tailwind classy UI for the leaderboard .. looks out of place with the rest of the design .. I want to highlight / glow the row if the user makes it to top 5, make it obvious, also not obvious in the challenge complete section when someone gets the personal best, so maybe slight design update over there -- keep the code minimal and use smart tailwind updates 
 
 ---
 

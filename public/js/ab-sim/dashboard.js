@@ -1,8 +1,14 @@
 (function initDashboard() {
   if (typeof Plotly === 'undefined') return setTimeout(initDashboard, 100);
 
-  const colors = { variantA: '#e5e3e0ff', variantB: '#f5a656ff' };
+  const colors = { variantA: '#F7CA45', variantB: '#4572F7' };
   const chartConfig = { responsive: true, displayModeBar: false };
+  
+  // Adaptive polling state
+  let pollDelay = 5000; // Start at 5 seconds
+  const minDelay = 5000;
+  const maxDelay = 60000;
+  let pollTimeout = null;
 
   function getPlotlyTheme() {
     const isDark = document.documentElement.classList.contains('dark');
@@ -81,7 +87,7 @@
     layout.margin = { l: 50, r: 30, t: 50, b: 40 };
     Plotly.newPlot('distribution-chart', [
       { x: kdeB.x, y: kdeB.y, type: 'scatter', mode: 'lines', name: 'Variant B', line: { color: colors.variantB, width: 2 }, fill: 'tozeroy', fillcolor: `${colors.variantB}66`  },
-      { x: kdeA.x, y: kdeA.y, type: 'scatter', mode: 'lines', name: 'Variant A', line: { color: colors.variantA, width: 2 }, fill: 'tozeroy', fillcolor: `${colors.variantA}22` }
+      { x: kdeA.x, y: kdeA.y, type: 'scatter', mode: 'lines', name: 'Variant A', line: { color: colors.variantA, width: 2 }, fill: 'tozeroy', fillcolor: `${colors.variantA}66` }
     ], layout, chartConfig);
   }
 
@@ -146,8 +152,21 @@
       renderCompletionsTable(completions, theme);
       document.getElementById('last-updated').innerHTML = `Last updated: ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
       document.getElementById('update-indicator').classList.remove('opacity-50');
+      
+      // Success: reset to minimum delay
+      pollDelay = minDelay;
+      
+      // Clear any existing error message
+      const errorEl = document.getElementById('dashboard-error');
+      if (errorEl) errorEl.remove();
+      
     } catch (err) {
       console.error('Dashboard error:', err);
+      
+      // Error: exponential backoff
+      pollDelay = Math.min(pollDelay * 2, maxDelay);
+      console.warn(`Dashboard fetch failed, retrying in ${pollDelay/1000}s`);
+      
       const container = document.getElementById('dashboard-section');
       if (container && !document.getElementById('dashboard-error')) {
         const el = document.createElement('div');
@@ -156,7 +175,7 @@
           <div class="rounded-lg p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 mb-3">
             <div class="text-sm font-semibold text-red-900 dark:text-red-100 mb-1">❌ Error Loading Dashboard</div>
             <div class="text-xs text-red-800 dark:text-red-200">${err.message}</div>
-            <div class="text-xs text-red-700 dark:text-red-300 mt-2">Check Supabase project URL and anon key in site env.</div>
+            <div class="text-xs text-red-700 dark:text-red-300 mt-2">Retrying in ${pollDelay/1000}s... Check Supabase project URL and anon key in site env.</div>
           </div>
         `;
         container.prepend(el);
@@ -164,14 +183,33 @@
     }
   }
 
-  updateDashboard();
-  setInterval(() => {
+  // Schedule next poll with adaptive delay
+  function scheduleNextPoll() {
+    if (pollTimeout) clearTimeout(pollTimeout);
+    pollTimeout = setTimeout(async () => {
+      document.getElementById('update-indicator').classList.add('opacity-50');
+      await updateDashboard();
+      if (typeof updateLeaderboard === 'function') {
+        updateLeaderboard();
+      }
+      scheduleNextPoll();
+    }, pollDelay);
+  }
+
+  // Manual refresh function
+  window.refreshDashboard = async function() {
+    if (pollTimeout) clearTimeout(pollTimeout);
     document.getElementById('update-indicator').classList.add('opacity-50');
-    updateDashboard();
+    await updateDashboard();
     if (typeof updateLeaderboard === 'function') {
       updateLeaderboard();
     }
-  }, 5000);
+    scheduleNextPoll();
+  };
+
+  // Initial load
+  updateDashboard();
+  scheduleNextPoll();
 
   const observer = new MutationObserver(() => {
     if (document.getElementById('avg-time-chart').hasChildNodes()) updateDashboard();
