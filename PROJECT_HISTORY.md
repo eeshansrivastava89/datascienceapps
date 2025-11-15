@@ -6,13 +6,11 @@
 
 ## Instructions for AI Assistant
 
-Please read through project_history.md in extreme detail so you understand where I am right now .. pay attention to working principles. Explore the codebase of soma-portfolio and soma-analytics repos so you understand the code in context of my project history doc. Let me know once you have perfect understand of my code and work. 
+Please read through project_history.md in extreme detail so you understand where I am right now .. pay attention to working principles. Explore the codebase of soma-portfolio repo so you understand the code in context of my project history doc. Let me know once you have perfect understand of my code and work. 
 
-go through the js files to see if there are any redundancies, dead code or opportunities to optimize without breaking anything and then give me a plan (don't do anything)
-
-1. Read the "Working Principles" section above (defines how you think)
+1. Read the "Working Principles" section below (defines how you think)
 2. Check the "Tech Stack & Architecture" section (current state)
-3. Understand the three repos: Hugo (archived), Streamlit (still running), Astro (current)
+3. Understand the repo
 4. If something breaks, look at "Critical Fixes" first (you've seen these problems before)
 5. Keep this file updated with each major change
 
@@ -26,7 +24,7 @@ This document is your north star. Update it. Reference it.
 1. `soma-blog-hugo` - Original Hugo blog (ARCHIVED - local only, Fly deployment removed, DNS removed)
 2. `soma-streamlit-dashboard` - Analytics dashboard (ARCHIVED - local only)
 3. `soma-portfolio` - Astro portfolio (PRODUCTION - live at https://eeshans.com)
-4. `soma-analytics` - FastAPI backend (PRODUCTION - live at https://soma-analytics.fly.dev/)
+4. `soma-analytics` - FastAPI backend (ARCHIVED)
 
 -- using Cloudflare reverse proxy to get around ad blockers - https://api-v2.eeshans.com
 

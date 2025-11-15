@@ -57,6 +57,13 @@ Acceptance:
 - All PostgREST traffic via `window.supabaseApi`.
 - Single place (`core.js`) for feature flag, state, events, leaderboard logic.
 
+### CRITICAL ISSUE 
+Previous AI assistant broke posthog tracking after Phase 1. Did all the checks about proxy, it's working, posthog loads in console, but events are not reaching posthog. This is very much due to the phase 1 migration and not an external issue. Previous invesgtigations reveal:
+* events are showing up in posthog's live events, but not in activity or its own events database
+* supabase webhooks are probably not an issue because the events aren't loading into posthog events table, only the live view
+* everything was working perfectly before the phase 1 migration
+* proxy is working fine too
+
 ### Phase 2 — UX & resilience polish
 
 - [ ] Replace fixed `setInterval` with adaptive schedule in `dashboard.js`
