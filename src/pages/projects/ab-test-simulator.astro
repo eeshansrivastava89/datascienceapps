@@ -4,25 +4,6 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 
 <PageLayout meta={{ title: 'A/B Test Simulator' }}>
 	<div class="w-full space-y-8">
-		<!-- Memorize Overlay -->
-		<div
-			id="memorize-message"
-			data-visible="false"
-			class="memorize-overlay"
-			role="dialog"
-			aria-live="assertive"
-		>
-			<div class="memorize-overlay-card">
-				<div class="text-sm uppercase tracking-[0.4em] text-muted-foreground">Memorize Fast</div>
-				<h2 class="text-2xl font-semibold text-foreground">🧠 Memorize the Pineapples</h2>
-				<p class="text-sm text-muted-foreground">You have five seconds before the board hides every 🍍.</p>
-				<div class="pt-4">
-					<div class="text-xs font-semibold uppercase tracking-[0.3em] text-red-500">Hiding In</div>
-					<div id="countdown-number" class="text-6xl font-black text-red-600 tabular-nums">5</div>
-				</div>
-			</div>
-		</div>
-
 		<!-- Header -->
 		<div class="space-y-2">
 			<h1 class="text-3xl font-bold">A/B Test Simulator</h1>
@@ -56,37 +37,68 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 
 		<!-- Puzzle Section -->
 		<div id="puzzle-section" class="space-y-4 rounded-2xl border bg-card/95 p-4">
-			<h3 class="font-semibold">Find the PINPEAPPLES 🍍</h3>
+			<div class="flex flex-col gap-3">
+				<h3 class="font-semibold">MEMORY GAME: Find the Pineapples 🍍.</h3>
+				<p class="text-sm text-muted-foreground">Click Start to reveal the board, memorize all pineapples in 10 seconds, then find them before the timer expires.</p>
+			</div>
 			
-			<!-- Three-column layout: Grid (1/3) + Controls (1/3) + Stats (1/3) -->
+			<!-- Three-column layout: Grid (1/3) + Controls/Progress (1/3) + Stats (1/3) -->
 			<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-				<!-- LEFT: Letter Grid (1/3) -->
-				<div>
-					<div id="letter-grid" class="grid grid-cols-5 gap-4 max-w-[300px] rounded-2xl border-2 border-transparent p-2 transition-all duration-300"></div>
+				<!-- LEFT: Letter Grid with sticky guidance pill -->
+				<div class="space-y-4">
+					<div class="space-y-2">
+						<div id="memorize-pill" class="memorize-pill" data-state="idle">
+							<div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+								<span class="text-base">🍍</span>
+								<span id="memorize-pill-text">Click Start to reveal the board.</span>
+							</div>
+							<div class="flex items-center gap-2 text-sm">
+								<span class="text-muted-foreground">You get <strong>7 seconds</strong> to memorize.</span>
+								<span id="memorize-countdown" class="memorize-countdown" aria-live="polite">7s</span>
+							</div>
+						</div>
+						<div id="letter-grid" class="grid grid-cols-5 gap-4 max-w-[320px] rounded-2xl border-2 border-transparent p-2 transition-all duration-300"></div>
+					</div>
 				</div>
 
-				<!-- CENTER: Controls & Info (1/3) -->
-				<div class="space-y-4">
-					<!-- Timer + Try Again Button (always visible, changes state) -->
-					<div class="flex flex-col gap-1">
-						<!-- Action Button (Start / Try Again / Reset) -->
+				<!-- CENTER: Controls + Pineapple Progress -->
+				<div class="flex flex-col gap-4">
+					<div class="space-y-3 rounded-2xl border border-border/60 bg-muted/60 p-4 shadow-sm">
 						<div id="controls" class="flex flex-row gap-2">
 							<button id="start-button" class="flex-1 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">Start</button>
 							<button id="reset-button" class="hidden flex-1 rounded-lg bg-orange-500 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600">Stop</button>
 							<button class="try-again-button hidden flex-1 rounded-lg bg-orange-600 px-3 py-2 text-sm font-medium text-white hover:bg-orange-700 transition-colors">Try Again</button>
 						</div>
-						
-						<!-- Timer -->
-						<div class="grid grid-cols-3 items-center rounded-lg bg-muted p-4">
+						<div class="grid grid-cols-3 items-center rounded-lg bg-card p-3">
 							<div class="text-xs text-muted-foreground">Time</div>
-							<div id="timer" class="font-mono text-2xl font-bold col-span-2">00:60:00</div>
+							<div id="timer" class="col-span-2 font-mono text-2xl font-bold">00:60:00</div>
 						</div>
 					</div>
-
-					<!-- Pineapples Found -->
-					<div id="found-pineapples" class="rounded-lg bg-muted p-3">
-						<div class="text-xs text-muted-foreground mb-2">Pineapples Found</div>
-						<div id="found-pineapples-list" class="font-mono text-sm">0</div>
+					<div class="pineapple-progress" aria-live="polite">
+						<div class="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+							<span>Pineapple Tracker</span>
+							<span class="text-[11px]">
+								<span id="pineapple-progress-found">0</span>/<span id="pineapple-target">0</span>
+							</span>
+						</div>
+						<div class="pineapple-progress-track" id="pineapple-progress-track">
+							<div class="pineapple-progress-fill" id="pineapple-progress-fill"></div>
+							<div class="pineapple-progress-slots" id="pineapple-progress-slots"></div>
+						</div>
+						<div id="pineapple-stats" class="pineapple-stats" aria-live="polite">
+							<div class="pineapple-stats-time">
+								<span class="label">Time</span>
+								<span id="pineapple-result-time" class="value">00:00:00</span>
+							</div>
+							<div class="pineapple-stats-divider"></div>
+							<div class="pineapple-stats-guesses">
+								<span class="label">Guesses</span>
+								<span id="pineapple-result-guesses" class="value">0</span>
+							</div>
+							<div id="pineapple-personal-best" class="pineapple-stats-pill hidden">
+								<span>✨ Personal Best</span>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -97,45 +109,6 @@ import PageLayout from '../../layouts/BaseLayout.astro'
 						<span>Top Players</span>
 					</div>
 					<div id="leaderboard-list" class="mt-3 text-xs"></div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Result Card (modular, single-line design) -->
-		<div id="result-card" class="hidden rounded-2xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950">
-			<div class="flex flex-wrap items-center justify-between gap-4">
-				<!-- Left: Status Badge -->
-				<div class="flex flex-col gap-2">
-					<div class="inline-flex items-center gap-3 px-3 py-2 rounded-xl bg-white dark:bg-slate-950 border border-green-200 dark:border-green-900">
-						<span class="text-xl">🎉</span>
-						<div>
-							<p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Challenge Complete</p>
-							<p id="result-message" class="text-sm font-bold">🏆 Personal Best!</p>
-						</div>
-					</div>
-					<div id="personal-best-pill" class="hidden flex items-center gap-2 rounded-full border border-yellow-300 bg-yellow-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-yellow-700 dark:border-yellow-400/60 dark:bg-yellow-400/10 dark:text-yellow-200">
-						<span class="text-base">✨</span>
-						<span>New Personal Best</span>
-					</div>
-				</div>
-
-				<!-- Middle: Stats (Time & Guesses) -->
-				<div class="flex items-center gap-4 px-3 py-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-					<div class="text-center">
-						<p class="text-xs text-muted-foreground">Time</p>
-						<p class="font-mono font-bold text-base"><span id="result-time">00:00:00</span></p>
-					</div>
-					<div class="h-8 w-px bg-slate-200 dark:bg-slate-700"></div>
-					<div class="text-center">
-						<p class="text-xs text-muted-foreground">Guesses</p>
-						<p class="font-mono font-bold text-base"><span id="result-guesses">0</span></p>
-					</div>
-				</div>
-
-				<!-- Right: Actions -->
-				<div class="flex gap-2">
-					<button class="try-again-button hidden rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 transition-colors">Try Again</button>
-					<a href="#dashboard-section" class="rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors">View Stats</a>
 				</div>
 			</div>
 		</div>

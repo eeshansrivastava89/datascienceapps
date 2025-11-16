@@ -56,6 +56,7 @@
     funnel() { return view('/rest/v1/v_conversion_funnel?select=*'); },
     recent(limit = 50) { return rpc('recent_completions', { limit_count: limit }); },
     distribution() { return rpc('completion_time_distribution', {}); },
-    leaderboard(variant, limit = 10) { return rpc('leaderboard', { variant, limit_count: limit }); }
+    leaderboard(variant, limit = 10) { return rpc('leaderboard', { variant, limit_count: limit }); },
+    personalBest(variant, username) { return rpc('personal_best', { variant, username }); }
   };
 })();

@@ -6,12 +6,65 @@ window.FEATURE_FLAG_KEY = FEATURE_FLAG_KEY;
 
 const TILE_COLORS = {
   base: 'bg-gray-100',
-  memorizing: 'bg-emerald-300',
+  memorizing: 'bg-gray-100',
   hit: 'bg-emerald-300',
   miss: 'bg-red-500'
 };
 
 const TILE_COLOR_CLASSES = ['bg-gray-100', 'bg-emerald-300', 'bg-red-500', 'bg-red-600', 'bg-gray-800', 'bg-gray-700', 'bg-green-600'];
+
+const MEMORIZE_DURATION_SECONDS = 7;
+const ROUND_DURATION_MS = 60000;
+const PERSONAL_BEST_KEY_PREFIX = 'ab_sim_pb_ms';
+let personalBestMs = null;
+
+function getPersonalBestStorageKey(variant) {
+  return `${PERSONAL_BEST_KEY_PREFIX}_${variant}`;
+}
+
+async function primePersonalBestCache(variant, username) {
+  if (!variant || !username || !window.supabaseApi?.personalBest) {
+    console.log('[PB] Skipping prime; missing variant/user/api', { variant, username });
+    personalBestMs = null;
+    return;
+  }
+  try {
+    const cacheKey = getPersonalBestStorageKey(variant);
+    const cached = localStorage.getItem(cacheKey);
+    if (cached !== null) {
+      const cachedValue = Number(cached);
+      personalBestMs = Number.isFinite(cachedValue) ? cachedValue : null;
+      console.log('[PB] Loaded from cache', { cacheKey, personalBestMs });
+    }
+    const data = await window.supabaseApi.personalBest(variant, username);
+    console.log('[PB] RPC response', { variant, username, data });
+    if (data?.best_time !== undefined && data?.best_time !== null) {
+      const bestMs = Number(data.best_time) * 1000;
+      if (Number.isFinite(bestMs)) {
+        personalBestMs = bestMs;
+        localStorage.setItem(cacheKey, String(bestMs));
+        console.log('[PB] Cache populated from RPC', { cacheKey, bestMs });
+        return;
+      }
+    }
+    if (cached === null) {
+      personalBestMs = null;
+      localStorage.removeItem(cacheKey);
+      console.log('[PB] No PB found; cleared cache', { cacheKey });
+    }
+  } catch (error) {
+    console.error('personal best cache error', error);
+  }
+}
+
+function updatePersonalBestCache(variant, newMs) {
+  if (!variant || !Number.isFinite(newMs)) return;
+  personalBestMs = Number.isFinite(personalBestMs)
+    ? Math.min(personalBestMs, newMs)
+    : newMs;
+  localStorage.setItem(getPersonalBestStorageKey(variant), String(personalBestMs));
+  console.log('[PB] Updated cache with new best', { variant, personalBestMs });
+}
 
 function applyTileColor(tile, state = 'base') {
   if (!tile) return;
@@ -34,6 +87,7 @@ const puzzleState = {
     startTime: null,
     isRunning: false,
     timerInterval: null,
+    countdownInterval: null,
     completionTime: null,
     isMemorizing: false,
     foundPineapples: [],
@@ -45,6 +99,8 @@ const puzzleState = {
   function resetState() {
     puzzleState.isRunning = false;
     clearInterval(puzzleState.timerInterval);
+    clearInterval(puzzleState.countdownInterval);
+    puzzleState.countdownInterval = null;
     puzzleState.startTime = null;
     puzzleState.foundPineapples = [];
     puzzleState.totalClicks = 0;
@@ -54,10 +110,119 @@ const puzzleState = {
     puzzleState.gameSessionId = null;
   }
 
-  function setMemorizeOverlay(isVisible) {
-    const overlay = $('memorize-message');
-    if (!overlay) return;
-    overlay.dataset.visible = isVisible ? 'true' : 'false';
+  function clearCountdownTimer() {
+    if (puzzleState.countdownInterval) {
+      clearInterval(puzzleState.countdownInterval);
+      puzzleState.countdownInterval = null;
+    }
+  }
+
+  function updateMemorizePill(state = 'idle', { text, countdown } = {}) {
+    const pill = $('memorize-pill');
+    if (!pill) return;
+    pill.dataset.state = state;
+    if (text) {
+      const textEl = $('memorize-pill-text');
+      if (textEl) textEl.textContent = text;
+    }
+    if (typeof countdown !== 'undefined') {
+      const countdownEl = $('memorize-countdown');
+      if (countdownEl) {
+        if (typeof countdown === 'number') {
+          const padded = countdown < 10 ? `0${countdown}` : `${countdown}`;
+          countdownEl.textContent = `${padded}s`;
+        } else {
+          countdownEl.textContent = countdown;
+        }
+      }
+    }
+  }
+
+  function resetMemorizePill() {
+    updateMemorizePill('idle', {
+      text: 'Click Start to reveal the board.',
+      countdown: `${MEMORIZE_DURATION_SECONDS}s`
+    });
+  }
+
+  function buildPineappleProgress(targetCount) {
+    const slotsHost = $('pineapple-progress-slots');
+    const fill = $('pineapple-progress-fill');
+    const track = $('pineapple-progress-track');
+    if (!slotsHost || !fill || !track) return;
+    slotsHost.innerHTML = '';
+    for (let i = 0; i < targetCount; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'pineapple-slot';
+      slot.dataset.index = String(i);
+      slot.innerHTML = '<span>🍍</span>';
+      slotsHost.appendChild(slot);
+    }
+    const targetLabel = $('pineapple-target');
+    if (targetLabel) targetLabel.textContent = targetCount;
+    fill.style.width = '0%';
+    updatePineappleProgress(0);
+  }
+
+  function resetProgressVisuals() {
+    const progressContainer = document.querySelector('.pineapple-progress');
+    const progressStats = $('pineapple-stats');
+    progressContainer?.classList.remove('success', 'fail');
+    progressStats?.classList.remove('is-visible');
+    setPersonalBestVisibility(false);
+  }
+
+  function setPersonalBestVisibility(isVisible) {
+    const personalBestPill = $('pineapple-personal-best');
+    if (!personalBestPill) return;
+    personalBestPill.classList.toggle('is-visible', Boolean(isVisible));
+    personalBestPill.setAttribute('aria-hidden', Boolean(isVisible) ? 'false' : 'true');
+  }
+
+  function updatePineappleProgress(foundCount) {
+    const slotsHost = $('pineapple-progress-slots');
+    const fill = $('pineapple-progress-fill');
+    const storedTarget = Number($('pineapple-target')?.textContent || 0);
+    const target = puzzleState.puzzleConfig?.targetCount ?? storedTarget ?? 0;
+    if (!slotsHost || !fill || !Number.isFinite(target)) return;
+    const slots = slotsHost.querySelectorAll('.pineapple-slot');
+    slots.forEach((slot, index) => {
+      slot.classList.remove('is-active', 'is-missed');
+      if (slot.classList.contains('pop')) {
+        slot.classList.remove('pop');
+      }
+      if (index < foundCount) {
+        if (!slot.classList.contains('is-complete')) {
+          slot.classList.add('pop');
+          setTimeout(() => slot.classList.remove('pop'), 320);
+        }
+        slot.classList.add('is-complete');
+      } else {
+        slot.classList.remove('is-complete');
+        if (index === foundCount) {
+          slot.classList.add('is-active');
+        }
+      }
+    });
+    const progressPercent = target === 0 ? 0 : Math.min(100, (foundCount / target) * 100);
+    fill.style.width = `${progressPercent}%`;
+    const foundLabel = $('pineapple-progress-found');
+    if (foundLabel) foundLabel.textContent = foundCount;
+    const targetLabel = $('pineapple-target');
+    if (targetLabel) targetLabel.textContent = target;
+  }
+
+  function markProgressFailure() {
+    const slotsHost = $('pineapple-progress-slots');
+    if (!slotsHost) return;
+    const slots = slotsHost.querySelectorAll('.pineapple-slot');
+    const foundCount = puzzleState.foundPineapples.length;
+    slots.forEach((slot, index) => {
+      if (index >= foundCount && !slot.classList.contains('is-complete')) {
+        slot.classList.remove('is-active');
+        slot.classList.add('is-missed');
+      }
+    });
   }
 
   function setGridPulse(isActive) {
@@ -87,8 +252,10 @@ const puzzleState = {
       emoji.classList.add('opacity-100', 'scale-100');
     });
     $('start-button').classList.add('hidden');
-    setMemorizeOverlay(true);
-    $('countdown-number').textContent = '5';
+    updateMemorizePill('memorizing', {
+      text: 'Memorize every pineapple location.',
+      countdown: MEMORIZE_DURATION_SECONDS
+    });
   }
 
   function hideFruits() {
@@ -102,7 +269,8 @@ const puzzleState = {
   }
 
   function updateTimerDisplay(elapsed) {
-    $('timer').textContent = formatTime(60000 - elapsed);
+    const remaining = Math.max(ROUND_DURATION_MS - elapsed, 0);
+    $('timer').textContent = formatTime(remaining);
   }
 
   // Feature flag resolution & user identity
@@ -232,6 +400,8 @@ const puzzleState = {
     $('user-username').textContent = username || 'Loading...';
     $('difficulty-display').textContent = `Difficulty: ${config.difficulty}/10`;
     $('target-word-count').textContent = config.targetCount;
+    buildPineappleProgress(config.targetCount);
+    resetMemorizePill();
     const puzzleSection = $('puzzle-section');
     puzzleSection.classList.toggle('variant-a-theme', variant === 'A');
     puzzleSection.classList.toggle('variant-b-theme', variant === 'B');
@@ -262,25 +432,30 @@ const puzzleState = {
     puzzleState.totalClicks = 0;
     puzzleState.gridState = Array(5).fill(null).map(() => Array(5).fill(false));
     puzzleState.gameSessionId = 'game_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-    setGridPulse(false);
+    resetProgressVisuals();
+    updatePineappleProgress(0);
+    setGridPulse(true);
     showMemorizePhase();
     startCountdownTimer();
     trackEvent('puzzle_started', { difficulty: puzzleState.puzzleConfig.difficulty, puzzle_id: puzzleState.puzzleConfig.id });
   }
 
   function startCountdownTimer() {
-    let countdown = 5;
-    $('countdown-number').textContent = countdown;
-    const countdownInterval = setInterval(() => {
+    clearCountdownTimer();
+    let countdown = MEMORIZE_DURATION_SECONDS;
+    updateMemorizePill('memorizing', {
+      text: 'Memorize every pineapple location.',
+      countdown
+    });
+    puzzleState.countdownInterval = setInterval(() => {
       countdown--;
       if (countdown > 0) {
-        $('countdown-number').textContent = countdown;
+        updateMemorizePill('memorizing', { countdown });
       } else {
-        clearInterval(countdownInterval);
-        $('countdown-number').textContent = 'Go!';
+        clearCountdownTimer();
+        updateMemorizePill('memorizing', { countdown: 'Go!' });
         setTimeout(() => {
           puzzleState.isMemorizing = false;
-          setMemorizeOverlay(false);
           startGamePhase();
         }, 400);
       }
@@ -290,7 +465,10 @@ const puzzleState = {
   function startGamePhase() {
     puzzleState.startTime = Date.now();
     hideFruits();
-    setMemorizeOverlay(false);
+    updateMemorizePill('hunting', {
+      text: 'Find every pineapple before the clock hits zero.',
+      countdown: 'GO!'
+    });
     setGridPulse(true);
     $('reset-button').classList.remove('hidden');
     puzzleState.timerInterval = setInterval(updateTimer, 100);
@@ -298,7 +476,7 @@ const puzzleState = {
 
   function updateTimer() {
     const elapsed = Date.now() - puzzleState.startTime;
-    if (elapsed >= 60000) return endChallenge(false);
+    if (elapsed >= ROUND_DURATION_MS) return endChallenge(false);
     updateTimerDisplay(elapsed);
   }
 
@@ -318,7 +496,7 @@ const puzzleState = {
       const emoji = tile.querySelector('.fruit-emoji');
       emoji.classList.remove('opacity-0', 'scale-80');
       emoji.classList.add('opacity-100', 'scale-100');
-      $('found-pineapples-list').textContent = `${puzzleState.foundPineapples.length}/${puzzleState.puzzleConfig.targetCount}`;
+      updatePineappleProgress(puzzleState.foundPineapples.length);
       if (puzzleState.foundPineapples.length === puzzleState.puzzleConfig.targetCount) endChallenge(true);
     } else {
       applyTileColor(tile, 'miss');
@@ -343,58 +521,57 @@ const puzzleState = {
     puzzleState.completionTime = success ? Date.now() - puzzleState.startTime : 60000;
     $('reset-button').classList.add('hidden');
     document.querySelectorAll('.try-again-button').forEach(btn => btn.classList.remove('hidden'));
-    $('result-card').classList.remove('hidden');
-    const statusBadge = $('result-card').querySelector('.inline-flex');
-    const emojiSpan = statusBadge.querySelector('.text-xl');
-    const statusTitle = statusBadge.querySelector('.text-xs');
-    const resultMessage = $('result-message');
-    const personalBestPill = $('personal-best-pill');
+    const progressContainer = document.querySelector('.pineapple-progress');
+    const progressStats = $('pineapple-stats');
+    const resultTime = $('pineapple-result-time');
+    const resultGuesses = $('pineapple-result-guesses');
+    progressContainer?.classList.remove('success', 'fail');
+    progressStats?.classList.remove('is-visible');
+    setPersonalBestVisibility(false);
     
     if (success) {
-      const isPersonalBest = await updateLeaderboard(puzzleState.completionTime, puzzleState.variant);
-      $('result-time').textContent = formatTime(puzzleState.completionTime);
-      $('result-guesses').textContent = puzzleState.totalClicks;
+      await updateLeaderboard(puzzleState.variant);
+      const isPersonalBest = !Number.isFinite(personalBestMs) || puzzleState.completionTime < personalBestMs;
+      console.log('[PB] Success run evaluated', {
+        completionMs: puzzleState.completionTime,
+        personalBestMs,
+        isPersonalBest
+      });
+      if (resultTime) resultTime.textContent = formatTime(puzzleState.completionTime);
+      if (resultGuesses) resultGuesses.textContent = puzzleState.totalClicks;
+      updatePineappleProgress(puzzleState.puzzleConfig.targetCount);
+      progressContainer?.classList.add('success');
       
       // Enhanced Personal Best styling
+      setPersonalBestVisibility(isPersonalBest);
       if (isPersonalBest) {
-        resultMessage.innerHTML = '🏆 <span class="font-bold text-yellow-600 dark:text-yellow-400">Personal Best!</span>';
-        $('result-card').classList.add('ring-2', 'ring-yellow-400', 'shadow-[0_20px_45px_rgba(251,191,36,0.35)]');
-        personalBestPill?.classList.remove('hidden');
-      } else {
-        resultMessage.innerHTML = '✓ Complete!';
-        $('result-card').classList.remove('ring-2', 'ring-yellow-400', 'shadow-[0_20px_45px_rgba(251,191,36,0.35)]');
-        personalBestPill?.classList.add('hidden');
+        updatePersonalBestCache(puzzleState.variant, puzzleState.completionTime);
       }
-      
-      $('result-card').classList.remove('border-red-200', 'bg-red-50', 'dark:border-red-900', 'dark:bg-red-950');
-      $('result-card').classList.add('border-green-200', 'bg-green-50', 'dark:border-green-900', 'dark:bg-green-950');
-      statusBadge.classList.remove('border-red-200', 'dark:border-red-900');
-      statusBadge.classList.add('border-green-200', 'dark:border-green-900');
-      emojiSpan.textContent = '🎉';
-      statusTitle.textContent = 'Challenge Complete';
     } else {
-      $('result-time').textContent = '00:60:00';
-      $('result-guesses').textContent = `${puzzleState.foundPineapples.length}/${puzzleState.puzzleConfig.targetCount}`;
-      resultMessage.innerHTML = '⏰ Time\'s up!';
-      $('result-card').classList.remove('border-green-200', 'bg-green-50', 'dark:border-green-900', 'dark:bg-green-950', 'ring-2', 'ring-yellow-400', 'shadow-[0_20px_45px_rgba(251,191,36,0.35)]');
-      $('result-card').classList.add('border-red-200', 'bg-red-50', 'dark:border-red-900', 'dark:bg-red-950');
-      statusBadge.classList.remove('border-green-200', 'dark:border-green-900');
-      statusBadge.classList.add('border-red-200', 'dark:border-red-900');
-      emojiSpan.textContent = '😞';
-      statusTitle.textContent = 'Challenge Failed';
-      personalBestPill?.classList.add('hidden');
+      if (resultTime) resultTime.textContent = '00:60:00';
+      if (resultGuesses) resultGuesses.textContent = puzzleState.totalClicks;
+      setPersonalBestVisibility(false);
+      progressContainer?.classList.add('fail');
+      markProgressFailure();
     }
     trackEvent(success ? 'puzzle_completed' : 'puzzle_failed', {
       completion_time_seconds: success ? Number((puzzleState.completionTime / 1000).toFixed(3)) : undefined,
       correct_words_count: puzzleState.foundPineapples.length,
       total_guesses_count: puzzleState.totalClicks
     });
+    setTimeout(() => {
+      resetMemorizePill();
+      progressStats?.classList.add('is-visible');
+    }, 800);
   }
 
   function resetPuzzle(isRepeat = false) {
     resetState();
     $('timer').textContent = '00:60:00';
-    $('found-pineapples-list').textContent = '0';
+    clearCountdownTimer();
+    resetMemorizePill();
+    updatePineappleProgress(0);
+    resetProgressVisuals();
     document.querySelectorAll('.memory-tile').forEach(tile => {
       tile.classList.remove('scale-105', 'animate-pulse');
       applyTileColor(tile, 'base');
@@ -404,12 +581,9 @@ const puzzleState = {
     });
     $('start-button').classList.remove('hidden');
     $('reset-button').classList.add('hidden');
-    setMemorizeOverlay(false);
     setGridPulse(false);
-    $('countdown-number').textContent = '5';
     document.querySelectorAll('.try-again-button').forEach(btn => btn.classList.add('hidden'));
-    $('result-card').classList.add('hidden');
-    $('personal-best-pill')?.classList.add('hidden');
+    setPersonalBestVisibility(false);
     if (isRepeat) trackEvent('puzzle_repeated', {});
   }
 
@@ -418,17 +592,11 @@ const puzzleState = {
     if (!variant) return false;
 
     let data;
-    let isPersonalBest = false;
     let hadError = false;
 
     if (window.supabaseApi) {
       try {
         data = await window.supabaseApi.leaderboard(variant, 10);
-        if (currentTime !== null) {
-          const username = localStorage.getItem('simulator_username');
-          const userEntry = data?.find(entry => entry.username === username);
-          isPersonalBest = !userEntry || currentTime < (userEntry.best_time * 1000);
-        }
       } catch (error) {
         hadError = true;
         console.error('Leaderboard fetch error:', error);
@@ -442,7 +610,6 @@ const puzzleState = {
     } else {
       await renderLeaderboard(variant, data);
     }
-    return isPersonalBest;
   }
 
   function showFeatureFlagError() {
@@ -455,10 +622,15 @@ const puzzleState = {
     }
   }
 
-  function afterVariantResolved() {
+  async function afterVariantResolved() {
     displayVariant();
     setupPuzzle();
-    updateLeaderboard();
+    const variant = puzzleState.variant;
+    const username = localStorage.getItem('simulator_username');
+    await Promise.all([
+      updateLeaderboard(variant),
+      primePersonalBestCache(variant, username)
+    ]);
   }
 
   document.addEventListener('DOMContentLoaded', () => {

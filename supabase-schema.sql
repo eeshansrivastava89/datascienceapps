@@ -329,6 +329,33 @@ $$;
 GRANT EXECUTE ON FUNCTION public.leaderboard(text, integer) TO anon, authenticated;
 
 -- =============================================
+-- RPC: personal_best(variant text, username text)
+-- Returns the best completion time (seconds) for a specific user/variant
+-- =============================================
+CREATE OR REPLACE FUNCTION public.personal_best(
+  variant text,
+  username text
+)
+RETURNS TABLE (
+  best_time numeric
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    MIN(completion_time_seconds) AS best_time
+  FROM posthog_events
+  WHERE event = 'puzzle_completed'
+    AND completion_time_seconds IS NOT NULL
+    AND properties->>'username' = username
+    AND (variant = personal_best.variant OR personal_best.variant IS NULL)
+  LIMIT 1;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.personal_best(text, text) TO anon, authenticated;
+
+-- =============================================
 -- 5. Analytics run log (for notebooks/jobs)
 -- =============================================
 
