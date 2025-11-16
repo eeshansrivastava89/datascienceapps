@@ -78,13 +78,32 @@ Acceptance for Phase 2:
 - ✅ Adaptive polling backs off gracefully on errors (5s → 10s → 20s → 40s → 60s max)
 - ✅ Manual refresh button gives users control over dashboard updates.
 
-### Phase 2.5 - Minor Improvements
+### Phase 2.5 — Visual polish + cleanup (complete):
 
-okay now some minor improvements 
+* Rebuilt the leaderboard UI using Tailwind utilities only, with a subtle glow when the player reaches the top five.
+* Removed the legacy ab-simulator.css; any bespoke rules now live in app.css.
+* Simplified the challenge-complete surface: inline stats card, calmer memorize pill, and a deterministic personal-best badge powered by the Supabase RPC cache.
 
--- i noticed that render leaderboard uses inline css and not tailiwind .. can you fix that?
--- can you go through all the js files and see if we can replace any inline css with tailwind
--- i need a nicer tailwind classy UI for the leaderboard .. looks out of place with the rest of the design .. I want to highlight / glow the row if the user makes it to top 5, make it obvious, also not obvious in the challenge complete section when someone gets the personal best, so maybe slight design update over there -- keep the code minimal and use smart tailwind updates 
+Acceptance:
+
+* No inline styles remain across simulator/leaderboard JS modules.
+* Leaderboard styling now matches the design system and clearly highlights the player row when applicable.
+* Personal-best pill appears only on genuine records and stays hidden otherwise.
+
+### Phase 3 — Codebase diet & modularization (in flight)
+
+Progression (low → high risk):
+
+1. **Template/DOM helpers (Low)** — ✅ Extracted shared leaderboard row markup and memory tile iteration helpers so `core.js` no longer inlines repeated template strings or selector loops.
+2. **Countdown + challenge flow utilities (Low/Medium)** — ✅ Added `startCountdownTimer(onComplete)` plus `prepareResultView` / `handleSuccessfulRun` / `handleFailedRun` helpers, reducing the size of `startChallenge` and `endChallenge` without touching the player UX.
+3. **Module split (Medium)** — ✅ Created `personal-best.js`, `leaderboard-ui.js`, and `analytics.js` under `public/js/ab-sim/`. These own PB caching + pill visibility, leaderboard DOM rendering, and PostHog feature-flag/telemetry wiring respectively. `core.js` now delegates to these globals and shrank by ~120 lines.
+4. **Shared state-machine layer (Medium/High)** — ✅ Replaced the old booleans with a `RUN_PHASES` map plus guarded transition helpers so the memorize → hunt → result flow is explicit.
+5. **Data-driven DOM wiring (High)** — ✅ Centralized DOM caches and tile-state configs so future styling changes only touch the config instead of scattered class toggles.
+
+Acceptance goals for Phase 3:
+- `core.js` trends toward <400 LOC by pushing identity, PB cache, and leaderboard rendering into modules. ✅
+- DOM/event helpers eliminate duplicated selector/class toggles. ✅
+- Final state machine keeps the run flow readable and prevents regressions once steps 4-5 land. ✅
 
 ---
 

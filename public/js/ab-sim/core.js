@@ -1,7 +1,8 @@
 // Feature flag + identity keys
-const FEATURE_FLAG_KEY = 'word_search_difficulty_v2';
-const USERNAME_KEY = 'simulator_username';
-const USER_ID_KEY = 'simulator_user_id';
+const ANALYTICS = window.abAnalytics || {};
+const FEATURE_FLAG_KEY = ANALYTICS.FEATURE_FLAG_KEY || 'word_search_difficulty_v2';
+const USERNAME_KEY = ANALYTICS.USERNAME_KEY || 'simulator_username';
+const USER_ID_KEY = ANALYTICS.USER_ID_KEY || 'simulator_user_id';
 window.FEATURE_FLAG_KEY = FEATURE_FLAG_KEY;
 
 const TILE_COLORS = {
@@ -13,58 +14,73 @@ const TILE_COLORS = {
 
 const TILE_COLOR_CLASSES = ['bg-gray-100', 'bg-emerald-300', 'bg-red-500', 'bg-red-600', 'bg-gray-800', 'bg-gray-700', 'bg-green-600'];
 
+const TILE_STATE_CONFIG = {
+  default: {
+    color: 'base',
+    tileRemove: ['scale-105', 'animate-pulse'],
+    emojiAdd: ['opacity-0', 'scale-80'],
+    emojiRemove: ['opacity-100', 'scale-100']
+  },
+  memorize: {
+    color: 'memorizing',
+    tileAdd: ['scale-105'],
+    tileRemove: ['animate-pulse'],
+    emojiAdd: ['opacity-100', 'scale-100'],
+    emojiRemove: ['opacity-0', 'scale-80']
+  },
+  hidden: {
+    color: 'base',
+    tileRemove: ['scale-105', 'animate-pulse'],
+    emojiAdd: ['opacity-0', 'scale-80'],
+    emojiRemove: ['opacity-100', 'scale-100']
+  },
+  hit: {
+    color: 'hit',
+    tileAdd: ['scale-105'],
+    tileRemove: ['animate-pulse'],
+    emojiAdd: ['opacity-100', 'scale-100'],
+    emojiRemove: ['opacity-0', 'scale-80']
+  },
+  missActive: {
+    color: 'miss',
+    tileAdd: ['animate-pulse'],
+    emojiAdd: ['opacity-100', 'scale-100'],
+    emojiRemove: ['opacity-0', 'scale-80']
+  }
+};
+
+const PROGRESS_CLASSES = Object.freeze({
+  success: 'success',
+  fail: 'fail',
+  slotActive: 'is-active',
+  slotMissed: 'is-missed',
+  slotComplete: 'is-complete',
+  slotPop: 'pop'
+});
+
+const DOM_CACHE = new Map();
+function getDom(id, selector, all = false) {
+  const cacheKey = `${id}:${selector}:${all}`;
+  if (DOM_CACHE.has(cacheKey)) return DOM_CACHE.get(cacheKey);
+  const node = all ? document.querySelectorAll(selector) : document.querySelector(selector);
+  DOM_CACHE.set(cacheKey, node);
+  return node;
+}
+
+const DOM = {
+  progressContainer: () => getDom('progressContainer', '.pineapple-progress'),
+  progressStats: () => getDom('progressStats', '#pineapple-stats'),
+  progressSlots: () => getDom('progressSlots', '#pineapple-progress-slots'),
+  progressFill: () => getDom('progressFill', '#pineapple-progress-fill'),
+  timer: () => getDom('timer', '#timer'),
+  startButton: () => getDom('startButton', '#start-button'),
+  resetButton: () => getDom('resetButton', '#reset-button'),
+  tryAgainButtons: () => getDom('tryAgainButtons', '.try-again-button', true),
+  grid: () => getDom('grid', '#letter-grid')
+};
+
 const MEMORIZE_DURATION_SECONDS = 7;
 const ROUND_DURATION_MS = 60000;
-const PERSONAL_BEST_KEY_PREFIX = 'ab_sim_pb_ms';
-let personalBestMs = null;
-
-function getPersonalBestStorageKey(variant) {
-  return `${PERSONAL_BEST_KEY_PREFIX}_${variant}`;
-}
-
-async function primePersonalBestCache(variant, username) {
-  if (!variant || !username || !window.supabaseApi?.personalBest) {
-    console.log('[PB] Skipping prime; missing variant/user/api', { variant, username });
-    personalBestMs = null;
-    return;
-  }
-  try {
-    const cacheKey = getPersonalBestStorageKey(variant);
-    const cached = localStorage.getItem(cacheKey);
-    if (cached !== null) {
-      const cachedValue = Number(cached);
-      personalBestMs = Number.isFinite(cachedValue) ? cachedValue : null;
-      console.log('[PB] Loaded from cache', { cacheKey, personalBestMs });
-    }
-    const data = await window.supabaseApi.personalBest(variant, username);
-    console.log('[PB] RPC response', { variant, username, data });
-    if (data?.best_time !== undefined && data?.best_time !== null) {
-      const bestMs = Number(data.best_time) * 1000;
-      if (Number.isFinite(bestMs)) {
-        personalBestMs = bestMs;
-        localStorage.setItem(cacheKey, String(bestMs));
-        console.log('[PB] Cache populated from RPC', { cacheKey, bestMs });
-        return;
-      }
-    }
-    if (cached === null) {
-      personalBestMs = null;
-      localStorage.removeItem(cacheKey);
-      console.log('[PB] No PB found; cleared cache', { cacheKey });
-    }
-  } catch (error) {
-    console.error('personal best cache error', error);
-  }
-}
-
-function updatePersonalBestCache(variant, newMs) {
-  if (!variant || !Number.isFinite(newMs)) return;
-  personalBestMs = Number.isFinite(personalBestMs)
-    ? Math.min(personalBestMs, newMs)
-    : newMs;
-  localStorage.setItem(getPersonalBestStorageKey(variant), String(personalBestMs));
-  console.log('[PB] Updated cache with new best', { variant, personalBestMs });
-}
 
 function applyTileColor(tile, state = 'base') {
   if (!tile) return;
@@ -72,32 +88,42 @@ function applyTileColor(tile, state = 'base') {
   tile.classList.add(TILE_COLORS[state] || TILE_COLORS.base);
 }
 
-// Username generation helper
-const generateUsername = () => {
-  if (typeof window.generateRandomUsername === 'function') {
-    return window.generateRandomUsername();
+function setTileState(tile, stateKey) {
+  const config = TILE_STATE_CONFIG[stateKey];
+  if (!tile || !config) return;
+  applyTileColor(tile, config.color);
+  if (config.tileAdd) tile.classList.add(...config.tileAdd);
+  if (config.tileRemove) tile.classList.remove(...config.tileRemove);
+  const emoji = tile.querySelector('.fruit-emoji');
+  if (emoji) {
+    if (config.emojiAdd) emoji.classList.add(...config.emojiAdd);
+    if (config.emojiRemove) emoji.classList.remove(...config.emojiRemove);
   }
-  return 'Player ' + Math.floor(Math.random() * 1000);
-};
+}
 
 // Game state
+const RUN_PHASES = Object.freeze({
+  IDLE: 'idle',
+  MEMORIZE: 'memorize',
+  HUNT: 'hunt',
+  RESULT: 'result'
+});
+
 const puzzleState = {
     variant: null,
     puzzleConfig: null,
     startTime: null,
-    isRunning: false,
     timerInterval: null,
     countdownInterval: null,
     completionTime: null,
-    isMemorizing: false,
     foundPineapples: [],
     totalClicks: 0,
     gridState: [],
-    gameSessionId: null
+    gameSessionId: null,
+    phase: RUN_PHASES.IDLE
   };
 
   function resetState() {
-    puzzleState.isRunning = false;
     clearInterval(puzzleState.timerInterval);
     clearInterval(puzzleState.countdownInterval);
     puzzleState.countdownInterval = null;
@@ -106,8 +132,20 @@ const puzzleState = {
     puzzleState.totalClicks = 0;
     puzzleState.gridState = [];
     puzzleState.completionTime = null;
-    puzzleState.isMemorizing = false;
     puzzleState.gameSessionId = null;
+    puzzleState.phase = RUN_PHASES.IDLE;
+  }
+
+  function setPhase(nextPhase) {
+    if (!Object.values(RUN_PHASES).includes(nextPhase)) {
+      console.warn('[phase] Attempted to set invalid phase', nextPhase);
+      return;
+    }
+    puzzleState.phase = nextPhase;
+  }
+
+  function isPhase(...phases) {
+    return phases.includes(puzzleState.phase);
   }
 
   function clearCountdownTimer() {
@@ -146,8 +184,8 @@ const puzzleState = {
   }
 
   function buildPineappleProgress(targetCount) {
-    const slotsHost = $('pineapple-progress-slots');
-    const fill = $('pineapple-progress-fill');
+    const slotsHost = DOM.progressSlots();
+    const fill = DOM.progressFill();
     const track = $('pineapple-progress-track');
     if (!slotsHost || !fill || !track) return;
     slotsHost.innerHTML = '';
@@ -165,42 +203,35 @@ const puzzleState = {
   }
 
   function resetProgressVisuals() {
-    const progressContainer = document.querySelector('.pineapple-progress');
-    const progressStats = $('pineapple-stats');
-    progressContainer?.classList.remove('success', 'fail');
+    const progressContainer = DOM.progressContainer();
+    const progressStats = DOM.progressStats();
+    progressContainer?.classList.remove(PROGRESS_CLASSES.success, PROGRESS_CLASSES.fail);
     progressStats?.classList.remove('is-visible');
-    setPersonalBestVisibility(false);
-  }
-
-  function setPersonalBestVisibility(isVisible) {
-    const personalBestPill = $('pineapple-personal-best');
-    if (!personalBestPill) return;
-    personalBestPill.classList.toggle('is-visible', Boolean(isVisible));
-    personalBestPill.setAttribute('aria-hidden', Boolean(isVisible) ? 'false' : 'true');
+    window.abPersonalBest?.setVisibility(false);
   }
 
   function updatePineappleProgress(foundCount) {
-    const slotsHost = $('pineapple-progress-slots');
-    const fill = $('pineapple-progress-fill');
+    const slotsHost = DOM.progressSlots();
+    const fill = DOM.progressFill();
     const storedTarget = Number($('pineapple-target')?.textContent || 0);
     const target = puzzleState.puzzleConfig?.targetCount ?? storedTarget ?? 0;
     if (!slotsHost || !fill || !Number.isFinite(target)) return;
     const slots = slotsHost.querySelectorAll('.pineapple-slot');
     slots.forEach((slot, index) => {
-      slot.classList.remove('is-active', 'is-missed');
-      if (slot.classList.contains('pop')) {
-        slot.classList.remove('pop');
+      slot.classList.remove(PROGRESS_CLASSES.slotActive, PROGRESS_CLASSES.slotMissed);
+      if (slot.classList.contains(PROGRESS_CLASSES.slotPop)) {
+        slot.classList.remove(PROGRESS_CLASSES.slotPop);
       }
       if (index < foundCount) {
-        if (!slot.classList.contains('is-complete')) {
-          slot.classList.add('pop');
-          setTimeout(() => slot.classList.remove('pop'), 320);
+        if (!slot.classList.contains(PROGRESS_CLASSES.slotComplete)) {
+          slot.classList.add(PROGRESS_CLASSES.slotPop);
+          setTimeout(() => slot.classList.remove(PROGRESS_CLASSES.slotPop), 320);
         }
-        slot.classList.add('is-complete');
+        slot.classList.add(PROGRESS_CLASSES.slotComplete);
       } else {
-        slot.classList.remove('is-complete');
+        slot.classList.remove(PROGRESS_CLASSES.slotComplete);
         if (index === foundCount) {
-          slot.classList.add('is-active');
+          slot.classList.add(PROGRESS_CLASSES.slotActive);
         }
       }
     });
@@ -213,20 +244,20 @@ const puzzleState = {
   }
 
   function markProgressFailure() {
-    const slotsHost = $('pineapple-progress-slots');
+    const slotsHost = DOM.progressSlots();
     if (!slotsHost) return;
     const slots = slotsHost.querySelectorAll('.pineapple-slot');
     const foundCount = puzzleState.foundPineapples.length;
     slots.forEach((slot, index) => {
-      if (index >= foundCount && !slot.classList.contains('is-complete')) {
-        slot.classList.remove('is-active');
-        slot.classList.add('is-missed');
+      if (index >= foundCount && !slot.classList.contains(PROGRESS_CLASSES.slotComplete)) {
+        slot.classList.remove(PROGRESS_CLASSES.slotActive);
+        slot.classList.add(PROGRESS_CLASSES.slotMissed);
       }
     });
   }
 
   function setGridPulse(isActive) {
-    const grid = $('letter-grid');
+    const grid = DOM.grid();
     if (!grid) return;
     grid.classList.toggle('grid-live', Boolean(isActive));
   }
@@ -243,15 +274,13 @@ const puzzleState = {
     $('letter-grid').innerHTML = gridHTML;
   }
 
+  function forEachMemoryTile(callback) {
+    document.querySelectorAll('.memory-tile').forEach(tile => callback(tile));
+  }
+
   function showMemorizePhase() {
-    document.querySelectorAll('.memory-tile').forEach(tile => {
-      applyTileColor(tile, 'memorizing');
-      tile.classList.add('scale-105');
-      const emoji = tile.querySelector('.fruit-emoji');
-      emoji.classList.remove('opacity-0', 'scale-80');
-      emoji.classList.add('opacity-100', 'scale-100');
-    });
-    $('start-button').classList.add('hidden');
+    forEachMemoryTile(tile => setTileState(tile, 'memorize'));
+    DOM.startButton()?.classList.add('hidden');
     updateMemorizePill('memorizing', {
       text: 'Memorize every pineapple location.',
       countdown: MEMORIZE_DURATION_SECONDS
@@ -259,13 +288,7 @@ const puzzleState = {
   }
 
   function hideFruits() {
-    document.querySelectorAll('.memory-tile').forEach(tile => {
-      tile.classList.remove('scale-105');
-      applyTileColor(tile, 'base');
-      const emoji = tile.querySelector('.fruit-emoji');
-      emoji.classList.remove('opacity-100', 'scale-100');
-      emoji.classList.add('opacity-0', 'scale-80');
-    });
+    forEachMemoryTile(tile => setTileState(tile, 'hidden'));
   }
 
   function updateTimerDisplay(elapsed) {
@@ -273,113 +296,12 @@ const puzzleState = {
     $('timer').textContent = formatTime(remaining);
   }
 
-  // Feature flag resolution & user identity
-  function initializeVariant() {
-    if (typeof posthog === 'undefined') return false;
-    const posthogVariant = posthog.getFeatureFlag(FEATURE_FLAG_KEY);
-
-    let variant = null;
-    if (posthogVariant === '4-words') variant = 'B';
-    else if (posthogVariant === 'control') variant = 'A';
-    else return false;
-
-    localStorage.setItem('simulator_variant', variant);
-
-    const userId = 'user_' + Math.random().toString(36).slice(2, 11);
-    localStorage.setItem('simulator_user_id', userId);
-
-    if (!localStorage.getItem('simulator_username')) {
-      const username = generateUsername();
-      localStorage.setItem('simulator_username', username);
-      if (typeof posthog !== 'undefined' && posthog.identify) {
-        posthog.identify(username);
-      }
-    }
-
-    return true;
-  }
-
-  // Event tracking helper
+  // Event tracking helper (delegates to analytics module)
   function trackEvent(name, extra = {}) {
-    try {
-      if (!posthog?.capture) return;
-
-      posthog.capture(name, {
-        variant: puzzleState.variant,
-        username: localStorage.getItem(USERNAME_KEY),
-        user_id: localStorage.getItem(USER_ID_KEY),
-        game_session_id: puzzleState.gameSessionId,
-        $feature_flag: FEATURE_FLAG_KEY,
-        $feature_flag_response: posthog.getFeatureFlag(FEATURE_FLAG_KEY),
-        ...extra
-      });
-    } catch (error) {
-      console.error('PostHog error:', error);
-    }
-  }
-
-  // Leaderboard rendering (via supabaseApi)
-  async function renderLeaderboard(variant, preloadedData) {
-    const list = document.getElementById('leaderboard-list');
-    const username = localStorage.getItem('simulator_username');
-    if (!list) return;
-    try {
-      if (!window.supabaseApi) throw new Error('Supabase API not initialized');
-      const data = typeof preloadedData === 'undefined'
-        ? await window.supabaseApi.leaderboard(variant, 10)
-        : preloadedData;
-      if (!data || data.length === 0) {
-        list.innerHTML = '<p class="rounded-xl border border-dashed border-border/70 bg-card/40 px-4 py-3 text-center text-xs font-medium text-muted-foreground">Complete a run to enter the hall of fame.</p>';
-        return;
-      }
-      const baseRowSurface = 'bg-white border border-slate-200 dark:bg-slate-900/80 dark:border-slate-700 shadow-sm';
-
-      const userIndex = data.findIndex(entry => entry.username === username);
-      const userRank = userIndex >= 0 ? userIndex + 1 : null;
-      const userEntry = userIndex >= 0 ? data[userIndex] : null;
-
-      const baseRowClass = 'flex items-center justify-between rounded-2xl px-3 py-1 text-[11px] transition-all duration-200 transform';
-
-      const rows = data.slice(0, 5).map((entry, i) => {
-        const isCurrentUser = entry.username === username;
-        const glowClass = isCurrentUser
-          ? 'ring-2 ring-amber-300 shadow-[0_0_28px_rgba(251,191,36,0.45)]'
-          : 'hover:ring-1 hover:ring-slate-200 dark:hover:ring-slate-600';
-        return `
-          <li class="${baseRowClass} ${baseRowSurface} ${glowClass} hover:-translate-y-0.5 hover:shadow-lg hover:bg-slate-50 dark:hover:bg-slate-900/60 focus-within:-translate-y-0.5 focus-within:ring-2 focus-within:ring-slate-300">
-            <span class="flex items-center gap-2 font-mono text-[11px]">
-              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 font-semibold text-[10px] text-slate-600 dark:bg-slate-800 dark:text-slate-200">
-                ${i + 1}
-              </span>
-              <span class="truncate leading-tight ${isCurrentUser ? 'font-semibold' : ''}">${entry.username}</span>
-              ${isCurrentUser ? '<span class="text-[9px] uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">You</span>' : ''}
-            </span>
-            <span class="font-semibold text-slate-900 dark:text-slate-100 tabular-nums text-xs">${Number(entry.best_time).toFixed(2)}s</span>
-          </li>
-        `;
-      }).join('');
-
-      let userRow = '';
-      if (userEntry && userRank > 5) {
-        userRow = `
-          <div class="mt-3 space-y-1.5 rounded-2xl border border-sky-200/80 bg-sky-50/80 p-2.5 text-[11px] text-sky-900 shadow-[0_12px_28px_rgba(14,165,233,0.25)] dark:border-sky-500/40 dark:bg-sky-500/10 dark:text-sky-100">
-            <div class="text-[9px] font-semibold uppercase tracking-[0.3em] text-sky-600 dark:text-sky-300">Your Current Rank</div>
-            <div class="flex items-center justify-between font-mono text-[11px]">
-              <span class="flex items-center gap-1.5">
-                <span class="font-bold">${userRank}.</span>
-                <span>${userEntry.username}</span>
-              </span>
-              <span class="font-semibold tabular-nums">${Number(userEntry.best_time).toFixed(2)}s</span>
-            </div>
-          </div>
-        `;
-      }
-
-      list.innerHTML = `<ol class="space-y-1">${rows}</ol>${userRow}`;
-    } catch (error) {
-      console.error('Leaderboard error:', error);
-      list.innerHTML = '<p class="rounded-xl border border-red-200/60 bg-red-50/80 px-4 py-3 text-center text-xs font-medium text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-200">Loading leaderboard…</p>';
-    }
+    window.abAnalytics?.trackEvent?.(name, puzzleState, {
+      phase: puzzleState.phase,
+      ...extra
+    });
   }
 
   // Display variant + build grid
@@ -393,7 +315,7 @@ const puzzleState = {
       return;
     }
     puzzleState.variant = variant;
-    const username = localStorage.getItem('simulator_username');
+    const username = localStorage.getItem(USERNAME_KEY);
     const config = window.PuzzleConfig.getPuzzleForVariant(variant);
     puzzleState.puzzleConfig = config;
     $('user-variant').textContent = `Variant ${variant} | ${config.id}`;
@@ -411,7 +333,7 @@ const puzzleState = {
   function setupPuzzle() {
     const variant = localStorage.getItem('simulator_variant');
     if (!variant) {
-      const startButton = $('start-button');
+      const startButton = DOM.startButton();
       if (startButton) {
         startButton.disabled = true;
         startButton.textContent = 'Feature Flag Error';
@@ -419,15 +341,15 @@ const puzzleState = {
       }
       return;
     }
-    $('start-button').addEventListener('click', startChallenge);
-    $('reset-button').addEventListener('click', () => resetPuzzle());
-    document.querySelectorAll('.try-again-button').forEach(btn => btn.addEventListener('click', () => resetPuzzle(true)));
-    document.querySelectorAll('.memory-tile').forEach(tile => tile.addEventListener('click', handleTileClick));
+    DOM.startButton()?.addEventListener('click', startChallenge);
+    DOM.resetButton()?.addEventListener('click', () => resetPuzzle());
+    DOM.tryAgainButtons().forEach(btn => btn.addEventListener('click', () => resetPuzzle(true)));
+    forEachMemoryTile(tile => tile.addEventListener('click', handleTileClick));
   }
 
   function startChallenge() {
-    puzzleState.isRunning = true;
-    puzzleState.isMemorizing = true;
+    if (!isPhase(RUN_PHASES.IDLE, RUN_PHASES.RESULT)) return;
+    setPhase(RUN_PHASES.MEMORIZE);
     puzzleState.foundPineapples = [];
     puzzleState.totalClicks = 0;
     puzzleState.gridState = Array(5).fill(null).map(() => Array(5).fill(false));
@@ -436,11 +358,11 @@ const puzzleState = {
     updatePineappleProgress(0);
     setGridPulse(true);
     showMemorizePhase();
-    startCountdownTimer();
+    startCountdownTimer(startGamePhase);
     trackEvent('puzzle_started', { difficulty: puzzleState.puzzleConfig.difficulty, puzzle_id: puzzleState.puzzleConfig.id });
   }
 
-  function startCountdownTimer() {
+  function startCountdownTimer(onComplete) {
     clearCountdownTimer();
     let countdown = MEMORIZE_DURATION_SECONDS;
     updateMemorizePill('memorizing', {
@@ -451,18 +373,19 @@ const puzzleState = {
       countdown--;
       if (countdown > 0) {
         updateMemorizePill('memorizing', { countdown });
-      } else {
-        clearCountdownTimer();
-        updateMemorizePill('memorizing', { countdown: 'Go!' });
-        setTimeout(() => {
-          puzzleState.isMemorizing = false;
-          startGamePhase();
-        }, 400);
+        return;
       }
+      clearCountdownTimer();
+      updateMemorizePill('memorizing', { countdown: 'Go!' });
+      setTimeout(() => {
+        setPhase(RUN_PHASES.HUNT);
+        if (typeof onComplete === 'function') onComplete();
+      }, 400);
     }, 1000);
   }
 
   function startGamePhase() {
+    if (!isPhase(RUN_PHASES.HUNT)) return;
     puzzleState.startTime = Date.now();
     hideFruits();
     updateMemorizePill('hunting', {
@@ -470,7 +393,7 @@ const puzzleState = {
       countdown: 'GO!'
     });
     setGridPulse(true);
-    $('reset-button').classList.remove('hidden');
+    DOM.resetButton()?.classList.remove('hidden');
     puzzleState.timerInterval = setInterval(updateTimer, 100);
   }
 
@@ -481,7 +404,7 @@ const puzzleState = {
   }
 
   function handleTileClick(event) {
-    if (!puzzleState.isRunning || puzzleState.isMemorizing) return;
+    if (!isPhase(RUN_PHASES.HUNT)) return;
     const tile = event.currentTarget;
     const row = parseInt(tile.dataset.row);
     const col = parseInt(tile.dataset.col);
@@ -491,68 +414,71 @@ const puzzleState = {
     puzzleState.gridState[row][col] = true;
     if (fruit === '🍍') {
       puzzleState.foundPineapples.push([row, col]);
-      applyTileColor(tile, 'hit');
-      tile.classList.add('scale-105');
-      const emoji = tile.querySelector('.fruit-emoji');
-      emoji.classList.remove('opacity-0', 'scale-80');
-      emoji.classList.add('opacity-100', 'scale-100');
+      setTileState(tile, 'hit');
       updatePineappleProgress(puzzleState.foundPineapples.length);
       if (puzzleState.foundPineapples.length === puzzleState.puzzleConfig.targetCount) endChallenge(true);
     } else {
-      applyTileColor(tile, 'miss');
-      tile.classList.add('animate-pulse');
-      const emoji = tile.querySelector('.fruit-emoji');
-      emoji.classList.remove('opacity-0', 'scale-80');
-      emoji.classList.add('opacity-100', 'scale-100');
+      setTileState(tile, 'missActive');
       setTimeout(() => {
-        tile.classList.remove('animate-pulse', 'scale-105');
-        applyTileColor(tile, 'base');
-        emoji.classList.remove('opacity-100', 'scale-100');
-        emoji.classList.add('opacity-0', 'scale-80');
+        setTileState(tile, 'hidden');
         puzzleState.gridState[row][col] = false;
       }, 1000);
     }
   }
 
-  async function endChallenge(success) {
-    puzzleState.isRunning = false;
-    clearInterval(puzzleState.timerInterval);
-    setGridPulse(false);
-    puzzleState.completionTime = success ? Date.now() - puzzleState.startTime : 60000;
-    $('reset-button').classList.add('hidden');
-    document.querySelectorAll('.try-again-button').forEach(btn => btn.classList.remove('hidden'));
+  function prepareResultView() {
     const progressContainer = document.querySelector('.pineapple-progress');
     const progressStats = $('pineapple-stats');
     const resultTime = $('pineapple-result-time');
     const resultGuesses = $('pineapple-result-guesses');
     progressContainer?.classList.remove('success', 'fail');
     progressStats?.classList.remove('is-visible');
-    setPersonalBestVisibility(false);
-    
+    window.abPersonalBest?.setVisibility(false);
+    return { progressContainer, progressStats, resultTime, resultGuesses };
+  }
+
+  async function handleSuccessfulRun(viewRefs) {
+    await updateLeaderboard(puzzleState.variant);
+    const { progressContainer, resultTime, resultGuesses } = viewRefs;
+    const currentPersonalBest = window.abPersonalBest?.currentMs?.();
+    const isPersonalBest = !Number.isFinite(currentPersonalBest) || puzzleState.completionTime < currentPersonalBest;
+    console.log('[PB] Success run evaluated', {
+      completionMs: puzzleState.completionTime,
+      personalBestMs: currentPersonalBest,
+      isPersonalBest
+    });
+    if (resultTime) resultTime.textContent = formatTime(puzzleState.completionTime);
+    if (resultGuesses) resultGuesses.textContent = puzzleState.totalClicks;
+    updatePineappleProgress(puzzleState.puzzleConfig.targetCount);
+    progressContainer?.classList.add('success');
+    window.abPersonalBest?.setVisibility(isPersonalBest);
+    if (isPersonalBest) {
+      window.abPersonalBest?.update(puzzleState.variant, puzzleState.completionTime);
+    }
+  }
+
+  function handleFailedRun(viewRefs) {
+    const { progressContainer, resultTime, resultGuesses } = viewRefs;
+    if (resultTime) resultTime.textContent = '00:60:00';
+    if (resultGuesses) resultGuesses.textContent = puzzleState.totalClicks;
+    window.abPersonalBest?.setVisibility(false);
+    progressContainer?.classList.add('fail');
+    markProgressFailure();
+  }
+
+  async function endChallenge(success) {
+    if (!isPhase(RUN_PHASES.MEMORIZE, RUN_PHASES.HUNT)) return;
+    setPhase(RUN_PHASES.RESULT);
+    clearInterval(puzzleState.timerInterval);
+    setGridPulse(false);
+    puzzleState.completionTime = success ? Date.now() - puzzleState.startTime : 60000;
+    DOM.resetButton()?.classList.add('hidden');
+    DOM.tryAgainButtons().forEach(btn => btn.classList.remove('hidden'));
+    const viewRefs = prepareResultView();
     if (success) {
-      await updateLeaderboard(puzzleState.variant);
-      const isPersonalBest = !Number.isFinite(personalBestMs) || puzzleState.completionTime < personalBestMs;
-      console.log('[PB] Success run evaluated', {
-        completionMs: puzzleState.completionTime,
-        personalBestMs,
-        isPersonalBest
-      });
-      if (resultTime) resultTime.textContent = formatTime(puzzleState.completionTime);
-      if (resultGuesses) resultGuesses.textContent = puzzleState.totalClicks;
-      updatePineappleProgress(puzzleState.puzzleConfig.targetCount);
-      progressContainer?.classList.add('success');
-      
-      // Enhanced Personal Best styling
-      setPersonalBestVisibility(isPersonalBest);
-      if (isPersonalBest) {
-        updatePersonalBestCache(puzzleState.variant, puzzleState.completionTime);
-      }
+      await handleSuccessfulRun(viewRefs);
     } else {
-      if (resultTime) resultTime.textContent = '00:60:00';
-      if (resultGuesses) resultGuesses.textContent = puzzleState.totalClicks;
-      setPersonalBestVisibility(false);
-      progressContainer?.classList.add('fail');
-      markProgressFailure();
+      handleFailedRun(viewRefs);
     }
     trackEvent(success ? 'puzzle_completed' : 'puzzle_failed', {
       completion_time_seconds: success ? Number((puzzleState.completionTime / 1000).toFixed(3)) : undefined,
@@ -561,29 +487,27 @@ const puzzleState = {
     });
     setTimeout(() => {
       resetMemorizePill();
-      progressStats?.classList.add('is-visible');
+      viewRefs.progressStats?.classList.add('is-visible');
     }, 800);
   }
 
   function resetPuzzle(isRepeat = false) {
     resetState();
-    $('timer').textContent = '00:60:00';
+    const timer = DOM.timer();
+    if (timer) timer.textContent = '00:60:00';
     clearCountdownTimer();
     resetMemorizePill();
     updatePineappleProgress(0);
     resetProgressVisuals();
-    document.querySelectorAll('.memory-tile').forEach(tile => {
-      tile.classList.remove('scale-105', 'animate-pulse');
-      applyTileColor(tile, 'base');
-      const emoji = tile.querySelector('.fruit-emoji');
-      emoji.classList.remove('opacity-100', 'scale-100');
-      emoji.classList.add('opacity-0', 'scale-80');
+    forEachMemoryTile(tile => {
+      tile.removeAttribute('data-fruit');
+      setTileState(tile, 'default');
     });
-    $('start-button').classList.remove('hidden');
-    $('reset-button').classList.add('hidden');
+    DOM.startButton()?.classList.remove('hidden');
+    DOM.resetButton()?.classList.add('hidden');
     setGridPulse(false);
-    document.querySelectorAll('.try-again-button').forEach(btn => btn.classList.add('hidden'));
-    setPersonalBestVisibility(false);
+    DOM.tryAgainButtons().forEach(btn => btn.classList.add('hidden'));
+    window.abPersonalBest?.setVisibility(false);
     if (isRepeat) trackEvent('puzzle_repeated', {});
   }
 
@@ -605,10 +529,12 @@ const puzzleState = {
       hadError = true;
     }
 
+    const render = window.abLeaderboard?.render;
+    if (!render) return;
     if (hadError) {
-      await renderLeaderboard(variant);
+      await render(variant);
     } else {
-      await renderLeaderboard(variant, data);
+      await render(variant, data);
     }
   }
 
@@ -626,16 +552,22 @@ const puzzleState = {
     displayVariant();
     setupPuzzle();
     const variant = puzzleState.variant;
-    const username = localStorage.getItem('simulator_username');
-    await Promise.all([
-      updateLeaderboard(variant),
-      primePersonalBestCache(variant, username)
-    ]);
+    const username = localStorage.getItem(USERNAME_KEY);
+      await Promise.all([
+        updateLeaderboard(variant),
+        window.abPersonalBest?.prime?.(variant, username)
+      ]);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     if (typeof posthog === 'undefined' || !posthog.onFeatureFlags) {
       console.error('PostHog not initialized. Check environment variables.');
+      showFeatureFlagError();
+      return;
+    }
+    const initializeVariant = window.abAnalytics?.initializeVariant;
+    if (typeof initializeVariant !== 'function') {
+      console.error('Analytics module missing initializeVariant.');
       showFeatureFlagError();
       return;
     }
