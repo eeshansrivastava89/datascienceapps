@@ -105,6 +105,14 @@ Acceptance goals for Phase 3:
 - DOM/event helpers eliminate duplicated selector/class toggles. ✅
 - Final state machine keeps the run flow readable and prevents regressions once steps 4-5 land. ✅
 
+### Phase 4: Blogging [PENDING]
+
+This is what needs to be done:
+* Pull the official astro-breadcrumbs instructions (likely README) to confirm install/config requirements.
+* If they look compatible, add the dependency and register it in astro.config.mjs.
+Update BlogPost.astro (or [...slug].astro, depending on integration pattern) to render the breadcrumb component with sensible defaults.
+* Re-run npm run build, capture the line-count delta, and summarize.
+
 ---
 
 ## Success Markers

@@ -25,7 +25,7 @@ const timelineData = yaml.load(timelineYaml) as { timeline: any[] }
 		</Section>
 
 		<Section title='Experience'>
-			<Timeline client:visible items={timelineData.timeline} />
+			<Timeline client:load items={timelineData.timeline} />
 		</Section>
 
 		<Section title='Projects'>

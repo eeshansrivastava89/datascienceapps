@@ -73,11 +73,14 @@ Let's Encrypt         → SSL/TLS (eeshans.com + www, auto-renewing)
 GitHub Actions        → Auto-deploy on main push (needs FLY_API_TOKEN secret)
 Cloudflare            → DNS records (A + AAAA + CNAME for www)
 ```
+### Services to Monitor
+* Posthog status - if events aren't reaching Supabase
+* Supabase status - if dashboard is not updating
+* Cloudflare status - if bascially the site is broken
+* Fly status - site will be broken or slow
 
 ### Local runs
 * For Astro site: ```npm run dev```
-* For Hugo site: ```hugo server -D```
-* For Streamlit: ```streamlit run app.py```
 
 ### Previous Stack (Hugo Era - ARCHIVED)
 
@@ -98,12 +101,6 @@ Cloudflare            → DNS records (A + AAAA + CNAME for www)
 - Host: `aws-1-us-east-2.pooler.supabase.com` (connection pooler on port 6543)
 - Webhook: PostHog → Edge Function → Events table
 - Views: v_variant_stats, v_conversion_funnel, v_stats_by_hour
-
-**Streamlit:** Analytics dashboard (Python app)
-- Repo: soma-streamlit-dashboard
-- Deployed on: Fly.io (private, local access only)
-- Refresh: 10-second cache TTL
-- Embedding: Iframe in `/projects/ab-test-simulator` page
 
 ### Configuration Files (Critical)
 
