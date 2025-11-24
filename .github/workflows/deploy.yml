@@ -24,7 +24,7 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       
       - name: Build Astro Site
-        run: pnpm install --frozen-lockfile && pnpm run build
+        run: pnpm install && pnpm run build
       
       - name: Deploy to Fly.io
         run: flyctl deploy --remote-only
