@@ -286,12 +286,12 @@ soma-streamlit-dashboard/
 
 ### "I want to change the **BLOG CONTENT**"
 
-| What | Where | File Type | How |
-|------|-------|-----------|-----|
-| Add new blog post | **Both repos** | Markdown | Create `.md` file in `soma-portfolio/src/content/post/` AND `soma-blog-hugo/content/posts/` |
-| Change blog post title | **Both repos** | Markdown frontmatter | Edit `title:` field in `.md` |
-| Change blog CSS styling | **Astro only** | CSS | Edit `src/styles/app.css` in soma-portfolio |
-| Change post layout | **Astro only** | Astro | Modify `src/components/blog/Post.astro` |
+| What                    | Where          | File Type            | How                                                                                         |
+| ----------------------- | -------------- | -------------------- | ------------------------------------------------------------------------------------------- |
+| Add new blog post       | **Both repos** | Markdown             | Create `.md` file in `soma-portfolio/src/content/post/` AND `soma-blog-hugo/content/posts/` |
+| Change blog post title  | **Both repos** | Markdown frontmatter | Edit `title:` field in `.md`                                                                |
+| Change blog CSS styling | **Astro only** | CSS                  | Edit `src/styles/app.css` in soma-portfolio                                                 |
+| Change post layout      | **Astro only** | Astro                | Modify `src/components/blog/Post.astro`                                                     |
 
 **💡 NOTE:** During migration, edit soma-portfolio first. After cutover, delete soma-blog-hugo.
 
@@ -299,14 +299,14 @@ soma-streamlit-dashboard/
 
 ### "I want to change the **HOMEPAGE**"
 
-| What | Where | File Type | How |
-|------|-------|-----------|-----|
-| Change hero text/image | **Astro** | Astro | Edit `src/pages/index.astro` (hero section) |
-| Change about section | **Astro** | Astro | Edit `src/pages/index.astro` (about section) |
-| Change projects shown | **Astro** | Astro | Edit `src/pages/index.astro` (projects section) |
-| Change timeline companies | **Astro** | YAML | Edit `src/data/timeline.yaml` |
-| Change timeline logo | **Astro** | PNG files | Replace files in `public/logos/` |
-| Change colors/fonts | **Astro** | Config | Edit `tailwind.config.js` or `src/styles/app.css` |
+| What                      | Where     | File Type | How                                               |
+| ------------------------- | --------- | --------- | ------------------------------------------------- |
+| Change hero text/image    | **Astro** | Astro     | Edit `src/pages/index.astro` (hero section)       |
+| Change about section      | **Astro** | Astro     | Edit `src/pages/index.astro` (about section)      |
+| Change projects shown     | **Astro** | Astro     | Edit `src/pages/index.astro` (projects section)   |
+| Change timeline companies | **Astro** | YAML      | Edit `src/data/timeline.yaml`                     |
+| Change timeline logo      | **Astro** | PNG files | Replace files in `public/logos/`                  |
+| Change colors/fonts       | **Astro** | Config    | Edit `tailwind.config.js` or `src/styles/app.css` |
 
 **📍 CRITICAL FILE:** `src/pages/index.astro` (all homepage sections in one file)
 
@@ -314,16 +314,17 @@ soma-streamlit-dashboard/
 
 ### "I want to change the **A/B SIMULATOR**"
 
-| What | Where | File Type | How |
-|------|-------|-----------|-----|
-| Change puzzle words | **Both** | JavaScript | Edit `ab-simulator.js` (PUZZLE_CONFIG object) |
-| Change timer length | **Both** | JavaScript | Edit `ab-simulator.js` (change 60000 to new milliseconds) |
-| Change CSS styling | **Both** | CSS | Edit `ab-simulator.css` |
-| Change puzzle HTML | **Astro** | Astro | Edit `src/pages/projects/ab-test-simulator.astro` |
-| Track new event type | **Both** | JavaScript | Add `posthog.capture()` call in `ab-simulator.js` |
-| Change variant A/B logic | **Both** | JavaScript | Edit feature flag logic in `ab-simulator.js` |
+| What                     | Where     | File Type  | How                                                       |
+| ------------------------ | --------- | ---------- | --------------------------------------------------------- |
+| Change puzzle words      | **Both**  | JavaScript | Edit `ab-simulator.js` (PUZZLE_CONFIG object)             |
+| Change timer length      | **Both**  | JavaScript | Edit `ab-simulator.js` (change 60000 to new milliseconds) |
+| Change CSS styling       | **Both**  | CSS        | Edit `ab-simulator.css`                                   |
+| Change puzzle HTML       | **Astro** | Astro      | Edit `src/pages/projects/ab-test-simulator.astro`         |
+| Track new event type     | **Both**  | JavaScript | Add `posthog.capture()` call in `ab-simulator.js`         |
+| Change variant A/B logic | **Both**  | JavaScript | Edit feature flag logic in `ab-simulator.js`              |
 
 **📍 CRITICAL FILES:**
+
 - `public/js/ab-simulator.js` - Game logic & PostHog tracking
 - `public/css/ab-simulator.css` - Styling
 - `src/pages/projects/ab-test-simulator.astro` - HTML container (Astro only)
@@ -332,15 +333,16 @@ soma-streamlit-dashboard/
 
 ### "I want to change **POSTHOG INTEGRATION**"
 
-| What | Where | File Type | How |
-|------|-------|-----------|-----|
-| Add new event tracking | **Astro** | JavaScript | Add `posthog.capture()` in `ab-simulator.js` |
-| Change PostHog API key | **Astro** | .env file | Update `PUBLIC_POSTHOG_KEY` in `.env` |
-| Change experiment flag name | **Astro** | JavaScript | Edit feature flag key in `ab-simulator.js` |
-| Initialize PostHog | **Astro** | Astro | Edit `src/components/BaseHead.astro` |
-| Add PostHog UI customization | **Astro** | Astro/JS | Modify `BaseHead.astro` script config |
+| What                         | Where     | File Type  | How                                          |
+| ---------------------------- | --------- | ---------- | -------------------------------------------- |
+| Add new event tracking       | **Astro** | JavaScript | Add `posthog.capture()` in `ab-simulator.js` |
+| Change PostHog API key       | **Astro** | .env file  | Update `PUBLIC_POSTHOG_KEY` in `.env`        |
+| Change experiment flag name  | **Astro** | JavaScript | Edit feature flag key in `ab-simulator.js`   |
+| Initialize PostHog           | **Astro** | Astro      | Edit `src/components/BaseHead.astro`         |
+| Add PostHog UI customization | **Astro** | Astro/JS   | Modify `BaseHead.astro` script config        |
 
 **🔐 CREDENTIALS:**
+
 - Location: `soma-portfolio/.env`
 - Keys used: `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST`
 - Same keys as Hugo (so they share analytics)
@@ -349,17 +351,18 @@ soma-streamlit-dashboard/
 
 ### "I want to change the **ANALYTICS DASHBOARD**"
 
-| What | Where | File Type | How |
-|------|-------|-----------|-----|
-| Add new chart | **Streamlit** | Python | Edit `app.py`, add `st.plotly_chart()` or `st.write()` |
-| Change Supabase query | **Streamlit** | SQL/Python | Edit query string in `app.py` |
-| Change refresh interval | **Streamlit** | Python | Edit `@st.cache_data(ttl=X)` decorator in `app.py` |
-| Change colors/theme | **Streamlit** | Config | Edit `.streamlit/config.toml` |
-| Deploy dashboard | **Streamlit** | Git | Push to GitHub, Streamlit auto-deploys |
+| What                    | Where         | File Type  | How                                                    |
+| ----------------------- | ------------- | ---------- | ------------------------------------------------------ |
+| Add new chart           | **Streamlit** | Python     | Edit `app.py`, add `st.plotly_chart()` or `st.write()` |
+| Change Supabase query   | **Streamlit** | SQL/Python | Edit query string in `app.py`                          |
+| Change refresh interval | **Streamlit** | Python     | Edit `@st.cache_data(ttl=X)` decorator in `app.py`     |
+| Change colors/theme     | **Streamlit** | Config     | Edit `.streamlit/config.toml`                          |
+| Deploy dashboard        | **Streamlit** | Git        | Push to GitHub, Streamlit auto-deploys                 |
 
 **📍 CRITICAL FILE:** `soma-streamlit-dashboard/app.py` (all logic in one file)
 
 **🔐 CREDENTIALS:**
+
 - Location: `soma-streamlit-dashboard/.streamlit/secrets.toml` (NOT in git)
 - Needed: Supabase connection string
 
@@ -367,12 +370,12 @@ soma-streamlit-dashboard/
 
 ### "I want to change the **DATABASE SCHEMA**"
 
-| What | Where | File Type | How |
-|------|-------|-----------|-----|
-| Add new table | **Supabase** | SQL | Run in Supabase SQL Editor, use `supabase-schema.sql` as reference |
-| Add new view | **Supabase** | SQL | Create view, query in `soma-streamlit-dashboard/app.py` |
-| Add new column | **Supabase** | SQL | Alter table, update views if needed |
-| See current schema | **Reference** | SQL | Check `soma-blog-hugo/supabase-schema.sql` |
+| What               | Where         | File Type | How                                                                |
+| ------------------ | ------------- | --------- | ------------------------------------------------------------------ |
+| Add new table      | **Supabase**  | SQL       | Run in Supabase SQL Editor, use `supabase-schema.sql` as reference |
+| Add new view       | **Supabase**  | SQL       | Create view, query in `soma-streamlit-dashboard/app.py`            |
+| Add new column     | **Supabase**  | SQL       | Alter table, update views if needed                                |
+| See current schema | **Reference** | SQL       | Check `soma-blog-hugo/supabase-schema.sql`                         |
 
 **📍 NOTE:** Schema changes affect both Hugo analytics AND Astro analytics (same database)
 
@@ -626,14 +629,14 @@ START: I want to change something
 
 ## 🎓 Key Takeaways
 
-| Concept | What It Means | Where It Matters |
-|---------|---------------|-----------------|
-| **Content Layer** | Blog posts, project descriptions | `src/content/post/` in Astro |
-| **Styling Layer** | CSS, colors, fonts, layout | `tailwind.config.js`, `src/styles/`, `public/css/` |
-| **Logic Layer** | JavaScript game code, tracking | `public/js/ab-simulator.js` |
-| **Infrastructure** | Deployment, environment, config | `fly.toml`, `.env`, `astro.config.mjs` |
-| **Analytics Layer** | Event tracking, dashboards, data | PostHog → Supabase → Streamlit |
-| **Database Layer** | Tables, views, schema | Supabase PostgreSQL |
+| Concept             | What It Means                    | Where It Matters                                   |
+| ------------------- | -------------------------------- | -------------------------------------------------- |
+| **Content Layer**   | Blog posts, project descriptions | `src/content/post/` in Astro                       |
+| **Styling Layer**   | CSS, colors, fonts, layout       | `tailwind.config.js`, `src/styles/`, `public/css/` |
+| **Logic Layer**     | JavaScript game code, tracking   | `public/js/ab-simulator.js`                        |
+| **Infrastructure**  | Deployment, environment, config  | `fly.toml`, `.env`, `astro.config.mjs`             |
+| **Analytics Layer** | Event tracking, dashboards, data | PostHog → Supabase → Streamlit                     |
+| **Database Layer**  | Tables, views, schema            | Supabase PostgreSQL                                |
 
 ---
 
@@ -650,4 +653,3 @@ START: I want to change something
 ---
 
 **This guide is your map. Bookmark it.** 🗺️
-

@@ -3,10 +3,7 @@ import { fontFamily } from 'tailwindcss/defaultTheme'
 /** @type {import('tailwindcss').Config} */
 const config = {
 	darkMode: ['class'],
-	content: [
-		'./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
-		'./public/js/**/*.{js,ts}'
-	],
+	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}', './public/js/**/*.{js,ts}'],
 	safelist: ['dark'],
 	corePlugins: {
 		aspectRatio: false
@@ -63,7 +60,7 @@ const config = {
 			},
 			fontFamily: {
 				sans: [...fontFamily.sans],
-				satoshi: ['Satoshi', 'sans'],
+				satoshi: ['Satoshi', 'sans']
 			}
 		}
 	}

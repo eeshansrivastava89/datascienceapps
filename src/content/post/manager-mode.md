@@ -1,5 +1,5 @@
 ---
-title: "Manager Mode"
+title: 'Manager Mode'
 description: Sketching how AI copilots change daily rituals for engineering managers and cross-functional leads.
 publishDate: 2025-11-16
 draft: true

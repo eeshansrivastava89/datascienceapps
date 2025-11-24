@@ -1,0 +1,73 @@
+{
+  "cycles": [
+    {
+      "slug": "ab-sim",
+      "name": "A/B Simulator",
+      "phase": "Active",
+      "openTasks": 0,
+      "claimed": 1,
+      "mergedThisWeek": 0
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1",
+      "title": "create build with me page instead of projects",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "claimed",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "cat:frontend"
+      ],
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/1"
+    }
+  ],
+  "hats": [
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "claimed"
+    }
+  ],
+  "leaderboard": [
+    {
+      "name": "eeshansrivastava89",
+      "points": 1,
+      "mergedPRs": 0,
+      "reviews": 0,
+      "docs": 0
+    }
+  ],
+  "upcoming": [
+    {
+      "name": "Metal Lyrics NLP",
+      "skills": [
+        "NLP",
+        "Python",
+        "Genius API"
+      ],
+      "eta": "TBD",
+      "note": "Classifiers + topic modeling"
+    },
+    {
+      "name": "Finance Dashboard",
+      "skills": [
+        "ETL",
+        "Charts",
+        "Plaid"
+      ],
+      "eta": "TBD",
+      "note": "Spending classification"
+    }
+  ]
+}

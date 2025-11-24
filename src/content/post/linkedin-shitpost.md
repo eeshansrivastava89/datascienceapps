@@ -1,5 +1,5 @@
 ---
-title: "Anatomy of a LinkedIn Shitpost"
+title: 'Anatomy of a LinkedIn Shitpost'
 description: Breaking down the incentives, narrative beats, and performance hacks behind viral cringe posts.
 publishDate: 2025-11-16
 draft: true
@@ -9,8 +9,6 @@ tags:
   - social-media
   - writing
 ---
-
-
 
 ## Working Outline
 

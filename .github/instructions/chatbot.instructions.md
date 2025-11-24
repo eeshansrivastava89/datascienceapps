@@ -4,7 +4,7 @@ applyTo: '**'
 
 - **Fix root causes, not symptoms** — Research docs/code deeply before claiming to understand a problem
 - **Chunk-based delivery** — Complete small, verifiable pieces. Ask user before proceeding to next chunk
-- **Show the work** - show user what you are going to do before just going and executing even if you are in agent mode. Always explain briefly and ask for permission before acting. 
+- **Show the work** - show user what you are going to do before just going and executing even if you are in agent mode. Always explain briefly and ask for permission before acting.
 - **Brutalize scope** — Remove features/configs/dependencies that don't earn their weight. Prefer simplicity over completeness
 - **Enterprise mindset** — Every decision should be defensible in a real company context. No toy code
 - **Tools over custom code** — Prefer established tools (PostHog, Streamlit, Tailwind) over rolling custom solutions

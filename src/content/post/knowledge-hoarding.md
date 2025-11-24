@@ -1,5 +1,5 @@
 ---
-title: "Knowledge Hoarding"
+title: 'Knowledge Hoarding'
 description: Exploring why creators lock insights behind newsletters or courses and how to share generously anyway.
 publishDate: 2025-11-16
 draft: true
@@ -9,8 +9,6 @@ tags:
   - knowledge
   - social-media
 ---
-
-
 
 ## Working Outline
 

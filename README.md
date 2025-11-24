@@ -62,6 +62,7 @@ GitHub Actions workflow (`deploy.yml`) can automate on push to `main` (ensure bu
 ## Smoke Checks
 
 `smoke.yml` hits:
+
 - `rpc/variant_overview`
 - `rpc/recent_completions`
 - `rpc/completion_time_distribution`
@@ -86,37 +87,36 @@ Repo secrets/variables required:
 
 MIT
 
-
 ## Operations (Supabase + Deploy)
 
-### Rotate PUBLIC_* keys
+### Rotate PUBLIC\_\* keys
 
 - Update local `.env` with new values:
-    - `PUBLIC_SUPABASE_URL`
-    - `PUBLIC_SUPABASE_ANON_KEY`
+  - `PUBLIC_SUPABASE_URL`
+  - `PUBLIC_SUPABASE_ANON_KEY`
 - For production deploys on Fly.io, provide these at build time (safe to expose, they’re public):
-    - via `fly.toml` under `[build.args]`, or
-    - via deploy flags: `fly deploy --build-arg PUBLIC_SUPABASE_URL=... --build-arg PUBLIC_SUPABASE_ANON_KEY=...`
+  - via `fly.toml` under `[build.args]`, or
+  - via deploy flags: `fly deploy --build-arg PUBLIC_SUPABASE_URL=... --build-arg PUBLIC_SUPABASE_ANON_KEY=...`
 - Update GitHub repository settings for smoke checks:
-    - Settings → Secrets and variables → Actions
-    - Add secrets (or variables) with the same two names so `.github/workflows/smoke.yml` can run.
+  - Settings → Secrets and variables → Actions
+  - Add secrets (or variables) with the same two names so `.github/workflows/smoke.yml` can run.
 
 ### Redeploy
 
-1) Commit changes
-2) `fly deploy` (or let GitHub Actions run `.github/workflows/deploy.yml` on push to main)
+1. Commit changes
+2. `fly deploy` (or let GitHub Actions run `.github/workflows/deploy.yml` on push to main)
 
 ### Monitoring (Smoke checks)
 
 - Workflow `.github/workflows/smoke.yml` runs every 30 minutes and on-demand.
 - It calls these endpoints on Supabase PostgREST:
-    - `rpc/variant_overview`
-    - `rpc/recent_completions`
-    - `rpc/completion_time_distribution`
-    - `v_conversion_funnel`
+  - `rpc/variant_overview`
+  - `rpc/recent_completions`
+  - `rpc/completion_time_distribution`
+  - `v_conversion_funnel`
 - Configure repository secrets or variables:
-    - `PUBLIC_SUPABASE_URL`
-    - `PUBLIC_SUPABASE_ANON_KEY`
+  - `PUBLIC_SUPABASE_URL`
+  - `PUBLIC_SUPABASE_ANON_KEY`
 
 ### Performance notes (optional)
 

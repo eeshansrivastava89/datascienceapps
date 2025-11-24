@@ -1,5 +1,5 @@
 ---
-title: "Neurological Case for Learning"
+title: 'Neurological Case for Learning'
 description: Exploring how brains encode skills differently with and without AI aids, and what that means for practice.
 publishDate: 2025-11-16
 draft: true
