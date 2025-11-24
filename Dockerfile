@@ -17,8 +17,8 @@ ENV PUBLIC_POSTHOG_HOST=$PUBLIC_POSTHOG_HOST
 ENV PUBLIC_SUPABASE_URL=$PUBLIC_SUPABASE_URL
 ENV PUBLIC_SUPABASE_ANON_KEY=$PUBLIC_SUPABASE_ANON_KEY
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm globally (version 10 to match lockfile)
+RUN npm install -g pnpm@10
 
 # Copy workspace and package files
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
