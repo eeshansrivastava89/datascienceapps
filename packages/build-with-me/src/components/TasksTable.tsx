@@ -18,14 +18,14 @@ const DEFAULT_PAGE_SIZE = 5
 
 // Skill display names and colors
 const SKILL_STYLES: Record<string, { label: string; color: string }> = {
-	react: { label: 'React', color: 'bg-sky-100 text-sky-700' },
-	typescript: { label: 'TypeScript', color: 'bg-blue-100 text-blue-700' },
-	tailwind: { label: 'Tailwind', color: 'bg-cyan-100 text-cyan-700' },
-	astro: { label: 'Astro', color: 'bg-orange-100 text-orange-700' },
-	python: { label: 'Python', color: 'bg-yellow-100 text-yellow-700' },
-	sql: { label: 'SQL', color: 'bg-indigo-100 text-indigo-700' },
-	git: { label: 'Git', color: 'bg-red-100 text-red-700' },
-	testing: { label: 'Testing', color: 'bg-pink-100 text-pink-700' },
+	react: { label: 'React', color: 'bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300' },
+	typescript: { label: 'TypeScript', color: 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300' },
+	tailwind: { label: 'Tailwind', color: 'bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300' },
+	astro: { label: 'Astro', color: 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300' },
+	python: { label: 'Python', color: 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300' },
+	sql: { label: 'SQL', color: 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300' },
+	git: { label: 'Git', color: 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300' },
+	testing: { label: 'Testing', color: 'bg-pink-100 dark:bg-pink-500/20 text-pink-700 dark:text-pink-300' },
 }
 
 function TaskEnrichment({ task }: { task: Task }) {
@@ -35,13 +35,13 @@ function TaskEnrichment({ task }: { task: Task }) {
 	return (
 		<div className='mt-1.5 flex flex-wrap items-center gap-1.5'>
 			{task.isGoodFirstIssue && (
-				<span className='inline-flex items-center gap-1 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-700'>
+				<span className='inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-500/20 px-2 py-0.5 text-[10px] font-semibold text-purple-700 dark:text-purple-300'>
 					<Sparkles className='h-3 w-3' />
 					Good First Issue
 				</span>
 			)}
 			{task.estimatedHours && (
-				<span className='inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600'>
+				<span className='inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-500/20 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:text-gray-300'>
 					<Clock className='h-3 w-3' />
 					{task.estimatedHours}h
 				</span>
