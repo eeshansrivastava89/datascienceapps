@@ -4,13 +4,424 @@
       "slug": "ab-sim",
       "name": "A/B Simulator",
       "phase": "Active",
-      "openTasks": 5,
-      "claimed": 3,
-      "mergedThisWeek": 19,
-      "highlight": "19 tasks merged"
+      "openTasks": 0,
+      "claimed": 5,
+      "mergedThisWeek": 34,
+      "highlight": "34 tasks merged"
     }
   ],
   "tasks": [
+    {
+      "id": "39",
+      "title": "DRY Projects: Shared YAML data + ProjectCard component",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend",
+        "wiring"
+      ],
+      "status": "claimed",
+      "difficulty": "medium",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "cat:wiring",
+        "diff:medium",
+        "hours:3-5"
+      ],
+      "skills": [],
+      "estimatedHours": "3-5",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/39",
+      "updatedAt": "2025-11-27T07:52:41Z",
+      "closedAt": null,
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "38",
+      "title": "Update tagline across site",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:easy",
+        "hours:1-2"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/38",
+      "updatedAt": "2025-11-27T07:32:09Z",
+      "closedAt": "2025-11-27T07:30:46Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "37",
+      "title": "Home page: Remove blog sections",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:easy",
+        "hours:1-2"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/37",
+      "updatedAt": "2025-11-27T07:32:06Z",
+      "closedAt": "2025-11-27T07:30:43Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "36",
+      "title": "Home page: Substack CTA at bottom",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:easy",
+        "hours:1-2"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/36",
+      "updatedAt": "2025-11-27T07:32:04Z",
+      "closedAt": "2025-11-27T07:30:41Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "35",
+      "title": "Home page: Contribute CTA card",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:easy",
+        "hours:1-2"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/35",
+      "updatedAt": "2025-11-27T07:32:01Z",
+      "closedAt": "2025-11-27T07:30:38Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "34",
+      "title": "Home page: Build Log showcase section",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:easy",
+        "hours:1-2"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/34",
+      "updatedAt": "2025-11-27T07:31:58Z",
+      "closedAt": "2025-11-27T07:30:36Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "33",
+      "title": "Home page: Hero card redesign",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:easy",
+        "hours:1-2"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/33",
+      "updatedAt": "2025-11-27T07:31:55Z",
+      "closedAt": "2025-11-27T07:27:03Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "32",
+      "title": "Add Contribute link to header nav",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:easy",
+        "hours:1-2",
+        "project:build-with-me"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/32",
+      "updatedAt": "2025-11-27T07:30:01Z",
+      "closedAt": "2025-11-27T05:45:19Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "31",
+      "title": "Create /build-log/contribute/ page",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "medium",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:medium",
+        "hours:1-2",
+        "project:build-with-me"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/31",
+      "updatedAt": "2025-11-27T05:45:19Z",
+      "closedAt": "2025-11-27T05:45:19Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "30",
+      "title": "Learnings filter pills + numbered pagination",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "medium",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:medium",
+        "hours:1-2",
+        "project:build-with-me"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/30",
+      "updatedAt": "2025-11-27T05:33:19Z",
+      "closedAt": "2025-11-27T05:33:19Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "29",
+      "title": "Learnings Timeline component with type badges",
+      "projectSlug": "ab-sim",
+      "category": [
+        "frontend"
+      ],
+      "status": "merged",
+      "difficulty": "medium",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:frontend",
+        "diff:medium",
+        "hours:3-5",
+        "project:build-with-me"
+      ],
+      "skills": [],
+      "estimatedHours": "3-5",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/29",
+      "updatedAt": "2025-11-27T05:18:44Z",
+      "closedAt": "2025-11-27T05:18:44Z",
+      "startDate": null,
+      "targetDate": null
+    },
+    {
+      "id": "28",
+      "title": "Learnings YAML data file + JSON schema for VS Code",
+      "projectSlug": "ab-sim",
+      "category": [
+        "wiring"
+      ],
+      "status": "merged",
+      "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
+      "labels": [
+        "enhancement",
+        "cat:wiring",
+        "diff:easy",
+        "hours:1-2",
+        "project:build-with-me"
+      ],
+      "skills": [],
+      "estimatedHours": "1-2",
+      "isGoodFirstIssue": false,
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/28",
+      "updatedAt": "2025-11-27T05:18:44Z",
+      "closedAt": "2025-11-27T05:18:44Z",
+      "startDate": null,
+      "targetDate": null
+    },
     {
       "id": "27",
       "title": "Hero copy update: \"The Build Log\" framing",
@@ -18,8 +429,18 @@
       "category": [
         "frontend"
       ],
-      "status": "open",
+      "status": "merged",
       "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
       "labels": [
         "enhancement",
         "cat:frontend",
@@ -31,8 +452,8 @@
       "estimatedHours": "1-2",
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/27",
-      "updatedAt": "2025-11-26T18:55:18Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-27T05:04:32Z",
+      "closedAt": "2025-11-27T04:17:54Z",
       "startDate": null,
       "targetDate": null
     },
@@ -43,8 +464,18 @@
       "category": [
         "frontend"
       ],
-      "status": "open",
+      "status": "merged",
       "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
       "labels": [
         "enhancement",
         "cat:frontend",
@@ -56,8 +487,8 @@
       "estimatedHours": "1-2",
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/26",
-      "updatedAt": "2025-11-26T18:55:06Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-27T05:04:27Z",
+      "closedAt": "2025-11-27T04:17:53Z",
       "startDate": null,
       "targetDate": null
     },
@@ -68,8 +499,18 @@
       "category": [
         "frontend"
       ],
-      "status": "open",
+      "status": "merged",
       "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
       "labels": [
         "enhancement",
         "cat:frontend",
@@ -81,8 +522,8 @@
       "estimatedHours": "1-2",
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/25",
-      "updatedAt": "2025-11-26T18:54:56Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-27T05:04:22Z",
+      "closedAt": "2025-11-27T04:17:53Z",
       "startDate": null,
       "targetDate": null
     },
@@ -93,8 +534,18 @@
       "category": [
         "frontend"
       ],
-      "status": "open",
+      "status": "merged",
       "difficulty": "medium",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
       "labels": [
         "enhancement",
         "cat:frontend",
@@ -106,8 +557,8 @@
       "estimatedHours": "3-5",
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/24",
-      "updatedAt": "2025-11-26T18:54:46Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-27T05:04:15Z",
+      "closedAt": "2025-11-27T04:17:53Z",
       "startDate": null,
       "targetDate": null
     },
@@ -179,8 +630,14 @@
         "backend",
         "wiring"
       ],
-      "status": "open",
+      "status": "claimed",
       "difficulty": "hard",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
       "labels": [
         "cat:backend",
         "cat:wiring",
@@ -191,7 +648,7 @@
       "estimatedHours": "6+",
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/21",
-      "updatedAt": "2025-11-25T17:57:24Z",
+      "updatedAt": "2025-11-27T04:52:58Z",
       "closedAt": null,
       "startDate": "2025-12-01",
       "targetDate": "2025-12-06"
@@ -853,6 +1310,84 @@
     {
       "name": "eeshansrivastava89",
       "hats": [
+        "frontend",
+        "wiring"
+      ],
+      "status": "claimed"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
         "wiring"
       ],
       "status": "merged"
@@ -861,6 +1396,49 @@
       "name": "eeshansrivastava89",
       "hats": [
         "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "wiring"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "claimed"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "backend",
+        "wiring"
       ],
       "status": "claimed"
     },
@@ -1011,7 +1589,7 @@
     {
       "name": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "mergedPRs": 19,
+      "mergedPRs": 34,
       "reviews": 0,
       "recentActivityCount": 10
     }
@@ -1019,94 +1597,94 @@
   "recentActivity": [
     {
       "type": "claimed",
-      "taskId": "22",
-      "taskTitle": "build with me -> add project to the open work table",
+      "taskId": "39",
+      "taskTitle": "DRY Projects: Shared YAML data + ProjectCard component",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-26T19:15:39Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/22"
+      "timestamp": "2025-11-27T07:52:41Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/39"
     },
     {
       "type": "merged",
-      "taskId": "23",
-      "taskTitle": "Route rename: /build-with-me/ → /build-log/",
+      "taskId": "38",
+      "taskTitle": "Update tagline across site",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-26T19:13:39Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/23"
-    },
-    {
-      "type": "claimed",
-      "taskId": "17",
-      "taskTitle": "portfolio -> create architecture doc page per project",
-      "user": "eeshansrivastava89",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T17:57:09Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/17"
+      "timestamp": "2025-11-27T07:30:46Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/38"
     },
     {
       "type": "merged",
-      "taskId": "20",
-      "taskTitle": "build with me -> open work table -> make the table for \"open\" items only",
+      "taskId": "37",
+      "taskTitle": "Home page: Remove blog sections",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T17:53:19Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/20"
-    },
-    {
-      "type": "claimed",
-      "taskId": "16",
-      "taskTitle": "build with me -> open work table -> add columns for architecture docs & substack posts at the project level",
-      "user": "eeshansrivastava89",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T17:14:45Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/16"
+      "timestamp": "2025-11-27T07:30:43Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/37"
     },
     {
       "type": "merged",
-      "taskId": "19",
-      "taskTitle": "surface issue numbers in open work, recent activity and contributor tables",
+      "taskId": "36",
+      "taskTitle": "Home page: Substack CTA at bottom",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T09:54:49Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/19"
+      "timestamp": "2025-11-27T07:30:41Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/36"
     },
     {
       "type": "merged",
-      "taskId": "18",
-      "taskTitle": "add manual github refresh button on the build with me page",
+      "taskId": "35",
+      "taskTitle": "Home page: Contribute CTA card",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T09:30:48Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/18"
+      "timestamp": "2025-11-27T07:30:38Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/35"
     },
     {
       "type": "merged",
-      "taskId": "1",
-      "taskTitle": "create build with me page instead of projects",
+      "taskId": "34",
+      "taskTitle": "Home page: Build Log showcase section",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T08:57:21Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/1"
+      "timestamp": "2025-11-27T07:30:36Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/34"
     },
     {
       "type": "merged",
-      "taskId": "15",
-      "taskTitle": "feat: Build With Me Landing Page Redesign",
+      "taskId": "33",
+      "taskTitle": "Home page: Hero card redesign",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T07:59:44Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/15"
+      "timestamp": "2025-11-27T07:27:03Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/33"
     },
     {
       "type": "merged",
-      "taskId": "14",
-      "taskTitle": "Reduce ab-test-simulator.astro from 600 to 170 lines",
+      "taskId": "32",
+      "taskTitle": "Add Contribute link to header nav",
       "user": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T05:47:07Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/14"
+      "timestamp": "2025-11-27T05:45:19Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/32"
+    },
+    {
+      "type": "merged",
+      "taskId": "31",
+      "taskTitle": "Create /build-log/contribute/ page",
+      "user": "eeshansrivastava89",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
+      "timestamp": "2025-11-27T05:45:19Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/31"
+    },
+    {
+      "type": "merged",
+      "taskId": "30",
+      "taskTitle": "Learnings filter pills + numbered pagination",
+      "user": "eeshansrivastava89",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
+      "timestamp": "2025-11-27T05:33:19Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/30"
     }
   ],
-  "lastFetchTime": "2025-11-27T04:08:35.780Z"
+  "lastFetchTime": "2025-11-27T07:57:30.635Z"
 }

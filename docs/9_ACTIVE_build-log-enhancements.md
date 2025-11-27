@@ -106,62 +106,100 @@ Consolidated 3 sections into unified `ContributorCards`. Removed competitive ele
 
 ---
 
-## Phase 4: Home Page Redesign ⬜
+## Phase 4: Home Page Redesign ✅
 
 **Goal:** Redesign home page to showcase Build Log as the main differentiator, with compact hero and clear CTAs.
+
+**Completed:** 2025-11-27
 
 ### Tasks
 
 | Task | Description | Status |
 |------|-------------|--------|
-| **Hero card redesign** ([#33](https://github.com/eeshansrivastava89/soma-portfolio/issues/33)) | Horizontal layout: photo left, name/tagline/socials right | ⬜ Not started |
-| **Build Log showcase** ([#34](https://github.com/eeshansrivastava89/soma-portfolio/issues/34)) | Current projects + learnings preview section | ⬜ Not started |
-| **Contribute CTA** ([#35](https://github.com/eeshansrivastava89/soma-portfolio/issues/35)) | Compact card with stats linking to /build-log/contribute | ⬜ Not started |
-| **Substack CTA** ([#36](https://github.com/eeshansrivastava89/soma-portfolio/issues/36)) | Keep orange styling, move to bottom | ⬜ Not started |
-| **Remove blog sections** ([#37](https://github.com/eeshansrivastava89/soma-portfolio/issues/37)) | Delete Latest Post + Explore by Topic | ⬜ Not started |
-| **Update tagline** ([#38](https://github.com/eeshansrivastava89/soma-portfolio/issues/38)) | New tagline in index.astro + about.astro | ⬜ Not started |
+| **Hero card redesign** ([#33](https://github.com/eeshansrivastava89/soma-portfolio/issues/33)) | Horizontal layout: photo left, name/tagline/socials right | ✅ Done |
+| **Build Log showcase** ([#34](https://github.com/eeshansrivastava89/soma-portfolio/issues/34)) | Current projects + learnings preview section | ✅ Done |
+| **Contribute CTA** ([#35](https://github.com/eeshansrivastava89/soma-portfolio/issues/35)) | Compact card with stats linking to /build-log/contribute | ✅ Done |
+| **Substack CTA** ([#36](https://github.com/eeshansrivastava89/soma-portfolio/issues/36)) | Keep orange styling, move to bottom | ✅ Done |
+| **Remove blog sections** ([#37](https://github.com/eeshansrivastava89/soma-portfolio/issues/37)) | Delete Latest Post + Explore by Topic | ✅ Done |
+| **Update tagline** ([#38](https://github.com/eeshansrivastava89/soma-portfolio/issues/38)) | New tagline in index.astro | ✅ Done |
 
-### New Tagline
+### Progress Log
 
-**Old:** "Data science leader who likes to write, build and teach"
+**Commit:** `954dc0a`
 
-**New:** "Data science leader building products with AI and writing about the journey"
+**Key changes to `src/pages/index.astro`:**
+- Compact horizontal hero card with profile image, name, tagline, social links
+- Build Log section with A/B Simulator card (Live badge) + What I've Learned card
+- Contribute CTA with dynamic stats from `build-log-data.json`
+- Substack newsletter CTA at bottom
+- Removed: Latest Post section, Explore by Topic section
+- Dynamic data: `learningsCount`, `totalContributors`, `openTasks`
 
-### Page Structure
+**Lines changed:** 149 added, 162 removed = -13 net lines
 
+---
+
+## Phase 4b: DRY Projects Infrastructure ⬜
+
+**Goal:** Create shared YAML-based projects data system so projects appear consistently on both home page and build log.
+
+### Tasks
+
+| Task | Description | Status |
+|------|-------------|--------|
+| **Projects YAML + Schema** ([#39](https://github.com/eeshansrivastava89/soma-portfolio/issues/39)) | YAML data file with JSON schema for VS Code | ⬜ Not started |
+
+### Implementation Plan
+
+**1. Create `projects.yaml` in shared data**
+```yaml
+# packages/shared/src/data/projects.yaml
+projects:
+  - id: ab-simulator
+    name: A/B Test Simulator
+    url: /ab-simulator/
+    status: live  # live | in-progress | coming-soon
+    description: Interactive tool for learning A/B testing fundamentals. Run experiments, visualize statistical significance, and understand the math behind the scenes.
+    shortDescription: Interactive tool for learning A/B testing fundamentals
+    tags:
+      - name: Astro
+        color: orange
+      - name: React
+        color: sky
+      - name: Tailwind
+        color: cyan
+      - name: Plotly
+        color: violet
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  HERO CARD (full-width, compact)                            │
-│  ┌───────┐  Eeshan S.                                       │
-│  │ photo │  Data science leader building products with AI   │
-│  └───────┘  and writing about the journey                   │
-│             [GitHub] [LinkedIn] [X] [Substack]              │
-└─────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────────────────────┐
-│  THE BUILD LOG (main showcase)                              │
-│  "Learning AI-native product development in public"         │
-│                                                             │
-│  ┌─────────────────┐  ┌─────────────────┐                   │
-│  │ A/B Simulator   │  │ What I've       │                   │
-│  │ ✅ Live         │  │ Learned         │                   │
-│  │ [Try It →]      │  │ (2 posts)       │                   │
-│  └─────────────────┘  └─────────────────┘                   │
-│                                                             │
-│  [Explore the Build Log →]                                  │
-└─────────────────────────────────────────────────────────────┘
+**2. Create TypeScript types + loader**
+- `packages/shared/src/lib/projects.ts`
+- `Project` interface with all fields
+- `parseProjectsYaml()` function (same pattern as learnings)
 
-┌─────────────────────────────────────────────────────────────┐
-│  WANT TO CONTRIBUTE? (compact CTA card)                     │
-│  Claim a task, open a PR, ship real code.                   │
-│  [X contributors] [Y open tasks] [See Open Tasks →]         │
-└─────────────────────────────────────────────────────────────┘
+**3. Create shared `ProjectCard.astro` component**
+- `packages/shared/src/components/ProjectCard.astro`
+- Props: `project`, `variant: 'full' | 'compact'`
+- Full variant = Build Log style (large card, "Try It →" button)
+- Compact variant = Home page style (smaller, nested inside section card)
 
-┌─────────────────────────────────────────────────────────────┐
-│  NEWSLETTER (Substack CTA - orange styling)                 │
-│  Science of Experimentation & Analytics                     │
-└─────────────────────────────────────────────────────────────┘
-```
+**4. Update both pages**
+- `src/pages/index.astro` → import projects, loop with `variant="compact"`
+- `packages/build-log/src/pages/index.astro` → import projects, loop with `variant="full"`
+
+**5. Add JSON schema**
+- `packages/shared/src/data/projects.schema.json` for VS Code autocomplete
+
+### Files to Create/Modify
+
+| File | Action |
+|------|--------|
+| `packages/shared/src/data/projects.yaml` | Create |
+| `packages/shared/src/data/projects.schema.json` | Create |
+| `packages/shared/src/lib/projects.ts` | Create |
+| `packages/shared/src/components/ProjectCard.astro` | Create |
+| `src/pages/index.astro` | Modify - use shared component |
+| `packages/build-log/src/pages/index.astro` | Modify - use shared component |
 
 ---
 

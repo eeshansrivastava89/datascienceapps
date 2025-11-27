@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=./projects.schema.json
+
+projects:
+  - id: ab-simulator
+    name: A/B Test Simulator
+    url: /ab-simulator/
+    status: live
+    description: Interactive tool for learning A/B testing fundamentals. Run experiments, visualize statistical significance, and understand the math behind the scenes.
+    shortDescription: Interactive tool for learning A/B testing fundamentals
+    tags:
+      - name: Astro
+        color: orange
+      - name: React
+        color: sky
+      - name: Tailwind
+        color: cyan
+      - name: Plotly
+        color: violet
