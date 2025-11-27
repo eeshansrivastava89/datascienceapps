@@ -21,11 +21,16 @@
 | **9** | **Quick Nav Bar** — Section links | Navigation + scanability. | Low | ✅ Done |
 | **10** | **Mobile Polish** — Responsive fixes | Critical for social sharing. | Medium | ✅ Done |
 | **11** | **Route Rename** — `/build-with-me/` → `/build-log/` | Matches new branding. | Low | ✅ Done |
-| **12** | **Build Log Reframe** — Reorder: Hero → Projects → Learnings → Contribute | 80/20 split. | Medium | ⬜ Not started |
-| **13** | **Latest Learnings Section** — Blog post links | Content is the engine. | Low | ⬜ Not started |
-| **14** | **Current Projects Section** — What's live, stats | Showcase before asking for help. | Low | ⬜ Not started |
-| **15** | **Hero Copy Update** — "The Build Log" framing | Solo-first, AI-native. | Low | ⬜ Not started |
+| **12** | **Build Log Reframe** — Reorder: Hero → Projects → Learnings → Contribute | 80/20 split. | Medium | ✅ Done |
+| **13** | **Latest Learnings Section** — Blog post links | Content is the engine. | Low | ✅ Done |
+| **14** | **Current Projects Section** — What's live, stats | Showcase before asking for help. | Low | ✅ Done |
+| **15** | **Hero Copy Update** — "The Build Log" framing | Solo-first, AI-native. | Low | ✅ Done |
 | **16** | **PostHog Tracking [Later]** — CTA clicks, scroll | Data to optimize. | Low | ⬜ Later |
+| **17** | **Learnings YAML + Schema** — Data file for learnings ([#28](https://github.com/eeshansrivastava89/soma-portfolio/issues/28)) | YAML with JSON schema for VS Code autocomplete. | Low | ✅ Done |
+| **18** | **Learnings Timeline** — Timeline component ([#29](https://github.com/eeshansrivastava89/soma-portfolio/issues/29)) | Visual timeline with type badges, pagination. | Medium | ✅ Done |
+| **19** | **Filter Pills + Pagination** — Project filters ([#30](https://github.com/eeshansrivastava89/soma-portfolio/issues/30)) | Filter by project, 10 items per page. | Low | ⬜ Not started |
+| **20** | **Contribute Page** — Separate `/build-log/contribute/` ([#31](https://github.com/eeshansrivastava89/soma-portfolio/issues/31)) | Move 20% contribution content to own page. | Medium | ⬜ Not started |
+| **21** | **Contribute Nav Link** — Add to header ([#32](https://github.com/eeshansrivastava89/soma-portfolio/issues/32)) | Direct access to contribution page. | Low | ⬜ Not started |
 
 ---
 
@@ -101,5 +106,26 @@
 - Add new sections (Projects, Learnings) above TasksTable
 - Move TasksTable + ContributorCards lower (20% section)
 - Update hero copy
+
+---
+
+### Learnings Infrastructure ✅
+**Completed:** 2025-11-27
+
+**Summary:** Added YAML-based learnings data with timeline component.
+
+**New files:**
+- `packages/shared/src/data/learnings.yaml` — Data file with 2 seed entries
+- `packages/shared/src/data/learnings.schema.json` — JSON schema for VS Code autocomplete
+- `packages/shared/src/lib/learnings.ts` — TypeScript loader with types + helpers
+- `packages/build-log/src/components/LearningsTimeline.tsx` — Timeline component
+
+**Features:**
+- Type badges: 📝 Blog, 📰 Substack, 📄 Doc, 🎥 Video
+- Featured items pinned to top
+- External link indicators
+- Tags display
+- Built-in pagination (10 items per page)
+- Empty state fallback
 
 ---

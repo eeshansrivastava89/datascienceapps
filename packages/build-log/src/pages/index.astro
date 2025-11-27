@@ -3,7 +3,12 @@ import SiteLayout from '../../../shared/src/layouts/SiteLayout.astro'
 import BuildLogView from '../components/BuildLogView'
 import StartHereGuide from '../components/StartHereGuide'
 import VideoModal from '../components/VideoModal'
+import LearningsTimeline from '../components/LearningsTimeline'
 import { validateBuildLogData } from '../lib/validate-build-log'
+import { parseLearningsYaml, getLearnings } from '../../../shared/src/lib/learnings'
+
+// Import YAML as raw string (Vite handles this)
+import learningsYaml from '../../../shared/src/data/learnings.yaml?raw'
 
 // Data source (overwritten by fetch script). Keep defaults for local preview.
 import buildLogData from '../data/build-log-data.json'
@@ -14,6 +19,9 @@ if (!validatedData) {
 }
 
 const { tasks, contributors, recentActivity } = validatedData
+
+// Load learnings from YAML
+const allLearnings = getLearnings(parseLearningsYaml(learningsYaml))
 
 // Compute stats for hero
 const totalContributors = contributors.length
@@ -110,12 +118,7 @@ const openCount = tasks.filter(t => t.status === 'open').length
 				<p class='mt-1 text-sm text-muted-foreground'>Build logs, technical deep-dives, and lessons from shipping.</p>
 			</div>
 
-			<!-- Empty state for now -->
-			<div class='rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center'>
-				<p class='text-sm text-muted-foreground'>
-					First build log post coming soon. <a href='https://github.com/eeshansrivastava89/soma-portfolio' target='_blank' rel='noreferrer' class='text-orange-500 hover:underline'>Explore the code on GitHub</a>.
-				</p>
-			</div>
+			<LearningsTimeline learnings={allLearnings} pageSize={10} client:load />
 		</section>
 
 		<!-- ============================================ -->

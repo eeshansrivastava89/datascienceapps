@@ -1,6 +1,4 @@
 import yaml from 'js-yaml'
-import fs from 'fs'
-import path from 'path'
 
 // Types
 export type LearningType = 'blog' | 'substack' | 'doc' | 'video'
@@ -49,16 +47,13 @@ export const PROJECT_NAMES: Record<ProjectSlug, string> = {
   'general': 'General'
 }
 
-// Load learnings from YAML file (for build-time use)
-export function loadLearningsSync(): Learning[] {
-  const filePath = path.join(process.cwd(), 'packages/shared/src/data/learnings.yaml')
-  
+// Parse YAML string into Learning array (use with Vite raw import)
+export function parseLearningsYaml(yamlContent: string): Learning[] {
   try {
-    const fileContents = fs.readFileSync(filePath, 'utf8')
-    const data = yaml.load(fileContents) as Learning[]
+    const data = yaml.load(yamlContent) as Learning[]
     return data || []
   } catch (e) {
-    console.warn('Could not load learnings.yaml:', e)
+    console.warn('Could not parse learnings YAML:', e)
     return []
   }
 }
