@@ -4,10 +4,10 @@
       "slug": "ab-sim",
       "name": "A/B Simulator",
       "phase": "Active",
-      "openTasks": 7,
-      "claimed": 2,
-      "mergedThisWeek": 18,
-      "highlight": "18 tasks merged"
+      "openTasks": 5,
+      "claimed": 3,
+      "mergedThisWeek": 19,
+      "highlight": "19 tasks merged"
     }
   ],
   "tasks": [
@@ -118,8 +118,18 @@
       "category": [
         "wiring"
       ],
-      "status": "open",
+      "status": "merged",
       "difficulty": "easy",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
       "labels": [
         "enhancement",
         "cat:wiring",
@@ -131,10 +141,10 @@
       "estimatedHours": "1-2",
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/23",
-      "updatedAt": "2025-11-26T18:54:32Z",
-      "closedAt": null,
-      "startDate": null,
-      "targetDate": null
+      "updatedAt": "2025-11-26T19:14:55Z",
+      "closedAt": "2025-11-26T19:13:39Z",
+      "startDate": "2025-11-27",
+      "targetDate": "2025-11-27"
     },
     {
       "id": "22",
@@ -143,14 +153,20 @@
       "category": [
         "frontend"
       ],
-      "status": "open",
+      "status": "claimed",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
       "labels": [
         "project:build-with-me"
       ],
       "skills": [],
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/22",
-      "updatedAt": "2025-11-25T18:04:30Z",
+      "updatedAt": "2025-11-26T19:15:39Z",
       "closedAt": null,
       "startDate": null,
       "targetDate": null
@@ -776,6 +792,12 @@
       ],
       "status": "merged",
       "difficulty": "hard",
+      "assignees": [
+        {
+          "name": "eeshansrivastava89",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+        }
+      ],
       "closedBy": {
         "name": "eeshansrivastava89",
         "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
@@ -788,7 +810,7 @@
       "skills": [],
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/2",
-      "updatedAt": "2025-11-24T15:05:08Z",
+      "updatedAt": "2025-11-26T19:15:55Z",
       "closedAt": "2025-11-24T15:05:08Z",
       "startDate": "2025-11-22",
       "targetDate": "2025-11-24"
@@ -828,6 +850,20 @@
     }
   ],
   "hats": [
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "wiring"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
+        "frontend"
+      ],
+      "status": "claimed"
+    },
     {
       "name": "eeshansrivastava89",
       "hats": [
@@ -959,6 +995,13 @@
     {
       "name": "eeshansrivastava89",
       "hats": [
+        "wiring"
+      ],
+      "status": "merged"
+    },
+    {
+      "name": "eeshansrivastava89",
+      "hats": [
         "frontend"
       ],
       "status": "merged"
@@ -968,12 +1011,30 @@
     {
       "name": "eeshansrivastava89",
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "mergedPRs": 17,
+      "mergedPRs": 19,
       "reviews": 0,
       "recentActivityCount": 10
     }
   ],
   "recentActivity": [
+    {
+      "type": "claimed",
+      "taskId": "22",
+      "taskTitle": "build with me -> add project to the open work table",
+      "user": "eeshansrivastava89",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
+      "timestamp": "2025-11-26T19:15:39Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/22"
+    },
+    {
+      "type": "merged",
+      "taskId": "23",
+      "taskTitle": "Route rename: /build-with-me/ → /build-log/",
+      "user": "eeshansrivastava89",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
+      "timestamp": "2025-11-26T19:13:39Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/23"
+    },
     {
       "type": "claimed",
       "taskId": "17",
@@ -1045,25 +1106,7 @@
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
       "timestamp": "2025-11-25T05:47:07Z",
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/14"
-    },
-    {
-      "type": "merged",
-      "taskId": "13",
-      "taskTitle": "Real-time dashboard optimization with Plotly charts",
-      "user": "eeshansrivastava89",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T05:47:02Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/13"
-    },
-    {
-      "type": "merged",
-      "taskId": "12",
-      "taskTitle": "Build With Me platform overhaul with React components",
-      "user": "eeshansrivastava89",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-25T05:46:57Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/12"
     }
   ],
-  "lastFetchTime": "2025-11-26T19:12:25.717Z"
+  "lastFetchTime": "2025-11-27T04:08:35.780Z"
 }

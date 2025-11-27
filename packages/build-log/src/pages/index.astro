@@ -22,35 +22,35 @@ const openCount = tasks.filter(t => t.status === 'open').length
 ---
 
 <SiteLayout meta={{ title: 'The Build Log' }}>
-	<div class='w-full space-y-8'>
-		<!-- Start Here Guide for new contributors -->
-		<StartHereGuide client:load />
+	<div class='w-full space-y-12'>
 
+		<!-- ============================================ -->
+		<!-- HERO: Solo-first messaging                   -->
+		<!-- ============================================ -->
 		<section class='space-y-4'>
 			<p class='text-xs font-semibold uppercase tracking-[0.3em] text-primary'>The Build Log</p>
 			
-			<!-- Hero: Left content + Right video -->
 			<div class='grid gap-6 lg:grid-cols-[1fr_320px]'>
 				<div class='space-y-4'>
-					<h1 class='text-2xl font-bold text-foreground sm:text-4xl'>Learn AI-Native Data Science. Ship Real Products & Analyze Data. Build Your Portfolio.</h1>
+					<h1 class='text-2xl font-bold text-foreground sm:text-4xl'>Learning AI-native data science by building products</h1>
 					<p class='max-w-2xl text-base text-muted-foreground'>
-						Claim a task, open a PR, get code review, and ship. Real projects, real GitHub history, zero cost.
+						I'm building full-stack products with AI tools, then doing data science on real user data. Everything is open: the code, the decisions, the mistakes.
 					</p>
 					
-					<!-- Stats bar -->
-					<div class='flex flex-wrap gap-4 text-sm'>
-						<div class='flex items-center gap-1.5'>
-							<span class='font-bold text-foreground'>{totalContributors}</span>
-							<span class='text-muted-foreground'>contributors</span>
-						</div>
-						<div class='flex items-center gap-1.5'>
-							<span class='font-bold text-emerald-600'>{mergedCount}</span>
-							<span class='text-muted-foreground'>PRs merged</span>
-						</div>
-						<div class='flex items-center gap-1.5'>
-							<span class='font-bold text-orange-500'>{openCount}</span>
-							<span class='text-muted-foreground'>open tasks</span>
-						</div>
+					<!-- CTAs -->
+					<div class='flex flex-wrap gap-3'>
+						<a
+							href='#projects'
+							class='inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-400'
+						>
+							See Current Project
+						</a>
+						<a
+							href='#contribute'
+							class='inline-flex items-center gap-2 rounded-full border border-border bg-primary-foreground px-5 py-2.5 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
+						>
+							Want to Contribute?
+						</a>
 					</div>
 				</div>
 
@@ -59,11 +59,99 @@ const openCount = tasks.filter(t => t.status === 'open').length
 					<VideoModal client:load />
 				</div>
 			</div>
-
 		</section>
 
-		<BuildLogView tasks={tasks} contributors={contributors} recentActivity={recentActivity} client:load />
+		<!-- ============================================ -->
+		<!-- 80% SECTION: What I'm Building               -->
+		<!-- ============================================ -->
+		<section id='projects' class='space-y-6'>
+			<div>
+				<h2 class='text-2xl font-bold text-foreground'>What I'm Building</h2>
+				<p class='mt-1 text-sm text-muted-foreground'>Live projects with real users and real data.</p>
+			</div>
 
+			<!-- A/B Simulator Card -->
+			<div class='rounded-2xl border border-border bg-primary-foreground p-6 shadow-lg shadow-black/5 transition hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-xl'>
+				<div class='flex flex-wrap items-start justify-between gap-4'>
+					<div class='space-y-3'>
+						<div class='flex items-center gap-3'>
+							<h3 class='text-xl font-semibold text-foreground'>A/B Test Simulator</h3>
+							<span class='inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-500/20 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300'>
+								<span class='h-1.5 w-1.5 rounded-full bg-emerald-500'></span>
+								Live
+							</span>
+						</div>
+						<p class='max-w-xl text-sm text-muted-foreground'>
+							Interactive tool for learning A/B testing fundamentals. Run experiments, visualize statistical significance, and understand the math behind the scenes.
+						</p>
+						<div class='flex flex-wrap gap-2'>
+							<span class='rounded-full bg-orange-100 dark:bg-orange-500/20 px-2.5 py-1 text-xs font-medium text-orange-700 dark:text-orange-300'>Astro</span>
+							<span class='rounded-full bg-sky-100 dark:bg-sky-500/20 px-2.5 py-1 text-xs font-medium text-sky-700 dark:text-sky-300'>React</span>
+							<span class='rounded-full bg-cyan-100 dark:bg-cyan-500/20 px-2.5 py-1 text-xs font-medium text-cyan-700 dark:text-cyan-300'>Tailwind</span>
+							<span class='rounded-full bg-violet-100 dark:bg-violet-500/20 px-2.5 py-1 text-xs font-medium text-violet-700 dark:text-violet-300'>Plotly</span>
+						</div>
+					</div>
+					<a
+						href='/ab-simulator/'
+						class='inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-400'
+					>
+						Try It →
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- ============================================ -->
+		<!-- 80% SECTION: What I've Learned               -->
+		<!-- ============================================ -->
+		<section id='learnings' class='space-y-6'>
+			<div>
+				<h2 class='text-2xl font-bold text-foreground'>What I've Learned</h2>
+				<p class='mt-1 text-sm text-muted-foreground'>Build logs, technical deep-dives, and lessons from shipping.</p>
+			</div>
+
+			<!-- Empty state for now -->
+			<div class='rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center'>
+				<p class='text-sm text-muted-foreground'>
+					First build log post coming soon. <a href='https://github.com/eeshansrivastava89/soma-portfolio' target='_blank' rel='noreferrer' class='text-orange-500 hover:underline'>Explore the code on GitHub</a>.
+				</p>
+			</div>
+		</section>
+
+		<!-- ============================================ -->
+		<!-- 20% SECTION: Want to Contribute?             -->
+		<!-- ============================================ -->
+		<section id='contribute' class='space-y-6 border-t border-border pt-12'>
+			<div class='flex items-center justify-between'>
+				<div>
+					<h2 class='text-2xl font-bold text-foreground'>Want to Contribute?</h2>
+					<p class='mt-1 text-sm text-muted-foreground'>Claim a task, open a PR, get code review, and ship. Real projects, real GitHub history.</p>
+				</div>
+				<div class='hidden sm:flex items-center gap-4 text-sm'>
+					<div class='flex items-center gap-1.5'>
+						<span class='font-bold text-foreground'>{totalContributors}</span>
+						<span class='text-muted-foreground'>contributors</span>
+					</div>
+					<div class='flex items-center gap-1.5'>
+						<span class='font-bold text-emerald-600'>{mergedCount}</span>
+						<span class='text-muted-foreground'>merged</span>
+					</div>
+					<div class='flex items-center gap-1.5'>
+						<span class='font-bold text-orange-500'>{openCount}</span>
+						<span class='text-muted-foreground'>open</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Start Here Guide for new contributors -->
+			<StartHereGuide client:load />
+
+			<BuildLogView tasks={tasks} contributors={contributors} recentActivity={recentActivity} client:load />
+		</section>
+
+		<!-- ============================================ -->
+		<!-- How to Ship / FAQ                            -->
+		<!-- ============================================ -->
 		<section id='how-to' class='grid gap-4 lg:grid-cols-[2fr_1fr]'>
 			<div class='rounded-2xl border border-border bg-primary-foreground p-4 shadow-lg shadow-black/5'>
 				<h2 class='text-xl font-semibold text-foreground'>How to Ship</h2>
