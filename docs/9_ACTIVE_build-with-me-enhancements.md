@@ -28,9 +28,68 @@
 | **16** | **PostHog Tracking [Later]** — CTA clicks, scroll | Data to optimize. | Low | ⬜ Later |
 | **17** | **Learnings YAML + Schema** — Data file for learnings ([#28](https://github.com/eeshansrivastava89/soma-portfolio/issues/28)) | YAML with JSON schema for VS Code autocomplete. | Low | ✅ Done |
 | **18** | **Learnings Timeline** — Timeline component ([#29](https://github.com/eeshansrivastava89/soma-portfolio/issues/29)) | Visual timeline with type badges, pagination. | Medium | ✅ Done |
-| **19** | **Filter Pills + Pagination** — Project filters ([#30](https://github.com/eeshansrivastava89/soma-portfolio/issues/30)) | Filter by project, 10 items per page. | Low | ⬜ Not started |
-| **20** | **Contribute Page** — Separate `/build-log/contribute/` ([#31](https://github.com/eeshansrivastava89/soma-portfolio/issues/31)) | Move 20% contribution content to own page. | Medium | ⬜ Not started |
-| **21** | **Contribute Nav Link** — Add to header ([#32](https://github.com/eeshansrivastava89/soma-portfolio/issues/32)) | Direct access to contribution page. | Low | ⬜ Not started |
+| **19** | **Filter Pills + Pagination** — Project filters ([#30](https://github.com/eeshansrivastava89/soma-portfolio/issues/30)) | Filter by project, 10 items per page. | Low | ✅ Done |
+| **20** | **Contribute Page** — Separate `/build-log/contribute/` ([#31](https://github.com/eeshansrivastava89/soma-portfolio/issues/31)) | Move 20% contribution content to own page. | Medium | ✅ Done |
+| **21** | **Contribute Nav Link** — Add to header ([#32](https://github.com/eeshansrivastava89/soma-portfolio/issues/32)) | Direct access to contribution page. | Low | ✅ Done |
+
+---
+
+## Home Page Redesign
+
+**Goal:** Redesign home page to showcase Build Log as the main differentiator, with compact hero and clear CTAs.
+
+### Tasks
+
+| # | Task | Description | Status |
+|---|------|-------------|--------|
+| **22** | **Hero card redesign** ([#33](https://github.com/eeshansrivastava89/soma-portfolio/issues/33)) | Horizontal layout: photo left, name/tagline/socials right | ⬜ Not started |
+| **23** | **Build Log showcase** ([#34](https://github.com/eeshansrivastava89/soma-portfolio/issues/34)) | Current projects + learnings preview section | ⬜ Not started |
+| **24** | **Contribute CTA** ([#35](https://github.com/eeshansrivastava89/soma-portfolio/issues/35)) | Compact card with stats linking to /build-log/contribute | ⬜ Not started |
+| **25** | **Substack CTA** ([#36](https://github.com/eeshansrivastava89/soma-portfolio/issues/36)) | Keep orange styling, move to bottom | ⬜ Not started |
+| **26** | **Remove blog sections** ([#37](https://github.com/eeshansrivastava89/soma-portfolio/issues/37)) | Delete Latest Post + Explore by Topic | ⬜ Not started |
+| **27** | **Update tagline** ([#38](https://github.com/eeshansrivastava89/soma-portfolio/issues/38)) | New tagline in index.astro + about.astro | ⬜ Not started |
+
+### New Tagline
+
+**Old:** "Data science leader who likes to write, build and teach"
+
+**New:** "Data science leader building products with AI and writing about the journey"
+
+### Page Structure
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  HERO CARD (full-width, compact)                            │
+│  ┌───────┐  Eeshan S.                                       │
+│  │ photo │  Data science leader building products with AI   │
+│  └───────┘  and writing about the journey                   │
+│             [GitHub] [LinkedIn] [X] [Substack]              │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  THE BUILD LOG (main showcase)                              │
+│  "Learning AI-native product development in public"         │
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐                   │
+│  │ A/B Simulator   │  │ What I've       │                   │
+│  │ ✅ Live         │  │ Learned         │                   │
+│  │ [Try It →]      │  │ (2 posts)       │                   │
+│  └─────────────────┘  └─────────────────┘                   │
+│                                                             │
+│  [Explore the Build Log →]                                  │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  WANT TO CONTRIBUTE? (compact CTA card)                     │
+│  Claim a task, open a PR, ship real code.                   │
+│  [X contributors] [Y open tasks] [See Open Tasks →]         │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  NEWSLETTER (Substack CTA - orange styling)                 │
+│  Science of Experimentation & Analytics                     │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
