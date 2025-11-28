@@ -34,7 +34,7 @@ export default function SearchBar({ tasks, onFilteredTasks }: SearchBarProps) {
 				placeholder='Search tasks by title, category, status...'
 				value={query}
 				onChange={(e) => setQuery(e.target.value)}
-				className='w-full rounded-lg border border-border bg-primary-foreground py-2 pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20'
+				className='w-full border border-border bg-primary-foreground py-2 pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20'
 			/>
 			{query && (
 				<button

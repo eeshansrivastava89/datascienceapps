@@ -50,13 +50,13 @@ const openCount = tasks.filter(t => t.status === 'open').length
 				<div class='flex flex-wrap gap-3'>
 					<a
 						href='#projects'
-						class='inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
+						class='inline-flex items-center gap-2 bg-foreground px-5 py-2.5 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
 					>
 						See Current Project
 					</a>
 					<a
 						href='/build-log/contribute/'
-						class='inline-flex items-center gap-2 rounded-full border border-border bg-primary-foreground px-5 py-2.5 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
+						class='inline-flex items-center gap-2 border border-border bg-primary-foreground px-5 py-2.5 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
 					>
 						Want to Contribute?
 					</a>
@@ -98,11 +98,11 @@ const openCount = tasks.filter(t => t.status === 'open').length
 		<section id='contribute' class='border-t border-border pt-12'>
 			<a 
 				href='/build-log/contribute/' 
-				class='group block rounded-2xl border border-border bg-primary-foreground p-6 shadow-lg shadow-black/5 transition hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-xl'
+				class='group block'
 			>
 				<div class='flex flex-wrap items-center justify-between gap-4'>
 					<div class='space-y-2'>
-						<h2 class='text-xl font-semibold text-foreground transition'>Want to Contribute?</h2>
+						<h2 class='text-2xl font-bold text-foreground'>Want to Contribute?</h2>
 						<p class='text-sm text-muted-foreground'>
 							Claim a task, open a PR, get code review, and ship. Real projects, real GitHub history.
 						</p>
@@ -111,7 +111,7 @@ const openCount = tasks.filter(t => t.status === 'open').length
 							<span><span class='font-bold text-foreground'>{openCount}</span> <span class='text-muted-foreground'>open tasks</span></span>
 						</div>
 					</div>
-					<span class='inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background shadow-sm transition group-hover:bg-foreground/90'>
+					<span class='inline-flex items-center gap-2 bg-foreground px-5 py-2.5 text-sm font-semibold text-background shadow-sm transition group-hover:bg-foreground/90'>
 						See Open Tasks →
 					</span>
 				</div>

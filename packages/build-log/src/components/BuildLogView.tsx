@@ -46,25 +46,25 @@ export default function BuildLogView({
 				<div className='flex flex-wrap items-center gap-2'>
 					<a
 						href='#open-work'
-						className='rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
+						className='bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
 					>
 						Open Work
 					</a>
 					<a
 						href='#contributors'
-						className='rounded-full border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
+						className='border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
 					>
 						Contributors
 					</a>
 					<a
 						href='#how-to'
-						className='rounded-full border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
+						className='border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
 					>
 						How to Ship
 					</a>
 					<a
 						href='#faq'
-						className='rounded-full border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
+						className='border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:border-foreground/30'
 					>
 						FAQ
 					</a>
@@ -72,7 +72,7 @@ export default function BuildLogView({
 				<button
 					onClick={handleRefresh}
 					disabled={isRefreshing}
-					className='inline-flex items-center gap-1.5 rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-600 disabled:opacity-50'
+					className='inline-flex items-center gap-1.5 bg-sky-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-600 disabled:opacity-50'
 				>
 					<RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
 					{isRefreshing ? 'Refreshing...' : 'Refresh'}

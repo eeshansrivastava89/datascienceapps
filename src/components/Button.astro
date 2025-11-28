@@ -6,9 +6,8 @@ const { as: Tag = 'a', class: className, title, href, style = 'button' } = Astro
 <Tag
 	class={cn(
 		className,
-		'inline-flex items-center gap-x-1 rounded-lg bg-primary-foreground border border-border px-2 py-1 text-sm transition-all hover:bg-input',
-		!href && 'cursor-default',
-		style === 'pill' && 'rounded-xl'
+		'inline-flex items-center gap-x-1 bg-primary-foreground border border-border px-2 py-1 text-sm transition-all hover:bg-input',
+		!href && 'cursor-default'
 	)}
 	href={href}
 	data-astro-prefetch

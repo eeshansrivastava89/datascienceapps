@@ -41,7 +41,7 @@ export default function LearningsTimeline({ learnings, pageSize = 10 }: Props) {
 
   if (learnings.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center">
+      <div className="border border-dashed border-border bg-muted/30 p-8 text-center">
         <p className="text-sm text-muted-foreground">
           No learnings yet.{' '}
           <a
@@ -65,7 +65,7 @@ export default function LearningsTimeline({ learnings, pageSize = 10 }: Props) {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleFilterChange('all')}
-            className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+            className={`px-3 py-1.5 text-xs font-medium transition ${
               selectedProject === 'all'
                 ? 'bg-foreground text-background'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -79,7 +79,7 @@ export default function LearningsTimeline({ learnings, pageSize = 10 }: Props) {
               <button
                 key={project}
                 onClick={() => handleFilterChange(project)}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                className={`px-3 py-1.5 text-xs font-medium transition ${
                   selectedProject === project
                     ? 'bg-foreground text-background'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -108,7 +108,7 @@ export default function LearningsTimeline({ learnings, pageSize = 10 }: Props) {
           <button
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="rounded-lg border border-border bg-primary-foreground px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-foreground/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border border-border bg-primary-foreground px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-foreground/30 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             ← Prev
           </button>
@@ -118,7 +118,7 @@ export default function LearningsTimeline({ learnings, pageSize = 10 }: Props) {
           <button
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="rounded-lg border border-border bg-primary-foreground px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-foreground/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="border border-border bg-primary-foreground px-3 py-1.5 text-sm font-medium text-foreground transition hover:border-foreground/30 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next →
           </button>
@@ -143,7 +143,7 @@ function TimelineItem({ learning }: { learning: Learning }) {
       <div className="flex-1 space-y-2">
         {/* Header row: type badge + date */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${typeConfig.color}`}>
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium ${typeConfig.color}`}>
             <span>{typeConfig.emoji}</span>
             <span>{typeConfig.label}</span>
           </span>
@@ -151,7 +151,7 @@ function TimelineItem({ learning }: { learning: Learning }) {
             {formatLearningDate(learning.date)}
           </span>
           {learning.featured && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+            <span className="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
               ⭐ Featured
             </span>
           )}
@@ -185,7 +185,7 @@ function TimelineItem({ learning }: { learning: Learning }) {
             {learning.tags.map(tag => (
               <span
                 key={tag}
-                className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400"
+                className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400"
               >
                 {tag}
               </span>

@@ -93,7 +93,7 @@ export default function TasksView({ tasks }: TasksViewProps) {
 						<button
 							key={id}
 							onClick={() => toggleQuickFilter(id)}
-							className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+							className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition ${
 								isActive
 									? 'bg-foreground text-background'
 									: 'border border-border bg-muted/50 text-muted-foreground hover:border-foreground/50 hover:text-foreground'

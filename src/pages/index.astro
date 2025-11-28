@@ -51,7 +51,7 @@ const featuredPosts = allPosts
 		<!-- ============================================ -->
 		<!-- HERO: Compact horizontal card                -->
 		<!-- ============================================ -->
-		<section class='rounded-2xl border border-border bg-primary-foreground p-6 shadow-lg shadow-black/5'>
+		<section class='border border-border bg-primary-foreground p-6 shadow-lg shadow-black/5'>
 			<div class='flex flex-col items-center gap-6 sm:flex-row sm:items-start'>
 				<!-- Profile Image -->
 				<Image
@@ -105,7 +105,7 @@ const featuredPosts = allPosts
 					{featuredPosts.map((post) => (
 						<a
 							href={`/blog/${post.slug}/`}
-							class='group block rounded-xl border border-border bg-primary-foreground p-4 transition hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-sm'
+							class='group block border-b border-border pb-3 last:border-b-0 last:pb-0'
 						>
 							<div class='flex items-start justify-between gap-4'>
 								<div class='space-y-1'>
@@ -128,12 +128,12 @@ const featuredPosts = allPosts
 		<section class='space-y-4'>
 			<h2 class='text-2xl font-bold text-foreground'>My Build Log</h2>
 			
-			<div class='rounded-2xl border border-border bg-primary-foreground p-5 shadow-lg shadow-black/5'>
+			<div>
 				<div class='flex flex-wrap items-start justify-between gap-4'>
 					<p class='text-sm text-muted-foreground'>Learning AI-native product development in public — and documenting everything.</p>
 					<a
 						href='/build-log/'
-						class='inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
+						class='inline-flex shrink-0 items-center gap-2 bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
 					>
 						Explore my Build Log →
 					</a>
@@ -154,7 +154,7 @@ const featuredPosts = allPosts
 					<h3 class='mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground'>What I've Learned</h3>
 					<a
 						href='/build-log/#learnings'
-						class='group block rounded-xl border border-border bg-background p-4 transition hover:border-foreground/30 hover:shadow-sm'
+						class='group block'
 					>
 						<div class='flex items-center justify-between'>
 							<div class='flex items-center gap-4'>
@@ -177,7 +177,7 @@ const featuredPosts = allPosts
 		<section class='space-y-4'>
 			<h2 class='text-2xl font-bold text-foreground'>Want to learn by contributing?</h2>
 			
-			<div class='rounded-2xl border border-border bg-primary-foreground p-5 shadow-lg shadow-black/5'>
+			<div>
 				<div class='flex flex-wrap items-center justify-between gap-4'>
 					<div class='space-y-1'>
 						<p class='text-sm text-muted-foreground'>Claim a task, open a PR, get code review, and ship. Real projects, real GitHub history.</p>
@@ -188,7 +188,7 @@ const featuredPosts = allPosts
 					</div>
 					<a
 						href='/build-log/contribute/'
-						class='inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
+						class='inline-flex shrink-0 items-center gap-2 bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
 					>
 						See Open Tasks →
 					</a>
@@ -202,10 +202,10 @@ const featuredPosts = allPosts
 		<section class='space-y-4'>
 			<h2 class='text-2xl font-bold text-foreground'>Read my Newsletter</h2>
 			
-			<div class='rounded-2xl border border-border bg-primary-foreground p-5 shadow-lg shadow-black/5'>
+			<div class='border border-border bg-primary-foreground p-5 shadow-lg shadow-black/5'>
 				<div class='flex flex-wrap items-center justify-between gap-4'>
 					<div class='flex items-center gap-3'>
-						<div class='flex-shrink-0 rounded-lg bg-foreground p-2'>
+						<div class='flex-shrink-0 bg-foreground p-2'>
 							<Icon name='simple-icons:substack' class='h-5 w-5 text-background' />
 						</div>
 						<div>
@@ -216,7 +216,7 @@ const featuredPosts = allPosts
 					<a
 						href='https://scienceofexperimentation.substack.com'
 						target='_blank'
-						class='inline-flex shrink-0 items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
+						class='inline-flex shrink-0 items-center gap-2 bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
 					>
 						Subscribe →
 					</a>

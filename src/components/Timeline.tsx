@@ -17,7 +17,7 @@ export default function Timeline({ items }: TimelineProps) {
 			{items.map((item, i) => (
 				<div
 					key={i}
-					className='flex items-center gap-6 rounded-2xl border border-border bg-primary-foreground px-5 py-3'
+					className='flex items-center gap-6 border border-border bg-primary-foreground px-5 py-3'
 				>
 					{/* Logo - Simple left side */}
 					{item.logo && (

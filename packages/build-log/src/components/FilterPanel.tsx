@@ -48,7 +48,7 @@ export default function FilterPanel({
 		<div className='relative'>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className='flex items-center gap-2 rounded-lg border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:border-foreground/50 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-foreground/20'
+				className='flex items-center gap-2 border border-border bg-primary-foreground px-4 py-2 text-sm font-medium text-foreground transition hover:border-foreground/50 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-foreground/20'
 			>
 				<Filter className='h-4 w-4' />
 				Filters
@@ -60,7 +60,7 @@ export default function FilterPanel({
 			</button>
 
 			{isOpen && (
-				<div className='absolute right-0 z-10 mt-2 w-80 rounded-lg border border-border bg-primary-foreground p-4 shadow-lg'>
+				<div className='absolute right-0 z-10 mt-2 w-80 border border-border bg-primary-foreground p-4 shadow-lg'>
 					<div className='mb-4 flex items-center justify-between'>
 						<h3 className='text-sm font-semibold text-foreground'>Filter Tasks</h3>
 						<div className='flex items-center gap-2'>

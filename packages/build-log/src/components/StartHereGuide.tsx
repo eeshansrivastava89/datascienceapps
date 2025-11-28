@@ -32,7 +32,7 @@ export default function StartHereGuide() {
 	const [isExpanded, setIsExpanded] = useState(false)
 
 	return (
-		<div className='rounded-2xl border border-purple-200 dark:border-purple-400/40 bg-gradient-to-r from-purple-50 to-slate-50 dark:from-purple-900/50 dark:to-slate-900/40 shadow-lg shadow-purple-500/5'>
+		<div className='bg-gradient-to-r from-purple-50 to-slate-50 dark:from-purple-900/50 dark:to-slate-900/40'>
 			<button
 				onClick={() => setIsExpanded(!isExpanded)}
 				className='flex w-full items-center justify-between px-4 py-3'

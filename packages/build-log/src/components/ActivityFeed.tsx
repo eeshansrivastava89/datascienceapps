@@ -72,7 +72,7 @@ export default function ActivityFeed({ activities, initialLimit = DEFAULT_LIMIT 
 	const displayedActivities = activities.slice(startIndex, startIndex + PAGE_SIZE)
 
 	return (
-		<section className='rounded-2xl border border-border bg-primary-foreground p-4 shadow-lg shadow-black/5'>
+		<section className='border border-border bg-primary-foreground p-4 shadow-lg shadow-black/5'>
 			<div className='mb-3 flex items-center gap-2'>
 				<div className='h-2 w-2 animate-pulse rounded-full bg-emerald-500' />
 				<h2 className='text-sm font-semibold text-foreground'>Recent Activity</h2>

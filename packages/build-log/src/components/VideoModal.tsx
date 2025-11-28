@@ -21,7 +21,7 @@ export default function VideoModal({
 			{/* Thumbnail with play button */}
 			<button
 				onClick={() => setIsOpen(true)}
-				className='group relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:ring-offset-2'
+				className='group relative aspect-video w-full overflow-hidden bg-black shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:ring-offset-2'
 			>
 				<img
 					src={thumbnailUrl}
@@ -35,7 +35,7 @@ export default function VideoModal({
 					</div>
 				</div>
 				{/* Label */}
-				<div className='absolute bottom-3 left-3 rounded-lg bg-black/70 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm'>
+				<div className='absolute bottom-3 left-3 bg-black/70 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm'>
 					Watch: How it works (2 min)
 				</div>
 			</button>
@@ -59,7 +59,7 @@ export default function VideoModal({
 						</button>
 						
 						{/* Video player */}
-						<div className='aspect-video overflow-hidden rounded-2xl bg-black shadow-2xl'>
+						<div className='aspect-video overflow-hidden bg-black shadow-2xl'>
 							<video
 								src={videoUrl}
 								controls
