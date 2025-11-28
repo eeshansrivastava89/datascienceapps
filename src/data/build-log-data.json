@@ -4,10 +4,10 @@
       "slug": "ab-sim",
       "name": "A/B Simulator",
       "phase": "Active",
-      "openTasks": 1,
+      "openTasks": 0,
       "claimed": 5,
-      "mergedThisWeek": 44,
-      "highlight": "44 tasks merged"
+      "mergedThisWeek": 45,
+      "highlight": "45 tasks merged"
     }
   ],
   "tasks": [
@@ -18,15 +18,19 @@
       "category": [
         "frontend"
       ],
-      "status": "open",
+      "status": "merged",
+      "closedBy": {
+        "name": "eeshansrivastava89",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4"
+      },
       "labels": [
         "enhancement"
       ],
       "skills": [],
       "isGoodFirstIssue": false,
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/50",
-      "updatedAt": "2025-11-28T19:58:25Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-28T20:07:13Z",
+      "closedAt": "2025-11-28T20:06:53Z",
       "startDate": null,
       "targetDate": null
     },
@@ -2015,6 +2019,15 @@
   "recentActivity": [
     {
       "type": "merged",
+      "taskId": "50",
+      "taskTitle": "refactor: Simplify site structure (Phase 8)",
+      "user": "eeshansrivastava89",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
+      "timestamp": "2025-11-28T20:06:53Z",
+      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/50"
+    },
+    {
+      "type": "merged",
       "taskId": "49",
       "taskTitle": "refactor: Merge build-log package into main site",
       "user": "eeshansrivastava89",
@@ -2093,16 +2106,7 @@
       "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
       "timestamp": "2025-11-28T15:53:24Z",
       "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/41"
-    },
-    {
-      "type": "merged",
-      "taskId": "40",
-      "taskTitle": "Remove border beam animation from Build Log nav",
-      "user": "eeshansrivastava89",
-      "avatarUrl": "https://avatars.githubusercontent.com/u/77134595?v=4",
-      "timestamp": "2025-11-28T15:53:22Z",
-      "githubUrl": "https://github.com/eeshansrivastava89/soma-portfolio/issues/40"
     }
   ],
-  "lastFetchTime": "2025-11-28T20:05:08.996Z"
+  "lastFetchTime": "2025-11-28T20:13:04.153Z"
 }
