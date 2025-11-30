@@ -1,5 +1,5 @@
 # Fly.io configuration for SOMA Portfolio (Astro static site)
-app = "eeshan-portfolio"
+app = "soma-portfolio"
 primary_region = "dfw"
 
 [build]
