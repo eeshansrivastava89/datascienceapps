@@ -4,6 +4,10 @@ on:
   schedule:
     # Weekly on Sunday at 6am UTC
     - cron: '0 6 * * 0'
+  push:
+    branches: [main]
+    paths:
+      - 'analytics/notebooks/**'
   workflow_dispatch:
     inputs:
       notebook_filter:
