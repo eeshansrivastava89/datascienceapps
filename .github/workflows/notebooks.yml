@@ -53,7 +53,10 @@ jobs:
           fi
           
           echo "Found notebooks: $NOTEBOOKS"
-          echo "matrix={\"include\":$NOTEBOOKS}" >> $GITHUB_OUTPUT
+          
+          # Compact JSON and set output (escape for GH Actions)
+          MATRIX=$(echo "{\"include\":$NOTEBOOKS}" | jq -c .)
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
 
   run-notebook:
     needs: discover-notebooks
