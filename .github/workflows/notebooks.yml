@@ -128,20 +128,36 @@ jobs:
       
       - name: Move artifacts to public folder
         run: |
+          # Install yq for YAML parsing
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          
           # Create analysis directory
           mkdir -p public/analysis
           
-          # Move each artifact to correct location
+          # Move each artifact to correct location based on outputPath from config
           for dir in artifacts/notebook-*/; do
             if [ -d "$dir" ]; then
-              # Find HTML files and determine their destination from filename
-              find "$dir" -name "*.html" -exec cp {} public/analysis/ \; 2>/dev/null || true
+              # Extract notebook id from directory name (artifacts/notebook-<id>/)
+              NOTEBOOK_ID=$(basename "$dir" | sed 's/notebook-//')
+              
+              # Look up outputPath from projects.yaml
+              OUTPUT_PATH=$(yq -r ".projects[].notebooks[]? | select(.id == \"$NOTEBOOK_ID\") | .outputPath" packages/shared/src/data/projects.yaml | head -1)
+              
+              if [ -n "$OUTPUT_PATH" ] && [ "$OUTPUT_PATH" != "null" ]; then
+                # Create nested directory and copy
+                mkdir -p "public/analysis/$OUTPUT_PATH"
+                find "$dir" -name "*.html" -exec cp {} "public/analysis/$OUTPUT_PATH/" \; 2>/dev/null || true
+                echo "✓ Copied to public/analysis/$OUTPUT_PATH/"
+              else
+                # Fallback: flat copy
+                find "$dir" -name "*.html" -exec cp {} public/analysis/ \; 2>/dev/null || true
+              fi
             fi
           done
           
-          # Restructure based on projects.yaml outputPaths
-          # For now, simple flat structure - can enhance later
-          ls -la public/analysis/ || echo "No analysis files generated"
+          # Show what we generated
+          find public/analysis -name "*.html" -type f
       
       - name: Commit and push
         run: |
