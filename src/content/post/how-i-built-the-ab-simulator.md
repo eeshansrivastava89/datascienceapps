@@ -1,11 +1,11 @@
 ---
 title: 'From Parameters to Product: How I Built the A/B Simulator'
 description: 'A technical deep-dive into pivoting from a data science blog to a full-stack product, and the architectural lessons learned along the way.'
-publishDate: '2025-11-22'
-draft: true
+publishDate: '2025-12-07'
+draft: false
 featured: true
 category: technical
-tags: ['engineering', 'analytics', 'astro', 'supabase']
+tags: ['engineering', 'analytics', 'astro', 'supabase', 'posthog']
 projectId: ab-simulator
 ---
 
@@ -95,7 +95,29 @@ The A/B Simulator is just the first step. It proves that you can run a full prod
 - **Frontend:** Astro 4.4 + React Islands
 - **Styling:** Tailwind CSS (No custom CSS)
 - **Experiments:** PostHog Feature Flags (`memory-game-difficulty`)
-- **Backend:** Supabase (Postgres + Edge Functions)
+- **Backend:** Supabase (Postgres + Edge Functions + PostgREST)
+- **Analytics:** PostHog → Supabase batch export → Materialized views
 - **Viz:** Plotly.js (Client-side rendering)
+- **Analysis:** Python notebooks (pandas, statsmodels) auto-rendered via GitHub Actions
 
-[Check out the code on GitHub](https://github.com/eeshansrivastava89/ds-apps-main) or [Try the Simulator](/ab-simulator).
+## Phase 5: The Analysis Pipeline
+
+Building the product was only half the story. I needed to _analyze_ the experiment I was running.
+
+Most tutorials stop at "deploy and collect data." But real experimentation requires:
+
+- **Sanity checks:** Is the randomization working? (It wasn't—I found a 33/67 split instead of 50/50)
+- **Proper hypothesis testing:** Not just p-values, but confidence intervals and effect sizes
+- **Power analysis:** Did I even have enough users to detect a meaningful difference?
+
+I built a [full analysis notebook](/projects/ab-simulator/analysis/ab-test-analysis) that runs end-to-end: Supabase data pull → EDA → hypothesis definition → t-tests → regression → CUPED variance reduction → power analysis → conclusions.
+
+The notebook auto-refreshes weekly via GitHub Actions. Every time someone plays the game, the analysis updates. No manual intervention.
+
+**Key finding:** With only 49 completions, I had 12.8% power to detect the true effect. The experiment was underpowered from the start—a lesson I wouldn't have learned without doing the full analysis.
+
+---
+
+The A/B Simulator isn't a toy demo. It's a production system with real tracking, real experiments, and real analysis. It proves that a single developer can ship the full data science lifecycle—from product to pipeline to publication.
+
+[Explore the Project](/projects/ab-simulator) | [View the Analysis](/projects/ab-simulator/analysis/ab-test-analysis) | [Try the Game](/ab-simulator)

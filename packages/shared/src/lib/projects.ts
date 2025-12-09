@@ -18,6 +18,15 @@ export interface ProjectStats {
   metrics: ProjectStatMetric[]
 }
 
+export interface ProjectNotebook {
+  id: string
+  title: string
+  description: string
+  path: string
+  schedule: 'weekly' | 'daily' | 'manual'
+  outputPath: string
+}
+
 export interface Project {
   id: string
   name: string
@@ -29,6 +38,7 @@ export interface Project {
   tags: ProjectTag[]
   stats?: ProjectStats
   aiStory?: string[] // Bullets describing how AI helped build this project
+  notebooks?: ProjectNotebook[] // Jupyter notebooks associated with this project
 }
 
 // Status badge configuration

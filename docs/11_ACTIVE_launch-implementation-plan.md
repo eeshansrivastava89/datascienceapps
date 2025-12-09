@@ -279,8 +279,50 @@ Commit HTML to public/analysis/ → Fly deploys with fresh HTML
 
 | ✓ | Task | Notes |
 |---|------|-------|
-| ☐ | "How I Built the A/B Simulator" post | Technical deep-dive |
-| ☐ | Launch announcement post | LinkedIn + Substack cross-post |
+| ✅ | "How I Built the A/B Simulator" post | Published - technical deep-dive |
+| ☐ | Launch announcement post | Draft below, ready for LinkedIn + Substack |
+
+---
+
+## Launch Announcement Draft
+
+**Title:** I Built an A/B Testing Simulator (and Analyzed My Own Experiment)
+
+**Hook (LinkedIn/Substack intro):**
+
+Most A/B testing tutorials teach you to analyze someone else's data.
+
+I wanted to do it differently: build the product, run a real experiment, and publish the full analysis—all as one person.
+
+So I built the A/B Testing Memory Game.
+
+**The Product:**
+- A "Find the Pineapple" memory game with two difficulty variants
+- Real PostHog tracking, real Supabase backend, real experiment running 24/7
+- 200+ games played, data flowing into dashboards automatically
+
+**The Experiment:**
+- Variant A: 9 cards (easier)
+- Variant B: 12 cards (harder)
+- Hypothesis: Harder = longer completion times, but maybe better engagement?
+
+**The Analysis:**
+- End-to-end statistical analysis: t-tests, regression, CUPED variance reduction, power analysis
+- Auto-refreshing notebook rendered as HTML on my site
+- Key finding: With only 49 completions, I had 12.8% power. The experiment was underpowered from the start.
+
+**The Verdict:**
+Don't ship Variant B. Completion rate dropped 23%, repeat rate dropped 15.5%, and the time difference wasn't statistically significant (p=0.42).
+
+But the real lesson isn't the result—it's the process. Real data science isn't analyzing clean CSVs. It's building the product, breaking the tracking, fixing the pipeline, and then doing the analysis.
+
+**Links:**
+- 🎮 Play the game: eeshans.com/ab-simulator
+- 📊 View the analysis: eeshans.com/projects/ab-simulator/analysis/ab-test-analysis
+- 📝 How I built it: eeshans.com/writing/how-i-built-the-ab-simulator
+- 💻 Source code: github.com/eeshansrivastava89/ds-apps-main
+
+What's your experience with underpowered experiments? Have you ever shipped something only to realize you didn't have enough data?
 
 ---
 
