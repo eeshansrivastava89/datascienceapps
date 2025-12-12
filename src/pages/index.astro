@@ -52,7 +52,7 @@ const upcomingProjects = getProjectsByStatus(allProjects, 'coming-soon')
 						<div class='text-center sm:text-left'>
 							<h1 class='text-2xl font-bold sm:text-3xl'>Eeshan Srivastava</h1>
 							<p class='mt-1 text-lg text-muted-foreground'>
-								Data science leader building products with AI
+								CS + DS
 							</p>
 						</div>
 
@@ -72,7 +72,7 @@ const upcomingProjects = getProjectsByStatus(allProjects, 'coming-soon')
 							}
 							<span class='text-muted-foreground'>|</span>
 							<a
-								href='https://scienceofexperimentation.substack.com'
+								href='https://fullstackdatascientist.substack.com'
 								target='_blank'
 								class='group flex items-center gap-2 text-sm'
 							>
@@ -121,6 +121,43 @@ const upcomingProjects = getProjectsByStatus(allProjects, 'coming-soon')
 						inProgressProjects={inProgressProjects} 
 						upcomingProjects={upcomingProjects} 
 					/>
+				</div>
+			</section>
+
+			<!-- ============================================ -->
+			<!-- NEWSLETTER SIGNUP                            -->
+			<!-- Opens Substack with email pre-filled         -->
+			<!-- ============================================ -->
+			<section class='mt-10'>
+				<div class='border border-border bg-primary-foreground p-8'>
+					<div class='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+						<div class='flex items-start gap-3'>
+							<Icon name='simple-icons:substack' class='h-6 w-6 mt-0.5 shrink-0 text-[#FF6719]' />
+							<div class='space-y-1'>
+								<h2 class='text-xl font-bold text-foreground'>Full Stack Data Scientist</h2>
+								<p class='text-sm text-muted-foreground'>Building data science products end-to-end. New posts delivered free.</p>
+							</div>
+						</div>
+						<form 
+							class='flex w-full gap-2 sm:w-auto'
+							id="newsletter-form"
+							onsubmit="event.preventDefault(); const email = this.email.value; if(email) window.open('https://fullstackdatascientist.substack.com/subscribe?email=' + encodeURIComponent(email), '_blank');"
+						>
+							<input 
+								type="email" 
+								name="email" 
+								placeholder="you@email.com" 
+								required
+								class='flex-1 sm:w-64 px-4 py-2.5 text-sm border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground transition-all'
+							/>
+							<button 
+								type="submit" 
+								class='shrink-0 px-5 py-2.5 text-sm font-medium bg-foreground text-background hover:bg-foreground/90 transition-all hover:-translate-y-0.5'
+							>
+								Subscribe
+							</button>
+						</form>
+					</div>
 				</div>
 			</section>
 

@@ -328,9 +328,12 @@ CONTRIBUTE (/contribute) — unchanged
 
 | ✓ | Task | Notes |
 |---|------|-------|
-| ☐ | Remove "Home" from nav, reduce to 4 items | About, Projects, Writing, Contribute |
-| ☐ | Create `<Sidebar>` component | Contribute CTA, Recent Posts, Analyses, Tags |
-| ☐ | Add sidebar to Home page | Right column layout |
+| ✅ | Remove Stack from nav, reduce to 4 items | About, Projects, Writing, Contribute |
+| ✅ | Create `<Sidebar>` component | Created, tested, reverted - squished main content |
+| ✅ | Sidebar experiment | Removed - iframe pattern doesn't work for homepage |
+| ✅ | Newsletter integration | Custom form → opens Substack with email pre-filled |
+| ✅ | Brand consolidation | Unified as "Full Stack Data Scientist" |
+| ✅ | Update Substack URL | `fullstackdatascientist.substack.com` |
 | ☐ | Compress About page timeline | Remove cards/icons, tighter spacing |
 | ☐ | Add minified Stack section to About | Tech table only, link to full docs |
 | ☐ | Delete `/stack` as standalone page | Content moves to About |
