@@ -2,7 +2,7 @@ timeline:
   - timespan: "2019 — Present"
     title: "Sr. Manager Data Science"
     company: "Starbucks"
-    description: "Leading data science initiatives across marketing and product analytics"
+    description: "Leading digital & marketing data science initiatives; building AI/ML products, running large-scale experiments and informing executive decisions"
     logo: "starbucks.png"
     details:
       - "Built experimentation platform for A/B testing at scale"
@@ -12,7 +12,7 @@ timeline:
   - timespan: "2016 — 2019"
     title: "Manager of Data Analytics"
     company: "Overstock.com"
-    description: "Managed analytics team and drove data-driven decision making"
+    description: "Lived in the depths of marketing & media measurement; incrementality / MMM / MTA / LTV; acquisition & growth analytics"
     logo: "overstock.png"
     details:
       - "Scaled analytics infrastructure and reporting systems"
@@ -22,14 +22,15 @@ timeline:
   - timespan: "Summer 2015"
     title: "Sr. Product Manager - MBA Intern"
     company: "Amazon"
-    description: "Product management and analytics role"
+    description: "3-month product manager experience at Amazon"
     logo: "amazon.png"
 
   - timespan: "2014 — 2016"
     title: "MBA"
     company: "Case Western Reserve University"
-    description: "Advanced studies in business and data science"
+    description: "Transformational learning experience in business, leadership and organizational behavior; and a lifetime of friendships"
     logo: "cwru.png"
+    type: education
     details:
       - "MBA completion"
       - "Self-directed learning in statistics and machine learning"
@@ -38,17 +39,18 @@ timeline:
   - timespan: "2013 — 2014"
     title: "Automation Engineer"
     company: "S&P Global"
-    description: "Test automation and quality assurance"
+    description: "QA automation for native & web versions of financial software; and tons of Street Fighter"
     logo: "snp.png"
 
   - timespan: "2010 — 2013"
     title: "Lead Software Engineer"
     company: "HCL Technologies"
-    description: "Software development and team leadership"
+    description: "Full-stack software engineer; front-end web design, core Java architecture, server administration, QA automation & observability"
     logo: "hcl.png"
 
   - timespan: "2006 — 2010"
-    title: "B.Tech Computer Science"
-    company: "GGSIPU, Delhi"
-    description: "Undergraduate studies in Computer Science"
+    title: "Undergrad - Computer Science & Engineering"
+    company: "GGSIPU"
+    description: "Learning foundations of computer science, software architecture, algorithms, programming (C, C++, Java, Web) and lots of Linux"
     logo: "ggsipu.jpg"
+    type: education

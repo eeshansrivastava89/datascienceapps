@@ -2,6 +2,11 @@
 /**
  * Work Experience Timeline component
  * Visual style matches the project Timeline component
+ * 
+ * Dot colors:
+ * - Green: Current role (timespan includes "Present")
+ * - Sky blue: Education (type: education)
+ * - Gray: Past work experience
  */
 interface TimelineItem {
   timespan: string
@@ -10,6 +15,7 @@ interface TimelineItem {
   description?: string
   logo?: string
   details?: string[]
+  type?: 'education' | 'work'
 }
 
 interface Props {
@@ -21,6 +27,22 @@ const { items } = Astro.props
 // Split into current (has "Present") vs past
 const currentItems = items.filter(item => item.timespan.includes('Present'))
 const pastItems = items.filter(item => !item.timespan.includes('Present'))
+
+// Helper to determine dot colors
+const getDotColors = (item: TimelineItem) => {
+  if (item.type === 'education') {
+    return {
+      border: 'border-sky-500',
+      fill: 'bg-sky-500',
+      text: 'text-sky-600 dark:text-sky-400'
+    }
+  }
+  return {
+    border: 'border-gray-300 dark:border-gray-600',
+    fill: 'bg-gray-300 dark:bg-gray-600',
+    text: 'text-muted-foreground'
+  }
+}
 ---
 
 <div class='relative ml-3 border-l-2 border-border pl-6'>
@@ -43,19 +65,23 @@ const pastItems = items.filter(item => !item.timespan.includes('Present'))
   ))}
   
   {/* Past Roles */}
-  {pastItems.map((item, index) => (
-    <div class={`relative ${index < pastItems.length - 1 ? 'pb-6' : ''}`}>
-      {/* Gray dot for past */}
-      <div class='absolute -left-[31px] flex h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 bg-background dark:border-gray-600'>
-        <div class='h-2 w-2 rounded-full bg-gray-300 dark:bg-gray-600'></div>
-      </div>
-      <div class='space-y-1'>
-        <div class='flex items-center gap-2'>
-          <span class='text-xs font-medium uppercase tracking-wide text-muted-foreground'>{item.timespan}</span>
+  {pastItems.map((item, index) => {
+    const colors = getDotColors(item)
+    return (
+      <div class={`relative ${index < pastItems.length - 1 ? 'pb-6' : ''}`}>
+        {/* Colored dot based on type */}
+        <div class={`absolute -left-[31px] flex h-4 w-4 items-center justify-center rounded-full border-2 ${colors.border} bg-background`}>
+          <div class={`h-2 w-2 rounded-full ${colors.fill}`}></div>
         </div>
-        <h4 class='font-medium text-foreground'>{item.title}</h4>
-        {item.company && <p class='text-sm text-muted-foreground'>{item.company}</p>}
+        <div class='space-y-1'>
+          <div class='flex items-center gap-2'>
+            <span class={`text-xs font-medium uppercase tracking-wide ${colors.text}`}>{item.timespan}</span>
+          </div>
+          <h4 class='font-medium text-foreground'>{item.title}</h4>
+          {item.company && <p class='text-sm text-muted-foreground'>{item.company}</p>}
+          {item.description && <p class='text-sm text-muted-foreground'>{item.description}</p>}
+        </div>
       </div>
-    </div>
-  ))}
+    )
+  })}
 </div>

@@ -4,10 +4,6 @@ import Section from '../components/Section.astro'
 import WorkTimeline from '../components/WorkTimeline.astro'
 import Breadcrumbs from '../../packages/shared/src/components/Breadcrumbs.astro'
 
-import { parseProjectsYaml, getLiveProjects } from '../../packages/shared/src/lib/projects'
-import projectsYaml from '../../packages/shared/src/data/projects.yaml?raw'
-import ProjectCard from '../../packages/shared/src/components/ProjectCard.astro'
-
 import fs from 'fs'
 import yaml from 'js-yaml'
 import path from 'path'
@@ -15,10 +11,6 @@ import path from 'path'
 // Load timeline data
 const timelineYaml = fs.readFileSync(path.join(process.cwd(), 'src/data/timeline.yaml'), 'utf8')
 const timelineData = yaml.load(timelineYaml) as { timeline: any[] }
-
-// Load projects
-const allProjects = parseProjectsYaml(projectsYaml)
-const liveProjects = getLiveProjects(allProjects)
 ---
 
 <PageLayout meta={{ title: 'About' }}>
@@ -26,16 +18,10 @@ const liveProjects = getLiveProjects(allProjects)
 		<Breadcrumbs currentLabel="About" />
 		<Section title='About'>
 			<p class='text-muted-foreground'>
-				I sit at an unusual intersection: <strong>Computer Science</strong> by training, <strong>Data Science</strong> by profession, <strong>MBA</strong> by transformation.
+				Computer science by training, data science by profession, MBA by transformation. Currently leading data science at Starbucks—customer behavior modeling, experimentation at scale, and turning analysis into executive decisions.
 			</p>
 			<p class='mt-4 text-muted-foreground'>
-				CS gave me the ability to build systems—not just analyze data, but understand architecture, code quality, and deployment. Data Science became my craft, self-taught and continuously evolving through a decade of real-world experimentation, analytics, and ML at scale. The MBA was my inflection point—it pulled me out of the back office and into the boardroom, turning me from an engineer who happened to work with data into a business-facing consultant who could translate technical depth into executive decisions.
-			</p>
-			<p class='mt-4 text-muted-foreground'>
-				Most data scientists are either technical but can't communicate business value, or business-savvy but can't build anything themselves. I can <strong>build the product, analyze the data, AND present to the exec team</strong>. That's rare.
-			</p>
-			<p class='mt-4 text-muted-foreground'>
-				Currently leading data science at Starbucks, focusing on customer behavior modeling and A/B testing at scale. In my personal time, I build end-to-end products—not to replace engineers, but to stay sharp, understand the tradeoffs firsthand, and lead by example.
+				I build things in my spare time because it keeps me sharp and makes me a better leader. You can't credibly push your team toward new tools if you haven't felt the learning curve yourself.
 			</p>
 		</Section>
 
@@ -43,66 +29,15 @@ const liveProjects = getLiveProjects(allProjects)
 			<WorkTimeline items={timelineData.timeline} />
 		</Section>
 
-		{liveProjects.length > 0 && (
-			<Section title='Projects'>
-				<p class='mb-4 text-muted-foreground'>
-					Interactive tools built end-to-end with AI assistance.
-				</p>
-				<div class='space-y-3'>
-					{liveProjects.map((project) => (
-						<ProjectCard project={project} variant='compact' />
-					))}
-				</div>
-				<a 
-					href='/projects' 
-					class='mt-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition'
-				>
-					View all projects →
-				</a>
-			</Section>
-		)}
-
-		<Section title='Stack'>
-			<p class='mb-4 text-muted-foreground'>
-				This site is built with modern web tools and a data-first architecture.
+		<Section title='Projects'>
+			<p class='text-muted-foreground'>
+				I build full-stack data products from scratch—experimentation platforms, analytics pipelines, interactive tools. Each project is a learning lab where I'm the architect and AI handles the scaffolding.
 			</p>
-			<div class='overflow-x-auto'>
-				<table class='w-full text-sm'>
-					<tbody class='divide-y divide-border'>
-						<tr>
-							<td class='py-2 pr-4 font-medium w-24'>Framework</td>
-							<td class='py-2 text-muted-foreground'>Astro 4.x + React islands</td>
-						</tr>
-						<tr>
-							<td class='py-2 pr-4 font-medium'>Styling</td>
-							<td class='py-2 text-muted-foreground'>Tailwind CSS</td>
-						</tr>
-						<tr>
-							<td class='py-2 pr-4 font-medium'>Analytics</td>
-							<td class='py-2 text-muted-foreground'>PostHog → Supabase pipeline</td>
-						</tr>
-						<tr>
-							<td class='py-2 pr-4 font-medium'>Database</td>
-							<td class='py-2 text-muted-foreground'>Supabase (Postgres + PostgREST)</td>
-						</tr>
-						<tr>
-							<td class='py-2 pr-4 font-medium'>Hosting</td>
-							<td class='py-2 text-muted-foreground'>Cloudflare Pages + Workers</td>
-						</tr>
-						<tr>
-							<td class='py-2 pr-4 font-medium'>Monorepo</td>
-							<td class='py-2 text-muted-foreground'>pnpm workspaces</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
 			<a 
-				href='https://github.com/eeshansrivastava89/ds-apps-main' 
-				target='_blank'
-				rel='noopener noreferrer'
+				href='/projects' 
 				class='mt-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition'
 			>
-				View source on GitHub →
+				Explore my projects →
 			</a>
 		</Section>
 	</div>
