@@ -138,28 +138,29 @@ Substack, Twitter, RSS
 
 **Why:** Architecture is non-obvious. Document it once for contributors and curious visitors.
 
+**Note:** Stack page was later consolidated into About page during Phase 6.3 UX consolidation.
+
 **Site map:**
 ```
 eeshans.com/
 ├── /                          # Home
-├── /about                     # About
+├── /about                     # About (includes Stack section)
 ├── /projects/{id}             # Project hubs
-├── /stack/                    # Architecture + workflows
 ├── /writing/{slug}            # Posts (with projectId)
 └── /contribute/               # Follow the build
 ```
 
-**Nav order:** About | Projects | Stack | Writing | Contribute
+**Nav order:** About | Projects | Writing | Contribute
 
 | ✓ | Task | Notes |
 |---|------|-------|
-| ✅ | Create `/stack` page with architecture diagram | HTML/Tailwind boxes |
+| ✅ | Create `/stack` page with architecture diagram | Later consolidated into About |
 | ✅ | Document analytics flow | 6-step pipeline |
 | ✅ | Document project bootstrap workflow | 8 steps |
 | ✅ | Add shared `<Timeline>` component to stack | Reuses from home |
 | ✅ | Writing workflow section | Frontmatter example |
 | ✅ | Key file reference links | supabase-schema, cloudflare-proxy, projects.yaml |
-| ✅ | Add `/stack` to nav | Order: About, Projects, Stack, Writing, Contribute |
+| ✅ | Add `/stack` to nav | Later removed - content moved to About |
 
 ---
 
@@ -282,26 +283,20 @@ Commit HTML to public/analysis/ → Fly deploys with fresh HTML
 | ✅ | "How I Built the A/B Simulator" post | Published - technical deep-dive |
 | ☐ | Launch announcement post | Draft below, ready for LinkedIn + Substack |
 
-### 6.3 UX Consolidation
+### 6.3 UX Consolidation ✅ COMPLETE
 
-**Why:** Reduce friction, remove dead ends, create scannable single-scroll experience inspired by thariq.io simplicity.
+**Why:** Reduce friction, remove dead ends, create scannable single-scroll experience.
 
-**UX Audit Findings:**
-- 5 nav items = too much cognitive load
-- `/tools` and `/tags` were orphaned pages (deleted)
-- `/about` used stale ProjectCard component (fixed)
-- Timeline repeated on 3 pages (Home, Projects, Stack)
-- Stack page target audience unclear
-- No sidebar for discovery (recent posts, tags)
+**Changes Made:**
+- Nav reduced from 5 to 4 items (Stack consolidated into About)
+- `/tools` and `/tags` orphaned pages deleted
+- `/stack` deleted, content moved to About
+- Writing page simplified to single chronological list with category badges
+- `/writing/technical/` and `/writing/essays/` deleted (categories now shown as badges)
+- Typography: Playfair Display headings + Lato body, warm cream background
+- Sidebar experiment attempted and reverted (squished content)
 
-**Nav Change:**
-```
-Before: Home | About | Projects | Stack | Writing | Contribute
-After:  About | Projects | Writing | Contribute
-```
-
-**Page Structure:**
-
+**Current Page Structure:**
 ```
 HOME (/)
 ├── Hero (name, tagline, socials)
@@ -309,61 +304,40 @@ HOME (/)
 ├── Projects (compact cards + What's Next timeline)
 └── Build With Me (contribute CTA)
 
-+ SIDEBAR (right column)
-├── Contribute CTA (top)
-├── Recent Posts
-├── Recent Analyses  
-└── Tags
-
 ABOUT (/about)
 ├── Bio (compressed)
-├── Experience Timeline (visually compact, no cards/icons)
+├── Experience Timeline (visually compact)
 ├── Projects (compact)
-└── Stack (minified - just tech table, no architecture diagram)
+└── Stack (minified tech table)
+
+WRITING (/writing)
+├── Single chronological list
+└── Category badges (Technical Post = sky, Essay = amber)
 
 PROJECTS (/projects) — unchanged
-WRITING (/writing) — unchanged
 CONTRIBUTE (/contribute) — unchanged
 ```
 
 | ✓ | Task | Notes |
 |---|------|-------|
 | ✅ | Remove Stack from nav, reduce to 4 items | About, Projects, Writing, Contribute |
-| ✅ | Create `<Sidebar>` component | Created, tested, reverted - squished main content |
-| ✅ | Sidebar experiment | Removed - iframe pattern doesn't work for homepage |
+| ✅ | Sidebar experiment | Attempted, reverted - squished main content |
 | ✅ | Newsletter integration | Custom form → opens Substack with email pre-filled |
 | ✅ | Brand consolidation | Unified as "Full Stack Data Scientist" |
-| ✅ | Update Substack URL | `fullstackdatascientist.substack.com` |
-| ✅ | Compress About page timeline | WorkTimeline component matching project timeline style |
-| ✅ | Add minified Stack section to About | Tech table only, link to GitHub |
+| ✅ | Compress About page timeline | WorkTimeline component |
+| ✅ | Add minified Stack section to About | Tech table only |
 | ✅ | Delete `/stack` as standalone page | Content consolidated into About |
-| ✅ | Update sitemap to reflect changes | Stack removed from sitemap |
-| ✅ | Typography upgrade | Playfair Display headings + Lato body, warm cream background |
-| ✅ | Contribute page consistency | Fixed width + tighter spacing to match other pages |
-| ✅ | Update README.md | Comprehensive rewrite reflecting current architecture |
+| ✅ | Typography upgrade | Playfair Display + Lato, warm cream background |
+| ✅ | Simplify Writing page | Single list with category badges |
+| ✅ | Delete `/writing/technical/` and `/writing/essays/` | Categories now shown as badges |
 
----
-
-## Phase 6.3 Complete ✅
-
-All UX consolidation tasks finished. Site is ready for launch content.
-
----
-
-## Phase 6.4: Breadcrumb Navigation
+### 6.4 Breadcrumb Navigation ✅ COMPLETE
 
 **Why:** Consistent navigation across all pages. Remove ad-hoc back buttons/links.
 
-**Current State:**
-- Analysis page has breadcrumbs (good)
-- Other pages have inconsistent back buttons/links
-- Packages have standalone back links
-
-**Architecture:**
+**Component:** `packages/shared/src/components/Breadcrumbs.astro`
 
 ```
-Component: packages/shared/src/components/Breadcrumbs.astro
-
 API:
 <Breadcrumbs />                           # Auto-generate from URL
 <Breadcrumbs items={[...]} />             # Explicit override
@@ -378,29 +352,21 @@ API:
 /projects/.../analysis/.. → Home / Projects / {Project} / Analysis
 /writing                  → Home / Writing
 /writing/{slug}           → Home / Writing / {Post Title}
-/writing/technical        → Home / Writing / Technical
 /contribute               → Home / Contribute
 /ab-simulator (package)   → Home / Projects / A/B Testing Memory Game / Play
 ```
 
-**Design:** Matches analysis page — minimal, `text-sm text-muted-foreground`, `/` separators.
-
 | ✓ | Task | Notes |
 |---|------|-------|
 | ✅ | Create `<Breadcrumbs>` component | Shared package, hybrid auto/explicit |
-| ✅ | Update `BlogPost.astro` layout | Replace back button with breadcrumbs |
-| ✅ | Update `/writing` pages | Index, technical, essays |
-| ✅ | Update `/contribute` | Replace back link |
-| ✅ | Update `/sitemap` | Replace back link |
-| ✅ | Update `/projects` pages | Index, hub, analysis |
-| ✅ | Update `/about` | Add breadcrumbs |
-| ✅ | Update AB Simulator package | Explicit breadcrumbs with project context |
+| ✅ | Update all pages | BlogPost, writing, contribute, sitemap, about, projects, ab-simulator |
+| ✅ | Add smooth scroll | `scroll-smooth` on html for TOC navigation |
 
 ---
 
-## Phase 6.4 Complete ✅
+## Phase 6 Complete ✅
 
-Breadcrumb navigation implemented site-wide. Consistent UX across all pages.
+All content and UX tasks finished. Site ready for launch.
 
 ## Launch Announcement Draft
 
@@ -500,22 +466,15 @@ Hosting:
 
 | Pattern | Location | Used By |
 |---------|----------|---------|
-| Project metadata | `projects.yaml` | Home, hub, stack, contribute, ProjectCard |
+| Project metadata | `projects.yaml` | Home, hub, about, contribute, ProjectCard |
 | Status badges | `STATUS_CONFIG` in `projects.ts` | ProjectCard, Timeline, hub |
-| Stats fetch | Inline in ProjectCard → extract to `fetchProjectStats()` | ProjectCard, hub, home |
+| Stats fetch | Inline in ProjectCard | ProjectCard, hub, home |
 | Post-project linking | `getPostsByProject()` | Hub, home featured |
-| Timeline | Inline in index.astro → extract to `<Timeline>` | Home, stack |
-| Connection status | New `<ConnectionStatus>` | Game, contribute |
+| Timeline | `<Timeline>` component | Home, projects |
+| Connection status | `<ConnectionStatus>` | Game |
 | AI story | `projects.yaml.aiStory` | Hub |
-
----
-
-## Execution Order
-
-1. **Phase 1** (remaining): Schema + utils + component extraction
-2. **Phase 2**: Hub page (consumes Phase 1 patterns), then game polish
-3. **Phase 3**: Contribute reframe + analysis post (hub links to it)
-4. **Phase 4**: Stack page documents what we built
+| Breadcrumbs | `<Breadcrumbs>` component | All pages |
+| Category badges | `PostPreview.astro`, `Hero.astro` | Writing list, post pages |
 
 ---
 
@@ -523,12 +482,11 @@ Hosting:
 
 | Phase | Issue | Tasks |
 |-------|-------|-------|
-| 1 | [#86 Shared Infrastructure](https://github.com/eeshansrivastava89/ds-apps-main/issues/86) | 5 |
-| 2 | [#87 Project Hub + Game Polish](https://github.com/eeshansrivastava89/ds-apps-main/issues/87) | 7 |
-| 3 | [#88 Contribute + Content](https://github.com/eeshansrivastava89/ds-apps-main/issues/88) | 8 |
-| 4 | [#89 Stack + Documentation](https://github.com/eeshansrivastava89/ds-apps-main/issues/89) | 7 |
-| 5 | [#91 Engagement + Distribution](https://github.com/eeshansrivastava89/ds-apps-main/issues/91) | 13 |
-
+| 1 | [#86 Shared Infrastructure](https://github.com/eeshansrivastava89/ds-apps-main/issues/86) | ✅ |
+| 2 | [#87 Project Hub + Game Polish](https://github.com/eeshansrivastava89/ds-apps-main/issues/87) | ✅ |
+| 3 | [#88 Contribute + Content](https://github.com/eeshansrivastava89/ds-apps-main/issues/88) | ✅ |
+| 4 | [#89 Stack + Documentation](https://github.com/eeshansrivastava89/ds-apps-main/issues/89) | ✅ |
+| 5 | [#91 Engagement + Distribution](https://github.com/eeshansrivastava89/ds-apps-main/issues/91) | In progress |
 
 ### Evidence Tracking
 
