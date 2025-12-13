@@ -64,6 +64,15 @@
 	h1, h2, h3, h4, h5, h6 {
 		@apply font-serif;
 	}
+	/* Restore list styles */
+	ol {
+		list-style: decimal;
+		padding-left: 2.5rem;
+	}
+	ul {
+		list-style: disc;
+		padding-left: 2.5rem;
+	}
 }
 
 /* Letter Grid - Cool minimal design */

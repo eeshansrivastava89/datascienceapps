@@ -106,7 +106,6 @@ jobs:
           # Convert to HTML
           jupyter nbconvert "/tmp/${{ matrix.id }}-executed.ipynb" \
             --to html \
-            --no-input \
             --output "${{ matrix.id }}" \
             --output-dir "public/analysis/${{ matrix.outputPath }}"
           

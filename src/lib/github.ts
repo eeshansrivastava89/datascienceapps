@@ -12,8 +12,8 @@ const REPO_OWNER = 'eeshansrivastava89'
 const REPO_NAME = 'ds-apps-main'
 
 /**
- * Fetch recent contributors from GitHub Issues and PRs (last 30 days)
- * Deduplicates by login and excludes repo owner
+ * Fetch recent contributors from GitHub Issues and PRs
+ * Deduplicates by login
  */
 export async function getRecentContributors(days = 30): Promise<Contributor[]> {
   const since = new Date()
@@ -41,7 +41,7 @@ export async function getRecentContributors(days = 30): Promise<Contributor[]> {
     if (issuesRes.ok) {
       const issues = await issuesRes.json()
       for (const issue of issues) {
-        if (issue.user && issue.user.login !== REPO_OWNER) {
+        if (issue.user) {
           contributors.set(issue.user.login, {
             login: issue.user.login,
             avatar_url: issue.user.avatar_url,
@@ -63,10 +63,9 @@ export async function getRecentContributors(days = 30): Promise<Contributor[]> {
         const eventDate = new Date(event.created_at).getTime()
         if (eventDate < cutoff) continue
         
-        // Include PR and Issue events from non-owners
+        // Include PR and Issue events
         if (
           event.actor &&
-          event.actor.login !== REPO_OWNER &&
           ['PullRequestEvent', 'IssuesEvent', 'PullRequestReviewEvent'].includes(event.type)
         ) {
           contributors.set(event.actor.login, {
