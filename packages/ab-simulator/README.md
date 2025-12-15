@@ -1,43 +1,44 @@
-# Astro Starter Kit: Minimal
+# A/B Simulator
 
-```sh
-pnpm create astro@latest -- --template minimal
+Interactive memory game with real A/B testing, live stats, and analytics pipeline.
+
+**Live:** [eeshans.com/ab-simulator](https://eeshans.com/ab-simulator)
+
+## What It Does
+
+A memory game where users find hidden pineapples in a grid. PostHog feature flags randomly assign users to:
+- **Control (A):** 3 pineapples to find
+- **Variant (B):** 4 pineapples to find
+
+All events flow to Supabase for real-time dashboards and analysis.
+
+## Stack
+
+- **Frontend:** Vanilla JS (ES6 modules), Astro page wrapper
+- **Analytics:** PostHog SDK + feature flags
+- **Database:** Supabase (PostgREST)
+- **Charts:** Plotly.js
+
+## Module Structure
+
+```
+public/js/ab-sim/
+├── core.js           # State machine (IDLE → MEMORIZING → PLAYING → RESULT)
+├── analytics.js      # PostHog event tracking
+├── supabase-api.js   # PostgREST wrapper
+├── dashboard.js      # Plotly chart rendering
+├── leaderboard-ui.js # DOM rendering
+└── personal-best.js  # localStorage management
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Development
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+# From repo root
+pnpm dev:ab-sim
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Routes
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- `/ab-simulator` — The game (this package)
+- `/projects/ab-simulator` — Project hub with stats and analysis

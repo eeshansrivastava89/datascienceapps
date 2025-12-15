@@ -150,60 +150,28 @@ export default defineConfig({
 fs.writeFileSync(path.join(packageDir, 'astro.config.mjs'), astroConfig)
 console.log(`  ✓ astro.config.mjs`)
 
-// Generate tailwind.config.js (must match shared theme)
-const tailwindConfig = `/** @type {import('tailwindcss').Config} */
-module.exports = {
+// Generate tailwind.config.js (extends shared base)
+const tailwindConfig = `import { baseTheme, baseConfig } from '../shared/tailwind.base.js'
+
+/** @type {import('tailwindcss').Config} */
+const config = {
+	...baseConfig,
 	content: [
 		'./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
 		'./public/**/*.js',
 		'../shared/src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'
 	],
-	darkMode: ['class'],
 	theme: {
+		container: baseTheme.container,
 		extend: {
-			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
-				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
-				},
-				destructive: {
-					DEFAULT: 'hsl(var(--destructive))',
-					foreground: 'hsl(var(--destructive-foreground))'
-				},
-				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
-				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
-				},
-				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
-				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
-				}
-			},
-			fontFamily: {
-				sans: ['Lato', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-				serif: ['Playfair Display', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif']
-			}
+			colors: baseTheme.colors,
+			borderRadius: baseTheme.borderRadius,
+			fontFamily: baseTheme.fontFamily
 		}
-	},
-	plugins: [require('@tailwindcss/typography')]
+	}
 }
+
+export default config
 `
 
 fs.writeFileSync(path.join(packageDir, 'tailwind.config.js'), tailwindConfig)
