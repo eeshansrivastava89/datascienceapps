@@ -26,7 +26,7 @@ pnpm-debug.log*
 internal/
 docs/
 .github/instructions/
+supabase/
 
 # Python venv
 analytics/.venv/
-supabase/.temp/

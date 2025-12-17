@@ -1,138 +1,125 @@
-# eeshans.com — Full Stack Data Scientist Portfolio
+# eeshans.com — Collection of interactive data scienc web apps + portfolio
 
-Personal portfolio site with interactive data science projects, built end-to-end with AI assistance.
+> "The best way to understand data is to build the system that creates it."
 
 **Live:** [eeshans.com](https://eeshans.com)
 
-## What's Here
+**Want to contribute?** → [eeshans.com/contribute](https://eeshans.com/contribute)
 
-- **Portfolio site** — About, projects, writing, contribution guide
-- **A/B Simulator** — Interactive memory game with real A/B testing, live stats, and full analysis pipeline
-- **Analytics pipeline** — PostHog → Supabase → live dashboards
-- **Analysis notebooks** — Publication-quality Jupyter notebooks rendered as HTML
+---
 
-## Stack
+## What This Is
 
-| Layer | Tech | Why |
-|-------|------|-----|
+A full-stack data science portfolio built in public. Each project is a complete product with real users, production analytics, and published analysis.
+
+**Not** a tutorial site or course platform. Just one person building, documenting, and learning in public, using AI tools to create functional products, deploying to production, and analyzing real behavior.
+
+---
+
+
+## Current Projects
+
+### A/B Testing Memory Game
+Interactive memory game with real A/B testing, live stats, and full analysis pipeline. 
+
+**Stack:** Astro + React + PostHog + Supabase + Plotly
+
+[→ Try it live](https://eeshans.com/ab-simulator) | [→ Read the analysis](https://eeshans.com/projects/ab-simulator) | [→ View source](https://github.com/eeshansrivastava89/ds-apps-main/tree/main/packages/ab-simulator)
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
 | Framework | Astro 4.x | Static-first, React islands for interactivity |
-| Styling | Tailwind CSS | Utility-first, dark mode, Playfair + Lato typography |
-| Islands | React 19 | Interactive components (stats, game, comments) |
-| Analytics | PostHog | Events, session replay, feature flags |
-| Database | Supabase (Postgres) | Views, PostgREST API, edge functions |
-| Hosting | Cloudflare Pages | Fast, free, global CDN |
-| Proxy | Cloudflare Worker | PostHog reverse proxy (bypass blockers) |
+| Styling | Tailwind CSS | Utility-first, dark mode, responsive |
+| Interactivity | React 19 | Stats dashboards, game logic, comments |
+| Analytics | PostHog | Event tracking, feature flags, session replay |
+| Database | Supabase | PostgreSQL + PostgREST + edge functions |
+| Hosting | Fly.io | Docker deployment, global CDN |
 | Monorepo | pnpm workspaces | Shared components across packages |
 
-## Project Structure
-
-```
-ds-apps-main/
-├── src/                      # Main site
-│   ├── pages/               # Routes (index, about, projects, writing, contribute)
-│   ├── content/post/        # MDX blog posts
-│   ├── components/          # Site-specific components
-│   ├── data/                # YAML data (timeline, social links)
-│   └── styles/              # Global CSS (Tailwind + fonts)
-├── packages/
-│   ├── ab-simulator/        # Standalone A/B testing game
-│   └── shared/              # Shared components, utils, project configs
-├── analytics/
-│   └── notebooks/           # Jupyter analysis notebooks
-├── internal/                # Cloudflare worker, Supabase schema
-├── docs/                    # Project planning docs
-└── public/                  # Static assets
-```
-
-## Quick Start
-
-```bash
-# Install dependencies
-pnpm install
-
-# Create .env with required keys
-cp .env.example .env
-# Edit .env with your Supabase/PostHog keys
-
-# Run dev server
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Preview production build
-pnpm preview
-```
-
-**Environment variables:**
-- `PUBLIC_SUPABASE_URL` — Supabase project URL
-- `PUBLIC_SUPABASE_ANON_KEY` — Supabase anon key (safe for client)
-- `PUBLIC_POSTHOG_KEY` — PostHog project key
-- `PUBLIC_POSTHOG_HOST` — PostHog host (or proxy URL)
-
-## Key Pages
-
-| Route | Description |
-|-------|-------------|
-| `/` | Home — hero, projects, newsletter |
-| `/about` | Bio, experience timeline, stack |
-| `/projects` | Project index with live stats |
-| `/projects/ab-simulator` | A/B Simulator hub with analysis |
-| `/ab-simulator` | The actual game (embedded from package) |
-| `/writing` | Blog posts (technical + essays) |
-| `/contribute` | Build with me — how to follow along |
+---
 
 ## Analytics Pipeline
 
+```mermaid
+graph TD
+    subgraph "Write: Event Tracking"
+        A[User Events] --> B[PostHog SDK]
+        B --> C[Cloudflare Worker Proxy]
+        C --> D[PostHog Cloud]
+        D --> E{Event Type}
+        E -->|Batch Export| F[Supabase PostgreSQL]
+        E -->|Real-time Webhook| G[Supabase Edge Functions]
+        G --> F
+    end
+    
+    subgraph "Read: Live Stats"
+        F --> H[SQL Views]
+        H --> I[PostgREST API]
+        I --> J[React Islands]
+        J --> K[Plotly Charts]
+    end
+    
+    style A fill:#e1f5ff
+    style F fill:#dcfce7
+    style K fill:#fef3c7
 ```
-User Action → PostHog SDK → Cloudflare Worker (proxy) → PostHog Cloud
-                                                            ↓
-                                                      Batch Export
-                                                            ↓
-Supabase Edge Function ← Webhook ← PostHog
-        ↓
-   PostgreSQL (posthog_events, posthog_batch_events)
-        ↓
-   Views (v_ab_simulator_stats, v_page_views)
-        ↓
-   PostgREST API → React islands → Live stats
-```
 
-## Development
+**Main site**: Batch export (1 hour intervals) for pageviews and blog analytics  
+**AB Simulator**: Real-time webhooks for immediate game stats updates
 
-```bash
-# Main site
-pnpm dev
-
-# A/B Simulator package only
-pnpm dev:ab-sim
-
-# Lint and format
-pnpm lint
-
-# Type check
-pnpm build:check
-```
+---
 
 ## Deployment
 
-**Cloudflare Pages** (automatic on push to main via GitHub integration)
+**Automated via GitHub Actions:**
+- **Fly.io deployment** — Pushes to `main` trigger Docker build and deploy
+- **Notebook publishing** — Weekly cron job executes Jupyter notebooks, renders to HTML, commits to repo
 
-For manual Fly.io deployment:
-```bash
-fly deploy \
-    --build-arg PUBLIC_SUPABASE_URL=... \
-    --build-arg PUBLIC_SUPABASE_ANON_KEY=... \
-    --build-arg PUBLIC_POSTHOG_KEY=...
+All analytics keys and environment variables managed via GitHub Secrets and Fly.io secrets.
+
+---
+
+## Architecture
+
+```
+ds-apps-main/
+├── src/                    # Main portfolio site
+│   ├── pages/             # Home, About, Projects, Writing, Contribute
+│   ├── content/post/      # MDX blog posts
+│   └── components/        # Site-specific components
+├── packages/
+│   ├── ab-simulator/      # Standalone A/B testing game
+│   └── shared/            # Shared components, layouts, project configs
+├── analytics/notebooks/   # Jupyter analysis (auto-published to HTML)
+└── public/                # Static assets
 ```
 
-## Analysis Notebooks
+**Convention:**
+- Hub pages: `/projects/{id}` (analysis, notebooks, posts)
+- Apps: `/{id}/` (actual interactive product)
 
-Jupyter notebooks in `analytics/notebooks/` are auto-executed via GitHub Actions and rendered as HTML:
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for full technical details.
 
-- `ab_dashboard_health.ipynb` — Dashboard monitoring
-- Full A/B test analysis at `/projects/ab-simulator/analysis/ab-test-analysis`
+---
+
+## Contributing
+
+Want to build with me? See the full guide at **[eeshans.com/contribute](https://eeshans.com/contribute)**
+
+Quick paths:
+- **Fix or enhance** — Browse [open issues](https://github.com/eeshansrivastava89/ds-apps-main/issues), claim one, submit PR
+- **Build new app** — Propose via [GitHub Discussion](https://github.com/eeshansrivastava89/ds-apps-main/discussions/new?category=new-data-science-web-app-proposals), use `create-package` script
+
+Setup: Clone repo, copy `.env.example` to `.env`, run `pnpm install && pnpm dev`
+
+---
 
 ## License
 
-MIT
+MIT © 2025 Eeshan Srivastava
+
+Built with [Astro Theme Resume](https://github.com/srleom/astro-theme-resume) (MIT)

@@ -1,44 +1,71 @@
 # A/B Simulator
 
-Interactive memory game with real A/B testing, live stats, and analytics pipeline.
+Interactive memory game demonstrating real-world A/B testing with live analytics.
 
-**Live:** [eeshans.com/ab-simulator](https://eeshans.com/ab-simulator)
+**→ [Try it live](https://eeshans.com/ab-simulator)** | **→ [View analysis](https://eeshans.com/projects/ab-simulator)**
 
 ## What It Does
 
-A memory game where users find hidden pineapples in a grid. PostHog feature flags randomly assign users to:
-- **Control (A):** 3 pineapples to find
-- **Variant (B):** 4 pineapples to find
+Memory game where users memorize fruit positions for 7 seconds, then find hidden pineapples within 60 seconds. PostHog feature flags randomly assign users to:
 
-All events flow to Supabase for real-time dashboards and analysis.
+- **Control (A):** Find 4 pineapples  
+- **Variant (B):** Find 5 pineapples
 
-## Stack
+Every game event flows through the analytics pipeline:
+- **PostHog:** Session tracking, feature flags, event capture
+- **Cloudflare Worker:** Reverse proxy to bypass ad blockers
+- **Supabase:** Batch export + webhooks → PostgreSQL tables
+- **Real-time dashboards:** Variant performance, conversion funnels, user leaderboards
 
-- **Frontend:** Vanilla JS (ES6 modules), Astro page wrapper
-- **Analytics:** PostHog SDK + feature flags
-- **Database:** Supabase (PostgREST)
-- **Charts:** Plotly.js
+## Architecture
+
+**Frontend**
+- Vanilla JavaScript ES6 modules (no build step for game logic)
+- Astro page wrapper for layout and routing
+- Tailwind CSS for styling
+- Plotly.js for interactive charts
+
+**Analytics Pipeline**
+- PostHog SDK: Feature flags (`word_search_difficulty_v2`) and event tracking
+- Cloudflare Worker: `api-v2.eeshans.com` proxy for reliability
+- Supabase: PostgreSQL with RLS, PostgREST API, batch export from PostHog
+
+**Data Science**
+- Python notebooks (Pandas, Plotly, Statsmodels)
+- Weekly automated execution via GitHub Actions + Papermill
+- Published to `/public/analysis/ab-simulator/`
 
 ## Module Structure
 
 ```
-public/js/ab-sim/
-├── core.js           # State machine (IDLE → MEMORIZING → PLAYING → RESULT)
-├── analytics.js      # PostHog event tracking
-├── supabase-api.js   # PostgREST wrapper
-├── dashboard.js      # Plotly chart rendering
-├── leaderboard-ui.js # DOM rendering
-└── personal-best.js  # localStorage management
+packages/ab-simulator/
+├── public/
+│   ├── js/
+│   │   ├── ab-sim/
+│   │   │   ├── core.js           # Game state machine (IDLE → MEMORIZING → PLAYING → RESULT)
+│   │   │   ├── analytics.js      # PostHog initialization, variant assignment, event tracking
+│   │   │   ├── supabase-api.js   # PostgREST API wrapper for leaderboards
+│   │   │   ├── dashboard.js      # Plotly chart rendering (conversion, time series)
+│   │   │   ├── leaderboard-ui.js # DOM manipulation for rankings
+│   │   │   └── personal-best.js  # localStorage for user PB tracking
+│   │   └── puzzle-config.js      # Puzzle definitions for variants A & B
+│   └── analysis/                 # Published notebook outputs
+└── src/
+    └── pages/
+        └── ab-simulator/
+            └── index.astro       # Game container page
 ```
 
-## Development
+## Key Features
 
-```bash
-# From repo root
-pnpm dev:ab-sim
-```
+- **Variant assignment:** PostHog feature flag splits traffic 50/50
+- **Event tracking:** `game_started`, `game_completed`, `tile_clicked`
+- **Real-time leaderboards:** Top 10 players per variant via Supabase RPC
+- **Personal best:** Client-side localStorage + server verification
+- **Analytics notebooks:** Chi-square tests, conversion rate analysis, time-series plots
 
-## Routes
+## Related Pages
 
-- `/ab-simulator` — The game (this package)
-- `/projects/ab-simulator` — Project hub with stats and analysis
+- **Game:** [/ab-simulator](https://eeshans.com/ab-simulator)
+- **Project hub:** [/projects/ab-simulator](https://eeshans.com/projects/ab-simulator)
+- **Source code:** [github.com/eeshansrivastava89/ds-apps-main](https://github.com/eeshansrivastava89/ds-apps-main/tree/main/packages/ab-simulator)

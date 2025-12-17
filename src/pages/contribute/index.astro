@@ -86,6 +86,85 @@ import { Icon } from 'astro-icon/components'
       </div>
     </section>
 
+    <!-- Stack -->
+    <section id="stack" class="mb-8 border border-border bg-primary-foreground p-6">
+      <h2 class="text-lg font-bold text-foreground mb-4">Stack</h2>
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-sm font-medium text-muted-foreground mb-2">Frontend</h3>
+          <div class="flex flex-wrap items-center gap-x-2 text-base">
+            <a href="https://astro.build/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:astro" class="h-4 w-4" /> Astro
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://react.dev/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:react" class="h-4 w-4" /> React
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:tailwindcss" class="h-4 w-4" /> Tailwind
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-muted-foreground mb-2">Backend</h3>
+          <div class="flex flex-wrap items-center gap-x-2 text-base">
+            <a href="https://supabase.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:supabase" class="h-4 w-4" /> Supabase
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://posthog.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:posthog" class="h-4 w-4" /> PostHog
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-muted-foreground mb-2">Infrastructure</h3>
+          <div class="flex flex-wrap items-center gap-x-2 text-base">
+            <a href="https://fly.io/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:flydotio" class="h-4 w-4" /> Fly.io
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://github.com/features/actions" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:githubactions" class="h-4 w-4" /> Actions
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://cloudflare.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:cloudflare" class="h-4 w-4" /> Cloudflare
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://papermill.readthedocs.io/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:jupyter" class="h-4 w-4" /> Papermill
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-muted-foreground mb-2">Data Science</h3>
+          <div class="flex flex-wrap items-center gap-x-2 text-base">
+            <a href="https://python.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:python" class="h-4 w-4" /> Python
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://pandas.pydata.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:pandas" class="h-4 w-4" /> Pandas
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://plotly.com/python/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:plotly" class="h-4 w-4" /> Plotly
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://www.statsmodels.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:scipy" class="h-4 w-4" /> Statsmodels
+            </a>
+            <span class="text-muted-foreground">|</span>
+            <a href="https://seaborn.pydata.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
+              <Icon name="simple-icons:python" class="h-4 w-4" /> Seaborn
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Environment / Analytics -->
     <section class="mb-8 border border-border bg-primary-foreground p-6">
       <h2 class="text-lg font-bold text-foreground mb-4">Environment Setup</h2>
@@ -197,85 +276,6 @@ flowchart TB
       <p class="mt-4 text-sm text-muted-foreground text-center">
         Both paths converge at Submit → Review → Sync
       </p>
-    </section>
-
-    <!-- Stack -->
-    <section id="stack" class="border border-border bg-primary-foreground p-6">
-      <h2 class="text-lg font-bold text-foreground mb-4">Stack</h2>
-      <div class="space-y-4">
-        <div>
-          <h3 class="text-sm font-medium text-muted-foreground mb-2">Frontend</h3>
-          <div class="flex flex-wrap items-center gap-x-2 text-base">
-            <a href="https://astro.build/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:astro" class="h-4 w-4" /> Astro
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://react.dev/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:react" class="h-4 w-4" /> React
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:tailwindcss" class="h-4 w-4" /> Tailwind
-            </a>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm font-medium text-muted-foreground mb-2">Backend</h3>
-          <div class="flex flex-wrap items-center gap-x-2 text-base">
-            <a href="https://supabase.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:supabase" class="h-4 w-4" /> Supabase
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://posthog.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:posthog" class="h-4 w-4" /> PostHog
-            </a>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm font-medium text-muted-foreground mb-2">Infrastructure</h3>
-          <div class="flex flex-wrap items-center gap-x-2 text-base">
-            <a href="https://fly.io/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:flydotio" class="h-4 w-4" /> Fly.io
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://github.com/features/actions" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:githubactions" class="h-4 w-4" /> Actions
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://cloudflare.com/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:cloudflare" class="h-4 w-4" /> Cloudflare
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://papermill.readthedocs.io/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:jupyter" class="h-4 w-4" /> Papermill
-            </a>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm font-medium text-muted-foreground mb-2">Data Science</h3>
-          <div class="flex flex-wrap items-center gap-x-2 text-base">
-            <a href="https://python.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:python" class="h-4 w-4" /> Python
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://pandas.pydata.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:pandas" class="h-4 w-4" /> Pandas
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://plotly.com/python/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:plotly" class="h-4 w-4" /> Plotly
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://www.statsmodels.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:scipy" class="h-4 w-4" /> Statsmodels
-            </a>
-            <span class="text-muted-foreground">|</span>
-            <a href="https://seaborn.pydata.org/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-foreground underline">
-              <Icon name="simple-icons:python" class="h-4 w-4" /> Seaborn
-            </a>
-          </div>
-        </div>
-      </div>
     </section>
 
   </div>
