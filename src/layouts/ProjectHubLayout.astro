@@ -119,12 +119,15 @@ const statusConfig = STATUS_CONFIG[project.status]
           {notebooks.map((notebook) => (
             <a 
               href={`/projects/${project.id}/analysis/${notebook.id}`}
-              class='flex items-center justify-between border border-border bg-background p-4 transition hover:border-foreground/30 hover:shadow-sm'
+              class='flex items-center justify-between border border-amber-500/30 bg-gradient-to-br from-amber-50 to-orange-50 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-500/50 hover:shadow-md dark:from-amber-950/20 dark:to-orange-950/20'
             >
-              <div class='space-y-1'>
-                <h3 class='font-medium text-foreground'>{notebook.title}</h3>
+              <div class='flex items-center gap-3'>
+                <span class='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-xl dark:bg-amber-900/40'>📊</span>
+                <div class='space-y-1'>
+                  <h3 class='font-semibold text-foreground'>{notebook.title}</h3>
+                </div>
               </div>
-              <span class='shrink-0 text-sm text-muted-foreground'>View →</span>
+              <span class='shrink-0 text-sm font-medium text-amber-700 dark:text-amber-400'>View →</span>
             </a>
           ))}
         </div>

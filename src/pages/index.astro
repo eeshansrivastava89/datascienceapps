@@ -60,10 +60,7 @@ const upcomingProjects = getProjectsByStatus(allProjects, 'coming-soon')
 						<div class='text-center sm:text-left'>
 							<h1 class='text-2xl font-bold sm:text-3xl'>Eeshan Srivastava</h1>
 							<p class='mt-1 text-lg text-muted-foreground'>
-								Engineer × Data Scientist × Leader
-							</p>
-						</div>
-
+							Engineer x Data Scientist x Leader
 						<!-- Social Links + Newsletter -->
 						<div class='flex flex-wrap items-center gap-x-3 gap-y-3'>
 							{
@@ -80,13 +77,13 @@ const upcomingProjects = getProjectsByStatus(allProjects, 'coming-soon')
 							}
 							<span class='text-muted-foreground'>|</span>
 							<a
-								href='https://fullstackdatascientist.substack.com'
+							href='https://0to1datascience.substack.com'
 								target='_blank'
 								class='group flex items-center gap-2 text-sm'
 							>
 								<Icon name='simple-icons:substack' class='h-4 w-4 shrink-0' />
-								<span class='text-muted-foreground'>Newsletter: Full Stack Data Scientist</span>
-								<span class='font-medium text-foreground transition group-hover:translate-x-0.5'>Subscribe →</span>
+								<span class='text-muted-foreground'>Newsletter</span>
+								<span class='font-medium text-foreground transition group-hover:translate-x-0.5'>Follow →</span>
 							</a>
 						</div>
 					</div>
@@ -98,17 +95,15 @@ const upcomingProjects = getProjectsByStatus(allProjects, 'coming-soon')
 			<!-- ============================================ -->
 			<section class='mt-10 border-l-2 border-amber-400 pl-6 space-y-4'>
 				<!-- Section heading with tight tracking -->
-				<h2 class='text-2xl font-bold text-foreground tracking-tight'>Full-stack data science. Interactive experiments with data. <span class='font-serif italic text-amber-700 dark:text-amber-400'>Built in public.</span></h2>
+			<h2 class='text-2xl font-bold text-foreground tracking-tight'><span class='font-serif italic text-amber-700 dark:text-amber-400'>0→1 Data Science.</span> From analysis to applications.</h2>
 				<!-- Subtle divider -->
 				<div class='border-t border-border/50 pt-4'>
 					<p class='text-base text-muted-foreground'>
-						Hi, <span class='italic bg-amber-200/60 dark:bg-amber-400/25 px-1'>I'm Eeshan</span>. I'm not ex-FAANG or Ivy League. Just someone who's spent 15 years at the intersection of CS, data science, and business — someone who enjoys being curious, creative, and loves working with people. I'm currently a data science leader at <a href='https://www.starbucks.com/about-us/' target='_blank' class='underline hover:text-foreground'>Starbucks</a>. As a people leader, I see the role of data scientists shifting from stats experts working in notebooks into something more. AI tools are breaking down barriers.
+						Hi, I'm Eeshan, and welcome to my personal data science lab. I believe the best way to understand data is to <span class='italic bg-amber-200/60 dark:bg-amber-400/25 px-1'>build the system that creates it</span>. This site is my workshop 
+						where I practice the full loop: design the concept, build a working app, wire up analytics, do deep research or build models, and iterate based on what the data actually says. 
 					</p>
 					<p class='text-base text-muted-foreground mt-4'>
-						This site is where I practice: shipping products from 0 → 1 with AI tools, <span class='italic bg-amber-200/60 dark:bg-amber-400/25 px-1'>wearing every hat — PM, engineer, data scientist, marketer, founder</span>. Not to replace specialists, but to build the <span class='italic bg-amber-200/60 dark:bg-amber-400/25 px-1'>empathy and credibility</span> that makes data scientists impactful.
-					</p>
-					<p class='text-base text-muted-foreground mt-4'>
-						I want to learn by building, sharing openly, and listening to people who know more. Everything here is self-hosted, documented, and <a href='https://github.com/eeshansrivastava89/ds-apps-main' target='_blank' class='underline hover:text-foreground'>open-source</a>. The <a href='/contribute#stack' class='underline hover:text-foreground'>stack</a> is templatized for <span class='italic bg-amber-200/60 dark:bg-amber-400/25 px-1'>building data science apps</span>. Contributions are welcome — come <a href='/contribute' class='underline hover:text-foreground'>build with me</a>.
+						The goal isn't to replace experts. It's to build <span class='italic bg-amber-200/60 dark:bg-amber-400/25 px-1'>product intuition, technical credibility, and empathy</span> by practicing the feedback loop end-to-end. Everything here is <a href='https://github.com/eeshansrivastava89/ds-apps-main' target='_blank' class='underline hover:text-foreground'>open-source</a> and non-commercial. If you're learning to build, you can <a href='https://0to1datascience.substack.com' target='_blank' class='underline hover:text-foreground'>follow along</a> or <a href='/contribute' class='underline hover:text-foreground'>build with me</a>.
 					</p>
 				</div>
 			</section>
@@ -169,13 +164,13 @@ const upcomingProjects = getProjectsByStatus(allProjects, 'coming-soon')
 							<Icon name='simple-icons:substack' class='h-6 w-6 mt-0.5 shrink-0 text-[#FF6719]' />
 							<div class='space-y-1'>
 								<h2 class='text-xl font-bold text-foreground'>Sign up for my Newsletter</h2>
-								<p class='text-sm text-muted-foreground'>Cross-posting learnings and progress on Substack. Free and without fluff.</p>
+							<p class='text-sm text-muted-foreground'>Behind-the-scenes of 0→1 data science. What works, what breaks, what I'm learning.</p>
 							</div>
 						</div>
 						<form 
 							class='flex w-full gap-2 sm:w-auto'
 							id="newsletter-form"
-							onsubmit="event.preventDefault(); const email = this.email.value; if(email) window.open('https://fullstackdatascientist.substack.com/subscribe?email=' + encodeURIComponent(email), '_blank');"
+						onsubmit="event.preventDefault(); const email = this.email.value; if(email) window.open('https://0to1datascience.substack.com/subscribe?email=' + encodeURIComponent(email), '_blank');"
 						>
 							<input 
 								type="email" 
