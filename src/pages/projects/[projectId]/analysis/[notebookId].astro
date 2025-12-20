@@ -11,6 +11,7 @@
 import PageLayout from '../../../../layouts/BaseLayout.astro'
 import Section from '../../../../components/Section.astro'
 import Breadcrumbs from '../../../../../packages/shared/src/components/Breadcrumbs.astro'
+import NotebookSummary from '../../../../../packages/shared/src/components/NotebookSummary.astro'
 import { Icon } from 'astro-icon/components'
 
 import { getAllProjects, getProjectById } from '../../../../../packages/shared/src/data/projectLoader'
@@ -94,7 +95,14 @@ try {
   if (fs.existsSync(htmlPath)) {
     notebookHtml = fs.readFileSync(htmlPath, 'utf-8')
     const stats = fs.statSync(htmlPath)
-    lastUpdated = stats.mtime.toISOString().split('T')[0]
+    // Full datetime format
+    lastUpdated = stats.mtime.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
     notebookExists = true
   }
 } catch (e) {
@@ -150,6 +158,9 @@ const githubNotebookUrl = `https://github.com/eeshansrivastava89/datascienceapps
         </div>
       )}
     </header>
+
+    <!-- Key Findings Summary -->
+    <NotebookSummary projectId={projectId} notebookId={notebookId} />
 
     <!-- Notebook Content -->
     {notebookExists ? (

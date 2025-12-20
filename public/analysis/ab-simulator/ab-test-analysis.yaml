@@ -1,0 +1,32 @@
+title: 'A/B Test: Pineapple Finder Difficulty'
+status: inconclusive
+decision: Do NOT ship Variant B — guardrail metrics show significant drops in completion
+  and engagement.
+metrics:
+- label: Completion Time
+  value: +1.3s
+  delta: +12.5%
+  delta_direction: up
+  context: p=0.483, not significant
+- label: Completion Rate
+  value: 65%
+  delta: -24.9%
+  delta_direction: down
+  context: vs 86% control
+- label: Repeat Rate
+  value: 14%
+  delta: -16.1pp
+  delta_direction: down
+  context: vs 30% control
+- label: Effect Size
+  value: d=0.13
+  context: negligible (<0.2)
+generated_at: '2025-12-19T23:57:18.322109'
+power_analysis: 11% power — need 954 per group for 80%
+warnings:
+- Sample Ratio Mismatch detected (32%/68% vs expected 50/50)
+- Underpowered experiment (11% power, need 80%)
+- Significant drop in completion rate (86% → 65%)
+- Significant drop in repeat rate (30% → 14%)
+methodology: Welch's t-test (primary), Chi-square (completion rate), Z-test (repeat
+  rate)
