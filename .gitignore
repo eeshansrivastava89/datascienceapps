@@ -27,6 +27,10 @@ internal/
 docs/
 .github/instructions/
 supabase/
+tmp/
+
+# editor configs (personal)
+.obsidian/
 
 # Python venv
 analytics/.venv/
