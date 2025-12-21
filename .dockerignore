@@ -1,0 +1,26 @@
+# Build artifacts (ensure clean builds)
+dist/
+.astro/
+
+# Dependencies (reinstalled in container)
+node_modules/
+packages/*/node_modules/
+
+# Dev/local only
+.env
+.env.*
+.git/
+.github/
+.vscode/
+.obsidian/
+tmp/
+
+# Python (not needed in static build)
+analytics/.venv/
+__pycache__/
+
+# Supabase local
+supabase/
+
+# Internal docs
+internal/
