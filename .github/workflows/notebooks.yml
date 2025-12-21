@@ -49,5 +49,6 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore: refresh notebook outputs"
+            git pull --rebase
             git push
           fi
