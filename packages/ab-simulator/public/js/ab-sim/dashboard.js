@@ -5,8 +5,8 @@
 	const chartConfig = { responsive: true, displayModeBar: false }
 
 	// Adaptive polling state
-	let pollDelay = 5000 // Start at 5 seconds
-	const minDelay = 5000
+	let pollDelay = 3000 // Start at 3 seconds
+	const minDelay = 3000
 	const maxDelay = 60000
 	let pollTimeout = null
 

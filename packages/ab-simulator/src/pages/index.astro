@@ -7,27 +7,33 @@ import AppLayout from '../../../shared/src/layouts/AppLayout.astro'
 	<div class='-mt-4 mb-6 overflow-hidden rounded-2xl border-2 border-slate-200 bg-gradient-to-br from-slate-50 via-white to-amber-50/50 shadow-lg dark:border-slate-700 dark:from-slate-900 dark:via-slate-900 dark:to-amber-950/20'>
 		<div class='grid divide-y md:grid-cols-3 md:divide-x md:divide-y-0 divide-slate-200 dark:divide-slate-700'>
 			<!-- Col 1: You're in the experiment -->
-			<div class='flex flex-col items-center gap-3 p-6 text-center'>
-				<div class='flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-3xl dark:bg-amber-500/20'>🎲</div>
-				<div class='text-xl font-bold text-slate-900 dark:text-white'>You're in the Experiment</div>
-				<p class='text-base text-slate-600 dark:text-slate-400'>
-					Randomly assigned to <strong class='text-amber-600 dark:text-amber-400'>Variant A</strong> or <strong class='text-orange-600 dark:text-orange-400'>Variant B</strong> with different difficulty levels.
+			<div class='flex flex-col items-center gap-1.5 p-4 text-center sm:gap-2 sm:p-5'>
+				<div class='flex items-center gap-2'>
+					<div class='flex h-8 w-8 items-center justify-center rounded-xl bg-amber-100 text-lg dark:bg-amber-500/20 sm:h-10 sm:w-10 sm:text-xl'>🎲</div>
+					<div class='text-base font-bold text-slate-900 dark:text-white sm:text-lg'>You're in the Experiment</div>
+				</div>
+				<p class='text-xs text-slate-600 dark:text-slate-400 sm:text-sm'>
+					This is a real A/B test. You've been randomly assigned to <strong class='text-amber-600 dark:text-amber-400'>Variant A</strong> or <strong class='text-orange-600 dark:text-orange-400'>Variant B</strong>.
 				</p>
 			</div>
 			<!-- Col 2: Play the game -->
-			<div class='flex flex-col items-center gap-3 p-6 text-center'>
-				<div class='flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-3xl dark:bg-emerald-500/20'>🎮</div>
-				<div class='text-xl font-bold text-slate-900 dark:text-white'>Play the Memory Game</div>
-				<p class='text-base text-slate-600 dark:text-slate-400'>
+			<div class='flex flex-col items-center gap-1.5 p-4 text-center sm:gap-2 sm:p-5'>
+				<div class='flex items-center gap-2'>
+					<div class='flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-lg dark:bg-emerald-500/20 sm:h-10 sm:w-10 sm:text-xl'>🎮</div>
+					<div class='text-base font-bold text-slate-900 dark:text-white sm:text-lg'>Play the Memory Game</div>
+				</div>
+				<p class='text-xs text-slate-600 dark:text-slate-400 sm:text-sm'>
 					Memorize pineapple locations, then find them all. Your completion time is tracked.
 				</p>
 			</div>
 			<!-- Col 3: Watch results -->
-			<div class='flex flex-col items-center gap-3 p-6 text-center'>
-				<div class='flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-100 text-3xl dark:bg-sky-500/20'>📊</div>
-				<div class='text-xl font-bold text-slate-900 dark:text-white'>See Real-Time Results</div>
-				<p class='text-base text-slate-600 dark:text-slate-400'>
-					Live analytics dashboard below. Deep-dive python notebooks in <a href='/projects/ab-simulator' class='whitespace-nowrap font-semibold text-sky-600 underline decoration-sky-300 underline-offset-2 hover:text-sky-700 dark:text-sky-400 dark:decoration-sky-600 dark:hover:text-sky-300'>Project&nbsp;Docs&nbsp;→</a>
+			<div class='flex flex-col items-center gap-1.5 p-4 text-center sm:gap-2 sm:p-5'>
+				<div class='flex items-center gap-2'>
+					<div class='flex h-8 w-8 items-center justify-center rounded-xl bg-sky-100 text-lg dark:bg-sky-500/20 sm:h-10 sm:w-10 sm:text-xl'>📊</div>
+					<div class='text-base font-bold text-slate-900 dark:text-white sm:text-lg'>See Real-Time Results</div>
+				</div>
+				<p class='text-xs text-slate-600 dark:text-slate-400 sm:text-sm'>
+					Every game contributes real data. Live dashboard below, published analysis in <a href='/projects/ab-simulator' class='whitespace-nowrap font-semibold text-sky-600 underline decoration-sky-300 underline-offset-2 hover:text-sky-700 dark:text-sky-400 dark:decoration-sky-600 dark:hover:text-sky-300'>Project&nbsp;Docs&nbsp;→</a>
 				</p>
 			</div>
 		</div>
