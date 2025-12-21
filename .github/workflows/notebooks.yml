@@ -2,7 +2,6 @@ name: Run Notebooks
 
 on:
   schedule:
-    # Every 2 hours at minute 0
     - cron: '0 */2 * * *'
   push:
     branches: [main]
@@ -11,170 +10,44 @@ on:
   workflow_dispatch:
     inputs:
       project_filter:
-        description: 'Filter by project ID (e.g., ab-simulator) or "all"'
+        description: 'Filter by project ID (e.g., ab-simulator) or leave empty for all'
         required: false
-        default: 'all'
 
-env:
-  PYTHON_VERSION: '3.11'
-
-# Grant write permission to commit notebook outputs
 permissions:
   contents: write
 
 jobs:
-  discover-notebooks:
+  run-notebooks:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Discover notebooks from folder structure
-        id: set-matrix
-        run: |
-          # Scan analytics/notebooks/{projectId}/*.ipynb
-          # Convention: folder name = project ID, output goes to public/analysis/{projectId}/
-          
-          NOTEBOOKS='[]'
-          
-          for projectDir in analytics/notebooks/*/; do
-            if [ -d "$projectDir" ]; then
-              PROJECT_ID=$(basename "$projectDir")
-              
-              # Filter by project if specified
-              FILTER="${{ github.event.inputs.project_filter || 'all' }}"
-              if [ "$FILTER" != "all" ] && [ "$FILTER" != "$PROJECT_ID" ]; then
-                continue
-              fi
-              
-              for notebook in "$projectDir"*.ipynb; do
-                if [ -f "$notebook" ]; then
-                  # Extract notebook ID from filename (remove .ipynb, replace underscores with hyphens)
-                  NOTEBOOK_FILE=$(basename "$notebook" .ipynb)
-                  NOTEBOOK_ID=$(echo "$NOTEBOOK_FILE" | tr '_' '-')
-                  
-                  # Add to matrix
-                  NOTEBOOKS=$(echo "$NOTEBOOKS" | jq --arg id "$NOTEBOOK_ID" \
-                    --arg projectId "$PROJECT_ID" \
-                    --arg path "$notebook" \
-                    '. + [{"id": $id, "projectId": $projectId, "path": $path}]')
-                fi
-              done
-            fi
-          done
-          
-          echo "Found notebooks: $NOTEBOOKS"
-          
-          # Check if we have any notebooks
-          COUNT=$(echo "$NOTEBOOKS" | jq 'length')
-          if [ "$COUNT" -eq 0 ]; then
-            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
-          else
-            MATRIX=$(echo "{\"include\":$NOTEBOOKS}" | jq -c .)
-            echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
-          fi
 
-  run-notebook:
-    needs: discover-notebooks
-    if: ${{ needs.discover-notebooks.outputs.matrix != '{"include":[]}' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJson(needs.discover-notebooks.outputs.matrix) }}
-      fail-fast: false
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
           cache: 'pip'
-      
-      - name: Install dependencies
-        run: |
-          pip install -r analytics/requirements.txt
-      
-      - name: Execute notebook
+          cache-dependency-path: 'analytics/requirements.txt'
+
+      - name: Run notebooks
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-        run: |
-          echo "Running: ${{ matrix.id }}"
-          echo "Path: ${{ matrix.path }}"
-          echo "Project: ${{ matrix.projectId }}"
-          
-          # Create output directory (public/analysis/{projectId}/)
-          mkdir -p public/analysis/${{ matrix.projectId }}
-          
-          # Execute notebook with papermill (captures fresh data)
-          papermill "${{ matrix.path }}" "/tmp/${{ matrix.id }}-executed.ipynb" \
-            --no-progress-bar \
-            --log-output
-          
-          # Convert to HTML
-          jupyter nbconvert "/tmp/${{ matrix.id }}-executed.ipynb" \
-            --to html \
-            --template lab \
-            --output "${{ matrix.id }}" \
-            --output-dir "public/analysis/${{ matrix.projectId }}"
-          
-          echo "✓ Generated: public/analysis/${{ matrix.projectId }}/${{ matrix.id }}.html"
-      
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: notebook-${{ matrix.projectId }}-${{ matrix.id }}
-          path: public/analysis/${{ matrix.projectId }}/${{ matrix.id }}.html
-          retention-days: 7
+        run: node scripts/run-notebook.mjs ${{ github.event.inputs.project_filter || '' }}
 
-  commit-results:
-    needs: run-notebook
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-      
-      - name: Move artifacts to public folder
-        run: |
-          mkdir -p public/analysis
-          
-          # Artifacts are named notebook-{projectId}-{notebookId}
-          # Move each to public/analysis/{projectId}/
-          for dir in artifacts/notebook-*/; do
-            if [ -d "$dir" ]; then
-              # Extract project ID from artifact name
-              ARTIFACT_NAME=$(basename "$dir")
-              # Pattern: notebook-{projectId}-{notebookId}
-              # Extract projectId (everything between first and last hyphen-separated segments)
-              PROJECT_ID=$(echo "$ARTIFACT_NAME" | sed 's/notebook-//' | rev | cut -d'-' -f2- | rev)
-              
-              mkdir -p "public/analysis/$PROJECT_ID"
-              find "$dir" -name "*.html" -exec cp {} "public/analysis/$PROJECT_ID/" \; 2>/dev/null || true
-              echo "✓ Copied to public/analysis/$PROJECT_ID/"
-            fi
-          done
-          
-          # Show what we generated
-          find public/analysis -name "*.html" -type f
-      
-      - name: Commit and push
+      - name: Commit results
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           git add public/analysis/
-          
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: refresh notebook outputs [skip ci]
-            
-            Notebooks updated: $(date -u +"%Y-%m-%d %H:%M UTC")"
+            git commit -m "chore: refresh notebook outputs [skip ci]"
             git push
           fi
