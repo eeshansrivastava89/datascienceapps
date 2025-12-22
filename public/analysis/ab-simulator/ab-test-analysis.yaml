@@ -4,28 +4,28 @@ decision: Do NOT ship Variant B — guardrail metrics show significant drops in 
   and engagement.
 metrics:
 - label: Completion Time
-  value: +2.4s
-  delta: +28.1%
+  value: +2.5s
+  delta: +30.7%
   delta_direction: up
-  context: p=0.118, not significant
+  context: p=0.088, not significant
 - label: Completion Rate
-  value: 62%
-  delta: -24.5%
+  value: 63%
+  delta: -23.5%
   delta_direction: down
   context: vs 83% control
 - label: Repeat Rate
-  value: 23%
-  delta: -13.1pp
+  value: 26%
+  delta: -8.8pp
   delta_direction: down
-  context: vs 36% control
+  context: vs 35% control
 - label: Effect Size
-  value: d=0.25
+  value: d=0.27
   context: negligible (<0.2)
-generated_at: '2025-12-22T04:21:19.045084'
-power_analysis: 34% power — need 244 per group for 80%
+generated_at: '2025-12-22T04:58:51.752713'
+power_analysis: 40% power — need 215 per group for 80%
 warnings:
-- Sample Ratio Mismatch detected (36%/64% vs expected 50/50)
-- Underpowered experiment (34% power, need 80%)
-- Significant drop in completion rate (83% → 62%)
+- Sample Ratio Mismatch detected (37%/63% vs expected 50/50)
+- Underpowered experiment (40% power, need 80%)
+- Significant drop in completion rate (83% → 63%)
 methodology: Welch's t-test (primary), Chi-square (completion rate), Z-test (repeat
   rate)
