@@ -7571,7 +7571,7 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Analysis run: 2025-12-21 22:06:02
+<pre>Analysis run: 2025-12-22 00:25:28
 </pre>
 </div>
 </div>
@@ -7713,9 +7713,9 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>✓ Loaded 382 events
+<pre>✓ Loaded 386 events
   Date range: 2025-11-09 to 2025-12-21
-  Event types: {'puzzle_started': 190, 'puzzle_completed': 137, 'puzzle_failed': 28, 'puzzle_repeated': 27}
+  Event types: {'puzzle_started': 192, 'puzzle_completed': 137, 'puzzle_failed': 30, 'puzzle_repeated': 27}
 </pre>
 </div>
 </div>
@@ -7762,7 +7762,7 @@ a.anchor-link {
 <pre>
 📊 Analysis Datasets:
   Completions: 137 events
-  Started: 190 events
+  Started: 192 events
   Repeated: 27 events
 
   Variant split (completions):
@@ -8199,9 +8199,9 @@ PRIMARY: Completion Time (seconds)
   Difference: 1.38s (14.0%)
 
 SECONDARY: Completion Rate
-  Variant A: 86.9% (53/61)
+  Variant A: 84.1% (53/63)
   Variant B: 65.1% (84/129)
-  Difference: -21.8% (-25.1% relative)
+  Difference: -19.0% (-22.6% relative)
 
 ENGAGEMENT: Repeat Rate (repeats / completions)
   Variant A: 28.3% (15/53)
@@ -8278,11 +8278,11 @@ ENGAGEMENT: Repeat Rate (repeats / completions)
 <pre>🔍 Sample Ratio Mismatch (SRM) Test
 
 Expected split: 50% / 50%
-Observed split: 32.1% / 67.9%
-  Variant A: 61 started
+Observed split: 32.8% / 67.2%
+  Variant A: 63 started
   Variant B: 129 started
 
-Chi-square statistic: 24.3368
+Chi-square statistic: 22.6875
 P-value: 0.0000
 
 ⚠️  WARNING: SRM detected (p &lt; 0.01)
@@ -8616,8 +8616,8 @@ Practical Significance:
 Dep. Variable:     completion_time_seconds   R-squared:                       0.005
 Model:                                 OLS   Adj. R-squared:                 -0.003
 Method:                      Least Squares   F-statistic:                    0.6475
-Date:                     Sun, 21 Dec 2025   Prob (F-statistic):              0.422
-Time:                             22:06:03   Log-Likelihood:                -505.78
+Date:                     Mon, 22 Dec 2025   Prob (F-statistic):              0.422
+Time:                             00:25:30   Log-Likelihood:                -505.78
 No. Observations:                      137   AIC:                             1016.
 Df Residuals:                          135   BIC:                             1021.
 Df Model:                                1                                         
@@ -8927,17 +8927,17 @@ SE Reduction: 37.9%
 
 Contingency Table:
                    Completed   Not Completed
-Variant A                 53               8
+Variant A                 53              10
 Variant B                 84              45
 
 Completion Rates:
-  Variant A: 86.9% (53/61)
+  Variant A: 84.1% (53/63)
   Variant B: 65.1% (84/129)
-  Difference: -21.8% (-25.1% relative)
+  Difference: -19.0% (-22.6% relative)
 
 Chi-Square Test:
-  χ² statistic: 8.7055
-  p-value: 0.0032
+  χ² statistic: 6.5830
+  p-value: 0.0103
 
 ⚠️  GUARDRAIL ALERT: Significant drop in completion rate!
 </pre>
@@ -9059,7 +9059,7 @@ Two-Proportion Z-Test:
 <pre>📋 Secondary Metrics Summary
 
          Metric Variant A Variant B Difference p-value   Status
-Completion Rate     86.9%     65.1%     -21.8%  0.0032 ⚠️ Alert
+Completion Rate     84.1%     65.1%     -19.0%  0.0103 ⚠️ Alert
     Repeat Rate     28.3%     14.3%     -14.0%  0.0446 ⚠️ Alert
 
 ============================================================
@@ -9575,8 +9575,8 @@ PRIMARY METRIC: Completion Time
 
 SECONDARY METRICS &amp; GUARDRAILS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Completion Rate:       A=86.9% → B=65.1% (-25.1%)
-                         p=0.0032 ⚠️ SIGNIFICANT DROP
+  Completion Rate:       A=84.1% → B=65.1% (-22.6%)
+                         p=0.0103 ⚠️ SIGNIFICANT DROP
 
   Repeat Rate:           A=28.3% → B=14.3% (-14.0%)
                          p=0.0446 ⚠️ SIGNIFICANT DROP
@@ -9692,7 +9692,7 @@ STATISTICAL POWER
       • Consider CUPED with pre-experiment user metrics
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Analysis completed: 2025-12-21 22:06:04
+Analysis completed: 2025-12-22 00:25:31
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 </pre>
