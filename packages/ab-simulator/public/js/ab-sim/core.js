@@ -123,6 +123,7 @@ const puzzleState = {
 	startTime: null,
 	timerInterval: null,
 	countdownInterval: null,
+	countdownTimeout: null,
 	completionTime: null,
 	foundPineapples: [],
 	totalClicks: 0,
@@ -134,7 +135,9 @@ const puzzleState = {
 function resetState() {
 	clearInterval(puzzleState.timerInterval)
 	clearInterval(puzzleState.countdownInterval)
+	clearTimeout(puzzleState.countdownTimeout)
 	puzzleState.countdownInterval = null
+	puzzleState.countdownTimeout = null
 	puzzleState.startTime = null
 	puzzleState.foundPineapples = []
 	puzzleState.totalClicks = 0
@@ -160,6 +163,10 @@ function clearCountdownTimer() {
 	if (puzzleState.countdownInterval) {
 		clearInterval(puzzleState.countdownInterval)
 		puzzleState.countdownInterval = null
+	}
+	if (puzzleState.countdownTimeout) {
+		clearTimeout(puzzleState.countdownTimeout)
+		puzzleState.countdownTimeout = null
 	}
 }
 
@@ -393,7 +400,7 @@ function startCountdownTimer(onComplete) {
 		}
 		clearCountdownTimer()
 		updateMemorizePill('memorizing', { countdown: 'Go!' })
-		setTimeout(() => {
+		puzzleState.countdownTimeout = setTimeout(() => {
 			setPhase(RUN_PHASES.HUNT)
 			if (typeof onComplete === 'function') onComplete()
 		}, 400)
@@ -520,7 +527,6 @@ function resetPuzzle(isRepeat = false) {
 	updatePineappleProgress(0)
 	resetProgressVisuals()
 	forEachMemoryTile((tile) => {
-		tile.removeAttribute('data-fruit')
 		setTileState(tile, 'default')
 	})
 	DOM.startButton()?.classList.remove('hidden')
