@@ -1,8 +1,7 @@
 ;(function initDashboard() {
-	if (typeof Plotly === 'undefined') return setTimeout(initDashboard, 100)
+	if (typeof echarts === 'undefined') return setTimeout(initDashboard, 100)
 
 	const colors = { variantA: '#F7CA45', variantB: '#4572F7' }
-	const chartConfig = { responsive: true, displayModeBar: false }
 
 	// Adaptive polling state
 	let pollDelay = 3000 // Start at 3 seconds
@@ -10,34 +9,33 @@
 	const maxDelay = 60000
 	let pollTimeout = null
 
-	function getPlotlyTheme() {
-		const isDark = document.documentElement.classList.contains('dark')
+	// Store ECharts instances for resize handling
+	const charts = {
+		avgTime: null,
+		distribution: null,
+		funnel: null
+	}
+
+	function isDarkMode() {
+		return document.documentElement.classList.contains('dark')
+	}
+
+	function getEChartsTheme() {
+		const dark = isDarkMode()
 		return {
-			font: { family: 'Inter, sans-serif', size: 12, color: isDark ? '#e5e7eb' : '#374151' },
-			paper_bgcolor: 'rgba(0,0,0,0)',
-			plot_bgcolor: 'rgba(0,0,0,0)',
-			xaxis: {
-				gridcolor: isDark ? '#1f2937' : '#f3f4f6',
-				linecolor: isDark ? '#374151' : '#e5e7eb',
-				zerolinecolor: isDark ? '#374151' : '#e5e7eb'
-			},
-			yaxis: {
-				gridcolor: isDark ? '#1f2937' : '#f3f4f6',
-				linecolor: isDark ? '#374151' : '#e5e7eb',
-				zerolinecolor: isDark ? '#374151' : '#e5e7eb'
-			}
+			backgroundColor: 'transparent',
+			textStyle: { color: dark ? '#e5e7eb' : '#374151', fontFamily: 'Inter, sans-serif' },
+			axisLine: { lineStyle: { color: dark ? '#374151' : '#e5e7eb' } },
+			splitLine: { lineStyle: { color: dark ? '#1f2937' : '#f3f4f6' } },
+			legend: { textStyle: { color: dark ? '#e5e7eb' : '#374151' } }
 		}
 	}
 
-	function getBaseLayout(title, theme) {
-		return {
-			title: { text: title, font: { size: 14 } },
-			font: theme.font,
-			paper_bgcolor: theme.paper_bgcolor,
-			plot_bgcolor: theme.plot_bgcolor,
-			height: 320,
-			showlegend: true
-		}
+	function initChart(containerId) {
+		const container = document.getElementById(containerId)
+		if (!container) return null
+		const chart = echarts.init(container, null, { renderer: 'canvas' })
+		return chart
 	}
 
 	function renderComparison(c) {
@@ -53,31 +51,64 @@
 		else statusText.textContent = 'Both variants are equal'
 	}
 
-	function renderAvgTimeChart(stats, theme) {
+	function renderAvgTimeChart(stats) {
 		if (!stats || stats.length < 2) return
-		const layout = getBaseLayout('Average Completion Time', theme)
-		layout.xaxis = { title: '', ...theme.xaxis }
-		layout.yaxis = { title: 'Seconds', ...theme.yaxis }
-		layout.margin = { l: 50, r: 50, t: 50, b: 40 }
-		layout.showlegend = false
-		Plotly.newPlot(
-			'avg-time-chart',
-			[
-				{
-					x: ['Variant A', 'Variant B'],
-					y: [stats[0].avg_completion_time, stats[1].avg_completion_time],
-					type: 'bar',
-					marker: { color: [colors.variantA, colors.variantB] },
-					text: [
-						stats[0].avg_completion_time.toFixed(2) + 's',
-						stats[1].avg_completion_time.toFixed(2) + 's'
-					],
-					textposition: 'auto'
+		const theme = getEChartsTheme()
+
+		if (!charts.avgTime) {
+			charts.avgTime = initChart('avg-time-chart')
+			if (!charts.avgTime) return
+		}
+
+		const option = {
+			backgroundColor: theme.backgroundColor,
+			textStyle: theme.textStyle,
+			title: {
+				text: 'Average Completion Time',
+				left: 'center',
+				textStyle: { fontSize: 14, fontWeight: 'normal', ...theme.textStyle }
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: { type: 'shadow' },
+				formatter: function (params) {
+					const p = params[0]
+					return `${p.name}<br/>Avg Time: <strong>${p.value.toFixed(2)}s</strong>`
 				}
-			],
-			layout,
-			chartConfig
-		)
+			},
+			grid: { left: 50, right: 50, top: 50, bottom: 40 },
+			xAxis: {
+				type: 'category',
+				data: ['Variant A', 'Variant B'],
+				axisLine: theme.axisLine,
+				axisTick: { show: false }
+			},
+			yAxis: {
+				type: 'value',
+				name: 'Seconds',
+				nameTextStyle: theme.textStyle,
+				axisLine: theme.axisLine,
+				splitLine: theme.splitLine
+			},
+			series: [{
+				type: 'bar',
+				data: [
+					{ value: stats[0].avg_completion_time, itemStyle: { color: colors.variantA } },
+					{ value: stats[1].avg_completion_time, itemStyle: { color: colors.variantB } }
+				],
+				barWidth: '50%',
+				label: {
+					show: true,
+					position: 'top',
+					formatter: function (params) {
+						return params.value.toFixed(2) + 's'
+					},
+					...theme.textStyle
+				}
+			}]
+		}
+
+		charts.avgTime.setOption(option)
 	}
 
 	function computeKDE(data) {
@@ -100,77 +131,222 @@
 		return { x, y }
 	}
 
-	function renderDistributionChart(d, theme) {
+	function renderDistributionChart(d) {
 		if (!d.variant_a_times || !d.variant_b_times) return
+		const theme = getEChartsTheme()
+
+		if (!charts.distribution) {
+			charts.distribution = initChart('distribution-chart')
+			if (!charts.distribution) return
+		}
+
 		const kdeA = computeKDE(d.variant_a_times)
 		const kdeB = computeKDE(d.variant_b_times)
-		const layout = getBaseLayout('Completion Time Distribution (KDE)', theme)
-		layout.xaxis = { title: 'Completion Time (seconds)', ...theme.xaxis }
-		layout.yaxis = { title: 'Density', ...theme.yaxis }
-		layout.margin = { l: 50, r: 30, t: 50, b: 40 }
-		Plotly.newPlot(
-			'distribution-chart',
-			[
+
+		// Combine x and y into [x, y] pairs for ECharts
+		const dataA = kdeA.x.map((x, i) => [x, kdeA.y[i]])
+		const dataB = kdeB.x.map((x, i) => [x, kdeB.y[i]])
+
+		const option = {
+			backgroundColor: theme.backgroundColor,
+			textStyle: theme.textStyle,
+			title: {
+				text: 'Completion Time Distribution (KDE)',
+				left: 'center',
+				textStyle: { fontSize: 14, fontWeight: 'normal', ...theme.textStyle }
+			},
+			tooltip: {
+				trigger: 'axis',
+				formatter: function (params) {
+					const time = params[0]?.data?.[0]?.toFixed(2) || '0'
+					let result = `Time: ${time}s<br/>`
+					params.forEach(p => {
+						result += `${p.seriesName}: ${p.data[1].toFixed(4)}<br/>`
+					})
+					return result
+				}
+			},
+			legend: {
+				data: ['Variant A', 'Variant B'],
+				bottom: 0,
+				textStyle: theme.legend.textStyle
+			},
+			grid: { left: 50, right: 30, top: 50, bottom: 60 },
+			xAxis: {
+				type: 'value',
+				name: 'Completion Time (seconds)',
+				nameLocation: 'center',
+				nameGap: 30,
+				nameTextStyle: theme.textStyle,
+				axisLine: theme.axisLine,
+				splitLine: theme.splitLine
+			},
+			yAxis: {
+				type: 'value',
+				name: 'Density',
+				nameTextStyle: theme.textStyle,
+				axisLine: theme.axisLine,
+				splitLine: theme.splitLine
+			},
+			series: [
 				{
-					x: kdeB.x,
-					y: kdeB.y,
-					type: 'scatter',
-					mode: 'lines',
 					name: 'Variant B',
-					line: { color: colors.variantB, width: 2 },
-					fill: 'tozeroy',
-					fillcolor: `${colors.variantB}66`
+					type: 'line',
+					smooth: true,
+					data: dataB,
+					lineStyle: { color: colors.variantB, width: 2 },
+					itemStyle: { color: colors.variantB },
+					areaStyle: { color: colors.variantB, opacity: 0.4 },
+					symbol: 'none'
 				},
 				{
-					x: kdeA.x,
-					y: kdeA.y,
-					type: 'scatter',
-					mode: 'lines',
 					name: 'Variant A',
-					line: { color: colors.variantA, width: 2 },
-					fill: 'tozeroy',
-					fillcolor: `${colors.variantA}66`
+					type: 'line',
+					smooth: true,
+					data: dataA,
+					lineStyle: { color: colors.variantA, width: 2 },
+					itemStyle: { color: colors.variantA },
+					areaStyle: { color: colors.variantA, opacity: 0.4 },
+					symbol: 'none'
 				}
-			],
-			layout,
-			chartConfig
-		)
+			]
+		}
+
+		charts.distribution.setOption(option)
 	}
 
-	function renderFunnelChart(funnel, theme) {
+	function renderFunnelChart(funnel) {
+		if (!funnel || funnel.length === 0) return
+		const theme = getEChartsTheme()
+
+		if (!charts.funnel) {
+			charts.funnel = initChart('funnel-chart')
+			if (!charts.funnel) return
+		}
+
 		const variantA = funnel
 			.filter((f) => f.variant === 'A')
 			.sort((a, b) => a.stage_order - b.stage_order)
 		const variantB = funnel
 			.filter((f) => f.variant === 'B')
 			.sort((a, b) => a.stage_order - b.stage_order)
-		const layout = getBaseLayout('Conversion Funnel', theme)
-		layout.margin = { l: 100, r: 30, t: 50, b: 40 }
-		Plotly.newPlot(
-			'funnel-chart',
-			[
+
+		// Calculate percentages for display (relative to first stage)
+		const maxA = variantA[0]?.event_count || 1
+		const maxB = variantB[0]?.event_count || 1
+
+		// Find max value for symmetric x-axis
+		const maxValue = Math.max(
+			...variantA.map(f => f.event_count),
+			...variantB.map(f => f.event_count)
+		)
+
+		// Stage names for y-axis (reversed so Started is at top)
+		const stages = variantA.map(f => f.stage).reverse()
+
+		const option = {
+			backgroundColor: theme.backgroundColor,
+			textStyle: theme.textStyle,
+			title: {
+				text: 'Conversion Funnel',
+				left: 'center',
+				textStyle: { fontSize: 14, fontWeight: 'normal', ...theme.textStyle }
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: { type: 'shadow' },
+				formatter: function (params) {
+					let result = `<strong>${params[0].axisValue}</strong><br/>`
+					params.forEach(p => {
+						const absValue = Math.abs(p.value)
+						const percent = p.data.percent || 0
+						result += `${p.marker} ${p.seriesName}: ${absValue} (${percent}%)<br/>`
+					})
+					return result
+				}
+			},
+			legend: {
+				data: ['Variant A', 'Variant B'],
+				top: 30,
+				right: 20,
+				orient: 'vertical',
+				textStyle: theme.legend.textStyle
+			},
+			grid: { left: 100, right: 100, top: 60, bottom: 20 },
+			xAxis: {
+				type: 'value',
+				min: -maxValue * 1.15,
+				max: maxValue * 1.15,
+				axisLine: { show: false },
+				axisTick: { show: false },
+				axisLabel: { show: false },
+				splitLine: { show: false }
+			},
+			yAxis: {
+				type: 'category',
+				data: stages,
+				axisLine: { show: false },
+				axisTick: { show: false },
+				axisLabel: {
+					...theme.textStyle,
+					fontWeight: 'bold'
+				}
+			},
+			series: [
 				{
-					type: 'funnel',
-					y: variantA.map((f) => f.stage),
-					x: variantA.map((f) => f.event_count),
 					name: 'Variant A',
-					marker: { color: colors.variantA },
-					textposition: 'inside',
-					textinfo: 'value+percent initial'
+					type: 'bar',
+					stack: 'total',
+					data: variantA.map(f => ({
+						value: -f.event_count, // Negative for left side
+						percent: ((f.event_count / maxA) * 100).toFixed(0),
+						actualValue: f.event_count
+					})).reverse(),
+					itemStyle: {
+						color: colors.variantA,
+						borderRadius: [4, 0, 0, 4]
+					},
+					label: {
+						show: true,
+						position: 'left',
+						formatter: function (params) {
+							return `${params.data.actualValue}\n${params.data.percent}%`
+						},
+						...theme.textStyle,
+						fontSize: 11,
+						align: 'right'
+					},
+					barWidth: '60%'
 				},
 				{
-					type: 'funnel',
-					y: variantB.map((f) => f.stage),
-					x: variantB.map((f) => f.event_count),
 					name: 'Variant B',
-					marker: { color: colors.variantB },
-					textposition: 'inside',
-					textinfo: 'value+percent initial'
+					type: 'bar',
+					stack: 'total',
+					data: variantB.map(f => ({
+						value: f.event_count, // Positive for right side
+						percent: ((f.event_count / maxB) * 100).toFixed(0),
+						actualValue: f.event_count
+					})).reverse(),
+					itemStyle: {
+						color: colors.variantB,
+						borderRadius: [0, 4, 4, 0]
+					},
+					label: {
+						show: true,
+						position: 'right',
+						formatter: function (params) {
+							return `${params.data.actualValue}\n${params.data.percent}%`
+						},
+						...theme.textStyle,
+						fontSize: 11,
+						align: 'left'
+					},
+					barWidth: '60%'
 				}
-			],
-			layout,
-			chartConfig
-		)
+			]
+		}
+
+		charts.funnel.setOption(option)
 	}
 
 	// Cache previous completions to avoid unnecessary re-renders (preserves scroll position)
@@ -254,8 +430,14 @@
 		`
 	}
 
-	// Store Leaflet map instance
+	// ============================================
+	// Leaflet Geo Map (tile-based for detail)
+	// ============================================
+
 	let leafletMap = null
+	let markerLayer = null
+	let prevGeoHash = null
+	let prevMostRecentKey = null
 
 	// Bind follow toggle to HTML checkbox
 	function isFollowEnabled() {
@@ -263,15 +445,26 @@
 		return checkbox ? checkbox.checked : false
 	}
 
-	// Initialize follow toggle - zoom out to global when disabled
+	// Track most recent location for follow-live toggle
+	let lastKnownMostRecent = null
+
+	// Initialize follow toggle
 	function initFollowToggle() {
 		const checkbox = document.getElementById('follow-checkbox')
-		if (!checkbox) return
+		if (!checkbox || checkbox._initDone) return
+		checkbox._initDone = true
 
 		checkbox.addEventListener('change', () => {
-			if (!checkbox.checked && leafletMap) {
-				// Zoom out to global view when follow is disabled
-				leafletMap.flyTo([25, 0], 2)
+			if (!leafletMap) return
+
+			if (checkbox.checked) {
+				// When follow is ENABLED, immediately pan to most recent location
+				if (lastKnownMostRecent?.lat && lastKnownMostRecent?.lon) {
+					leafletMap.setView([lastKnownMostRecent.lat, lastKnownMostRecent.lon], 10, { animate: false })
+				}
+			} else {
+				// When follow is DISABLED, zoom out to global view
+				leafletMap.setView([25, 0], 2, { animate: false })
 			}
 		})
 	}
@@ -282,66 +475,117 @@
 
 		const hasData = geoData && geoData.length > 0
 		if (!hasData) {
-			mapEl.innerHTML = '<div class="flex h-full items-center justify-center text-muted-foreground">No geo data yet</div>'
+			if (!leafletMap) {
+				mapEl.innerHTML = '<div class="flex h-full items-center justify-center text-muted-foreground">No geo data yet</div>'
+			}
 			return
 		}
 
+		// Check if data changed (skip re-render to preserve zoom/pan)
+		const newGeoHash = JSON.stringify(geoData)
+		const dataChanged = newGeoHash !== prevGeoHash
+
+		// Find most recent completion for follow-live
+		const mostRecent = geoData.reduce((a, b) =>
+			new Date(a.last_completion_at) > new Date(b.last_completion_at) ? a : b
+		)
+		const mostRecentKey = mostRecent ? `${mostRecent.city}-${mostRecent.last_completion_at}` : null
+		const hasNewCompletion = mostRecentKey !== prevMostRecentKey
+
+		// Store for toggle handler
+		lastKnownMostRecent = mostRecent
+
+		// Skip update if data unchanged (just handle follow-live)
+		if (!dataChanged && leafletMap) {
+			if (isFollowEnabled() && hasNewCompletion && mostRecent?.lat && mostRecent?.lon) {
+				prevMostRecentKey = mostRecentKey
+				// Use setView for instant pan (no slow flyTo animation)
+				leafletMap.setView([mostRecent.lat, mostRecent.lon], 10, { animate: false })
+			}
+			return
+		}
+
+		prevGeoHash = newGeoHash
+		prevMostRecentKey = mostRecentKey
+
 		// Initialize map once
 		if (!leafletMap) {
-			leafletMap = L.map('geo-map', { scrollWheelZoom: true }).setView([25, 0], 2)
-			L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+			leafletMap = L.map('geo-map', {
+				scrollWheelZoom: true,
+				// Keep animations ON for smooth user zoom/pan
+				// Only programmatic setView calls use { animate: false }
+				zoomAnimation: true,
+				fadeAnimation: true,
+				markerZoomAnimation: true
+			}).setView([25, 0], 2)
+
+			// Use CartoDB Voyager (clean, fast tiles with labels)
+			L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
 				attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
 				subdomains: 'abcd',
 				maxZoom: 19
 			}).addTo(leafletMap)
 
-			// Reset zoom button (Leaflet control)
+			// Create marker layer group
+			markerLayer = L.layerGroup().addTo(leafletMap)
+
+			// Reset view button - clearer UX with text
 			L.Control.ResetView = L.Control.extend({
 				onAdd: function() {
 					const btn = L.DomUtil.create('button', 'leaflet-bar leaflet-control')
-					btn.innerHTML = '🏠'
+					btn.innerHTML = '🌍 Reset'
 					btn.title = 'Reset to global view'
-					btn.style.cssText = 'width:30px;height:30px;font-size:16px;cursor:pointer;background:#fff;border:none;'
-					btn.onclick = (e) => { e.stopPropagation(); leafletMap.setView([25, 0], 2) }
+					btn.style.cssText = 'padding:6px 10px;font-size:12px;font-weight:500;cursor:pointer;background:#fff;border:none;white-space:nowrap;'
+					btn.onclick = (e) => {
+						e.stopPropagation()
+						leafletMap.setView([25, 0], 2, { animate: false })
+					}
 					return btn
 				}
 			})
 			new L.Control.ResetView({ position: 'topleft' }).addTo(leafletMap)
 
-			// Initialize the HTML follow toggle
 			initFollowToggle()
-		} else {
-			// Clear existing markers
-			leafletMap.eachLayer(layer => {
-				if (layer instanceof L.CircleMarker) leafletMap.removeLayer(layer)
-			})
 		}
 
-		// Add markers (constant size)
+		// Clear existing markers efficiently
+		markerLayer.clearLayers()
+
+		// Add markers
 		geoData.forEach(d => {
+			if (!d.lat || !d.lon) return
+
 			const color = d.variant === 'A' ? colors.variantA : colors.variantB
 			const borderColor = d.variant === 'A' ? '#b8860b' : '#2d4a9e'
 
-			L.circleMarker([d.lat, d.lon], {
-				radius: 8,
+			const marker = L.circleMarker([d.lat, d.lon], {
+				radius: 5,
 				fillColor: color,
 				color: borderColor,
-				weight: 2,
+				weight: 1.5,
 				opacity: 1,
-				fillOpacity: 0.8
+				fillOpacity: 0.85
 			})
-			.bindPopup(`<strong>${d.city || 'Unknown City'}, ${d.country}</strong><br>Variant ${d.variant}<br>Completions: ${d.completions}<br>Avg Time: ${(d.avg_time_ms / 1000).toFixed(2)}s`)
-			.addTo(leafletMap)
+
+			marker.bindPopup(`
+				<strong>${d.city || 'Unknown City'}, ${d.country}</strong><br/>
+				Variant ${d.variant}<br/>
+				Completions: ${d.completions}<br/>
+				Avg Time: ${(d.avg_time_ms / 1000).toFixed(2)}s
+			`)
+
+			// Click to zoom to city level
+			marker.on('click', () => {
+				leafletMap.setView([d.lat, d.lon], 10, { animate: false })
+			})
+
+			markerLayer.addLayer(marker)
 		})
 
-		// Fly to most recent completion location (only if follow mode is enabled)
-		if (isFollowEnabled()) {
-			const mostRecent = geoData.reduce((a, b) =>
-				new Date(a.last_completion_at) > new Date(b.last_completion_at) ? a : b
-			)
-			if (mostRecent && mostRecent.lat && mostRecent.lon) {
-				leafletMap.flyTo([mostRecent.lat, mostRecent.lon], 8)
-			}
+		// Pan to most recent if follow is enabled
+		// (We only reach here when data changed, so this is either first load or new completion)
+		if (isFollowEnabled() && mostRecent?.lat && mostRecent?.lon) {
+			leafletMap.setView([mostRecent.lat, mostRecent.lon], 10, { animate: false })
 		}
 	}
 
@@ -355,14 +599,13 @@
 				window.supabaseApi.distribution(),
 				window.supabaseApi.geoCompletions()
 			])
-			const theme = getPlotlyTheme()
 			if (!overview || !overview.comparison || !overview.stats) {
 				throw new Error('Overview data missing')
 			}
 			renderComparison(overview.comparison)
-			renderFunnelChart(funnel, theme)
-			renderAvgTimeChart(overview.stats, theme)
-			renderDistributionChart(distribution || {}, theme)
+			renderFunnelChart(funnel)
+			renderAvgTimeChart(overview.stats)
+			renderDistributionChart(distribution || {})
 			renderCompletionsTable(completions)
 			renderGeoMap(geoData || [])
 			document.getElementById('last-updated').innerHTML =
@@ -422,12 +665,32 @@
 		scheduleNextPoll()
 	}
 
+	// Handle window resize
+	window.addEventListener('resize', () => {
+		Object.values(charts).forEach(chart => {
+			if (chart) chart.resize()
+		})
+		// Leaflet needs invalidateSize on resize
+		if (leafletMap) leafletMap.invalidateSize()
+	})
+
 	// Initial load
 	updateDashboard()
 	scheduleNextPoll()
 
+	// Dark mode observer - update all charts when theme changes
 	const observer = new MutationObserver(() => {
-		if (document.getElementById('avg-time-chart').hasChildNodes()) updateDashboard()
+		// Re-render all charts with new theme
+		Object.values(charts).forEach(chart => {
+			if (chart) {
+				const theme = getEChartsTheme()
+				chart.setOption({
+					textStyle: theme.textStyle
+				})
+			}
+		})
+		// Full re-render to apply all theme changes
+		updateDashboard()
 	})
 	observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 })()

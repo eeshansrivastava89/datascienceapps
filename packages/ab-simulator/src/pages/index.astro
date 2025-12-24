@@ -236,19 +236,19 @@ import GitHubContributeButton from '../../../shared/src/components/GitHubContrib
 
 			<!-- Funnel Chart (Moved up) -->
 			<div class='rounded-lg border bg-card p-4'>
-				<div id='funnel-chart'></div>
+				<div id='funnel-chart' class='h-[320px] w-full'></div>
 			</div>
 
 			<!-- Charts Grid: Avg Time + Distribution -->
 			<div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
 				<!-- Avg Time Chart -->
 				<div class='rounded-lg border bg-card p-4'>
-					<div id='avg-time-chart'></div>
+					<div id='avg-time-chart' class='h-[320px] w-full'></div>
 				</div>
 
 				<!-- Distribution Chart (Histogram) -->
 				<div class='rounded-lg border bg-card p-4'>
-					<div id='distribution-chart'></div>
+					<div id='distribution-chart' class='h-[320px] w-full'></div>
 				</div>
 			</div>
 
@@ -288,11 +288,11 @@ import GitHubContributeButton from '../../../shared/src/components/GitHubContrib
 			</div>
 		</div>
 
-		<!-- Leaflet for geo map -->
+		<!-- ECharts for charts -->
+		<script src='https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js' is:inline></script>
+		<!-- Leaflet for geo map (tile-based for detail) -->
 		<link rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' />
 		<script src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' is:inline></script>
-
-		<script src='https://cdn.plot.ly/plotly-2.27.0.min.js' is:inline></script>
 		<script src='/ab-simulator/js/utils.js' is:inline></script>
 		<script src='/ab-simulator/js/puzzle-config.js' is:inline></script>
 		<!-- Inject Supabase config for PostgREST access (uses public env vars) -->

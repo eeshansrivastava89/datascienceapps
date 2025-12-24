@@ -1,6 +1,6 @@
 # Architecture V2: Site Simplification
 
-> **Status:** Phase 1-5 Complete ✅ | Phase 13 Planned | Phase 14 Complete ✅
+> **Status:** Phase 1-5 Complete ✅ | Phase 13 Complete ✅ | Phase 14 Complete ✅ | Phase 15 Planned | Phase 16 Planned
 > **Date:** December 2024
 > **Goal:** Simplify UX by focusing the main site on **projects + unified analysis page**, moving writing to Substack.
 
@@ -59,19 +59,19 @@ Each app page follows this three-section layout:
 │   "Build your app here. See ab-simulator for example."      │
 ├─────────────────────────────────────────────────────────────┤
 │ Related Content                            (Templatized)    │
-│                                                              │
+│                                                             │
 │ 📊 Analysis Notebooks                                       │
 │ - Auto-generated summaries from analytics/notebooks/        │
 │ - NotebookSummary islands (methods, findings, conclusions)  │
 │ - [View Full Notebook →] links                              │
 │ - Placeholder if no notebooks exist                         │
-│                                                              │
+│                                                             │
 │ 📮 Related Writing                                          │
 │ - Substack posts tagged with this project                   │
 │ - Post previews with excerpts                               │
 │ - [Read on Substack →] links                                │
 │ - Placeholder if no posts exist                             │
-│                                                              │
+│                                                             │
 │ [View All Notebooks & Posts → /analysis?project=x]          │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -288,21 +288,19 @@ Substack RSS provides: `title`, `link`, `pubDate`, `description`. **No project t
 
 # Phase 13: Charting Library Consolidation
 
-> **Status:** Planned
-> **Goal:** Replace Plotly + Leaflet with Apache ECharts to reduce bundle size by 12x and unify visualization API.
+> **Status:** Complete ✅
+> **Goal:** Replace Plotly with Apache ECharts, keep Leaflet for geo map (better tile-based UX).
 
 ---
 
 ## Why This Change?
 
-Current charting stack is bloated and split across two libraries:
+Original charting stack was bloated:
 
 1. **Plotly.js (3.5MB)** — Charts only (bar, distribution, funnel)
 2. **Leaflet (300KB)** — Maps only (geo markers)
-3. **Two separate APIs** — Plotly imperative vs Leaflet OOP
-4. **Manual dark mode** — Separate theming for each library
 
-**New approach:** Apache ECharts handles charts + maps in 300KB with unified API.
+**Final approach:** ECharts for charts (300KB) + Leaflet for geo map (300KB). Kept Leaflet because tile-based maps provide better zoom detail (streets, cities) vs ECharts SVG-only world outline.
 
 ---
 
@@ -319,48 +317,49 @@ AB Simulator Dashboard
 ### After:
 ```
 AB Simulator Dashboard
-└── Apache ECharts (300KB) → All charts + geo map
-    ├── Built-in dark theme
-    └── Single imperative API
+├── Apache ECharts (300KB) → Bar, KDE, Funnel charts
+│   └── Unified theme system
+└── Leaflet (300KB)        → Geo map with tile detail
+    └── Optimized: caching, instant pans, smooth zoom
 ```
 
-**Bundle reduction:** 3,800 KB → 300 KB (12x smaller)
+**Bundle reduction:** 3,800 KB → 600 KB (6x smaller)
 
 ---
 
 ## Chart Migration Map
 
-| Current | Library | ECharts Replacement | Status |
-|---------|---------|---------------------|--------|
-| Average Completion Time | Plotly bar | `{ type: 'bar' }` | ⏳ |
-| KDE Distribution | Plotly line + custom KDE | `{ type: 'line', smooth: true }` (keep `computeKDE()`) | ⏳ |
-| Conversion Funnel | Plotly funnel | `{ type: 'funnel' }` | ⏳ |
-| Geo Markers | Leaflet map | `{ type: 'scatter', coordinateSystem: 'geo' }` | ⏳ |
+| Chart | Before | After | Status |
+|-------|--------|-------|--------|
+| Average Completion Time | Plotly bar | ECharts `{ type: 'bar' }` | ✅ |
+| KDE Distribution | Plotly line | ECharts `{ type: 'line', smooth: true }` | ✅ |
+| Conversion Funnel | Plotly funnel | ECharts butterfly bar chart (A left, B right) | ✅ |
+| Geo Markers | Leaflet tiles | Leaflet tiles (kept, optimized) | ✅ |
 
 ---
 
 ## Implementation Tasks — [#112](https://github.com/eeshansrivastava89/datascienceapps/issues/112)
 
-### 1. Setup ECharts
-- [ ] Add ECharts CDN to `packages/ab-simulator/src/pages/index.astro`
-- [ ] Remove Plotly + Leaflet CDN links
-- [ ] Download `world.json` geo data to `/public/data/world.json`
+### 1. Setup ECharts ✅
+- [x] Add ECharts CDN to `packages/ab-simulator/src/pages/index.astro`
+- [x] Remove Plotly CDN link
+- [x] Keep Leaflet for geo map (better UX decision)
 
-### 2. Refactor `dashboard.js`
-- [ ] Replace `getPlotlyTheme()` → `getEChartsTheme()` (return `{ backgroundColor, textStyle, color }`)
-- [ ] Replace `renderAvgTimeChart()` with ECharts bar chart
-- [ ] Replace `renderDistributionChart()` with ECharts smooth line (keep `computeKDE()`)
-- [ ] Replace `renderFunnelChart()` with ECharts funnel
-- [ ] Replace `renderGeoMap()` with ECharts geo scatter
-- [ ] Update dark mode observer to call `chart.setOption({ darkMode: true })` on theme toggle
+### 2. Refactor `dashboard.js` ✅
+- [x] Replace `getPlotlyTheme()` → `getEChartsTheme()`
+- [x] Replace `renderAvgTimeChart()` with ECharts bar chart
+- [x] Replace `renderDistributionChart()` with ECharts smooth line (kept `computeKDE()`)
+- [x] Replace `renderFunnelChart()` with ECharts butterfly bar chart
+- [x] Optimize `renderGeoMap()` with data caching and instant pans
+- [x] Update dark mode observer for ECharts charts
 
-### 3. Test & Verify
-- [ ] Verify all charts render correctly
-- [ ] Test dark mode toggle (light ↔ dark)
-- [ ] Test responsive resize on window change
-- [ ] Verify "Follow Live" mode works with `chart.setOption({ geo: { center, zoom } })`
-- [ ] Check tooltips match current design (city, variant, completions, avg time)
-- [ ] Verify adaptive polling still works (3-60s backoff)
+### 3. Test & Verify ✅
+- [x] All charts render correctly
+- [x] Dark mode toggle works
+- [x] Responsive resize works
+- [x] "Follow Live" mode works (instant pan to new completion)
+- [x] Tooltips match design
+- [x] Adaptive polling still works (3-60s backoff)
 
 ---
 
@@ -368,29 +367,30 @@ AB Simulator Dashboard
 
 | Action | Path | Status |
 |--------|------|--------|
-| **Edit** | `packages/ab-simulator/src/pages/index.astro` | ⏳ (swap CDN links) |
-| **Edit** | `packages/ab-simulator/public/js/ab-sim/dashboard.js` | ⏳ (replace all chart functions) |
-| **Create** | `packages/ab-simulator/public/data/world.json` | ⏳ (ECharts world map) |
+| **Edit** | `packages/ab-simulator/src/pages/index.astro` | ✅ (swap Plotly → ECharts CDN) |
+| **Edit** | `packages/ab-simulator/public/js/ab-sim/dashboard.js` | ✅ (full rewrite) |
 
 ---
 
-## Risk Assessment
+## Leaflet Optimizations
 
-| Risk | Level | Mitigation |
-|------|-------|------------|
-| Geo map UX differs from Leaflet tiles | Low | ECharts SVG map is sufficient for city-level markers |
-| Dark mode breaks | Low | ECharts has built-in theme system |
-| Chart APIs differ significantly | Low | Both are imperative, minimal refactor needed |
+| Issue | Fix |
+|-------|-----|
+| Slow `flyTo()` animation | Use `setView({ animate: false })` for programmatic pans |
+| Re-render every poll | Cache data hash, skip if unchanged |
+| Map reset flicker | Keep animations ON for user interactions |
+| Small reset button | Added "🌍 Reset" with clear text label |
+| Large markers | Reduced radius from 10 → 5 |
 
 ---
 
 ## Success Metrics
 
-- [ ] Bundle size reduced from 3.8MB → 300KB (12x smaller)
-- [ ] All 4 charts render correctly (bar, distribution, funnel, geo)
-- [ ] Dark mode works with single theme toggle
-- [ ] Page load time improves (measure via Lighthouse)
-- [ ] "Follow Live" mode still animates to recent completion
+- [x] Bundle size reduced from 3.8MB → 600KB (6x smaller)
+- [x] All 3 ECharts charts render correctly (bar, distribution, funnel)
+- [x] Geo map has tile-based detail with smooth zoom
+- [x] Dark mode works
+- [x] "Follow Live" mode pans to most recent completion
 
 ---
 
@@ -495,3 +495,86 @@ App Page
 - [x] "View Notebook" button works correctly (inside NotebookSummary)
 - [x] New packages created via `create-package.mjs` include all patterns
 - [x] Substack utilities moved to shared package for reuse across monorepo
+
+---
+
+# Phase 15: Architecture Cleanup (Shared Boundaries + Scaffolding)
+
+> **Status:** Planned
+> **Goal:** Eliminate architectural drift by hardening shared boundaries, removing hub legacy, and simplifying the scaffolded app contract.
+
+---
+
+## Why This Change?
+
+The codebase now has two main surfaces (base site + app packages) but still relies on brittle deep-relative imports and stale hub concepts. This creates unnecessary maintenance risk as new apps are added.
+
+**Primary risks today:**
+1. Deep `../../..` imports across packages
+2. Shared package exports out of sync with actual files
+3. Hub-page legacy encoded in scaffolding
+4. Duplicate layout shells causing drift
+
+---
+
+## Architecture Impact
+
+- **Shared package becomes the only API surface** for app/base imports.
+- **No reverse dependency** from shared → base.
+- **Scaffolded apps link to Analysis instead of hub pages** by default.
+- **Layouts converge** to a single source of truth.
+- **Versions align** across root/app/scaffold to reduce drift.
+
+---
+
+## Action Items
+
+- [ ] Define and export the shared API surface (layouts/components/data loaders).
+- [ ] Add path aliases and migrate away from deep relative imports.
+- [ ] Remove `hubUrl` from project schema, data, and templates.
+- [ ] Choose a single owner for `RelatedContent` (AppLayout vs app pages).
+- [ ] Consolidate base + app layout shells into one source of truth.
+- [ ] Align Astro/React/Tailwind versions across root/app/scaffold.
+- [ ] Clarify likes persistence path (RPC vs event-only).
+- [ ] Harden notebook loading assumptions for app builds.
+
+---
+
+# Phase 16: QA Automation
+
+> **Status:** Planned
+> **Goal:** Add automated regression detection for core site flows, UI stability, and content integrity.
+
+---
+
+## Why This Change?
+
+Today, only RPC smoke checks run on schedule. The rest of the system (navigation, rendering, styling, and analysis surfaces) lacks automated regression coverage.
+
+---
+
+## Architecture Impact
+
+- Introduce a QA workflow that runs on PRs and scheduled intervals.
+- Lightweight smoke coverage for all key routes.
+- Visual regression snapshots for top pages.
+- Content schema validation for YAML-driven data.
+
+---
+
+## Action Items
+
+- [ ] Add Lighthouse CI checks for performance/accessibility/SEO thresholds.
+- [ ] Add Playwright smoke tests for base routes and A/B Simulator flow.
+- [ ] Add visual regression snapshots for critical pages.
+- [ ] Add YAML schema validation for project data + analysis outputs.
+- [ ] Define a minimal desktop + mobile test matrix.
+
+---
+
+## Success Metrics
+
+- [ ] No broken routes in CI.
+- [ ] Core pages render with zero console errors.
+- [ ] Visual diffs caught before deploy.
+- [ ] Performance thresholds enforced in CI.
