@@ -11,6 +11,7 @@ interface Props {
 const { project, variant = 'full', showStats = true } = Astro.props
 const statusConfig = STATUS_CONFIG[project.status]
 const isActive = project.status === 'live' || project.status === 'in-progress'
+const isExternal = project.external === true
 const analysisUrl = `/analysis?project=${encodeURIComponent(project.id)}`
 
 // Pass Supabase config to client script
@@ -51,7 +52,7 @@ const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
           </div>
 
           {/* Standard Engagement Stats */}
-          {showStats && isActive && (
+          {showStats && isActive && !isExternal && (
             <div
               class='project-engagement-stats pt-2 text-sm text-muted-foreground'
               data-project-id={project.id}
@@ -67,15 +68,19 @@ const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
           )}
         </div>
       </div>
-      <div class='flex flex-col gap-2 sm:flex-row'>
-        <a
-          href={analysisUrl}
-          class='inline-flex items-center gap-2 border border-sky-500 bg-sky-50 px-5 py-2.5 text-sm font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-400 dark:hover:bg-sky-500/20'
-        >
-          Analysis
-        </a>
+      <div class={`flex flex-col gap-2 sm:flex-row ${isExternal ? 'basis-full' : ''}`}>
+        {!isExternal && (
+          <a
+            href={analysisUrl}
+            class='inline-flex items-center gap-2 border border-sky-500 bg-sky-50 px-5 py-2.5 text-sm font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-400 dark:hover:bg-sky-500/20'
+          >
+            Analysis
+          </a>
+        )}
         <a
           href={project.url}
+          target={isExternal ? '_blank' : undefined}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
           class='inline-flex items-center gap-2 bg-foreground px-5 py-2.5 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
         >
           Try It →
@@ -116,7 +121,7 @@ const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
           </div>
 
           {/* Standard Engagement Stats */}
-          {showStats && isActive && (
+          {showStats && isActive && !isExternal && (
             <div
               class='project-engagement-stats pt-1 text-xs text-muted-foreground'
               data-project-id={project.id}
@@ -132,15 +137,19 @@ const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
           )}
         </div>
       </div>
-      <div class='flex flex-col gap-2 sm:flex-row'>
-        <a
-          href={analysisUrl}
-          class='inline-flex items-center gap-2 border border-sky-500 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-400 dark:hover:bg-sky-500/20'
-        >
-          Analysis
-        </a>
+      <div class={`flex flex-col gap-2 sm:flex-row ${isExternal ? 'basis-full' : ''}`}>
+        {!isExternal && (
+          <a
+            href={analysisUrl}
+            class='inline-flex items-center gap-2 border border-sky-500 bg-sky-50 px-4 py-2 text-sm font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-100 dark:bg-sky-500/10 dark:text-sky-400 dark:hover:bg-sky-500/20'
+          >
+            Analysis
+          </a>
+        )}
         <a
           href={project.url}
+          target={isExternal ? '_blank' : undefined}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
           class='inline-flex items-center gap-2 bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90'
         >
           Try It →
